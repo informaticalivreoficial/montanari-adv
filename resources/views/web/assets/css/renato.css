@@ -1,0 +1,7 @@
+.link-contact{
+    color:#23406C;
+}
+.link-contact:hover{
+    text-decoration: underline;
+    color: #23406C;
+}

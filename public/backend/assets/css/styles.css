@@ -1,0 +1,165 @@
+.labelforms{
+    font-weight: normal;
+    color:#999;
+}
+
+/* Foto User Admin */
+.thumb_user_admin{
+   border: 1px solid #ddd;
+   border-radius: 4px; 
+   text-align: center;
+}
+.thumb_user_admin input[type=file]{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+}
+
+/* Lista de Imóveis */
+img {
+    max-width: 100%;
+}
+.realty_list_item  {    
+    border: 1px solid #F3F3F3;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.border-item-imovel{
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid #F3F3F3;  
+    background-color: #F3F3F3;
+}
+
+.valores {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    list-style: none;
+    color: #fff;
+    margin-bottom: 0;
+    font-size: 0.875em;
+}
+
+
+.property_image, .content_image {
+  width: 100%;
+  flex-basis: 100%;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.property_image .property_image_item, .content_image .property_image_item {
+  flex-basis: calc(25% - 20px) !important;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.property_image .property_image_item img, .content_image .property_image_item img {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.property_image .property_image_item .property_image_actions, .content_image .property_image_item .property_image_actions {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.embed {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+
+
+.ajax_response {
+  z-index: 6;
+  position: fixed;
+  padding: 20px 20px 0 0;
+  top: 0;
+  right: 0;
+  width: 300px;
+  max-width: 100%;
+}
+.ajax_response .message {
+  background: #333333;
+  font-size: 0.8em;
+  font-weight: 400;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  color: #ffffff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 15px 15px 20px 15px;
+  margin-bottom: 15px;
+  position: relative;
+  cursor: pointer;
+}
+
+.ajax_response .message:before {
+  flex-basis: 0%;
+  margin: -5px 15px 0 0 !important;
+  font-size: 2.4em;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.ajax_response .message.error {
+  background: #D94352;
+}
+.ajax_response .message_time {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 4%;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+div.tagsinput span.tag {
+    background: #65CEA7 !important;
+    border-color: #65CEA7;
+    color: #fff;
+    border-radius: 15px;
+    -webkit-border-radius: 15px;
+    padding: 3px 10px;
+}
+div.tagsinput span.tag a {
+    color: #43886e;    
+}
+.paginacao nav ul{
+    justify-content: center;
+    margin: 0;
+}
+
+
+.login-body {
+    background: #65cea7 url(../images/login-bg.jpg) no-repeat fixed;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+}
+.mapa-google iframe{
+  width: 100% !important;
+}
+
