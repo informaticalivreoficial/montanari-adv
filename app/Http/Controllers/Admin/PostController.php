@@ -154,7 +154,7 @@ class PostController extends Controller
     public function imageRemove(Request $request)
     {
         $imageDelete = PostsGb::where('id', $request->image)->first();
-        Storage::delete(env('AWS_PASTA') . $imageDelete->path);
+        Storage::delete($imageDelete->path);
         //Cropper::flush($imageDelete->path);
         $imageDelete->delete();
         $json = [
@@ -228,10 +228,10 @@ class PostController extends Controller
 
         if(!empty($postdelete)){
             if(!empty($imageDelete)){
-                Storage::delete(env('AWS_PASTA') . $imageDelete->path);
+                Storage::delete($imageDelete->path);
                 //Cropper::flush($imageDelete->path);
                 $imageDelete->delete();
-                Storage::deleteDirectory(env('AWS_PASTA') . $secao.'/'.$postdelete->id);
+                Storage::deleteDirectory($secao.'/'.$postdelete->id);
                 $postdelete->delete();
             }
             $postdelete->delete();

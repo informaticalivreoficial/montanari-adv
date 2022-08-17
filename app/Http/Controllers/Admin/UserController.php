@@ -84,7 +84,7 @@ class UserController extends Controller
     {        
         $userCreate = User::create($request->all()); 
         if(!empty($request->file('avatar'))){
-            $userCreate->avatar = $request->file('avatar')->storeAs('user', Str::slug($request->name)  . '-' . str_replace('.', '', microtime(true)) . '.' . $request->file('avatar')->extension());
+            $userCreate->avatar = $request->file('avatar')->storeAs(env('AWS_PASTA') . 'user', Str::slug($request->name)  . '-' . str_replace('.', '', microtime(true)) . '.' . $request->file('avatar')->extension());
             $userCreate->save();
         }
 
@@ -178,7 +178,7 @@ class UserController extends Controller
         $user->fill($request->all());
 
         if(!empty($request->file('avatar'))){
-            $user->avatar = $request->file('avatar')->storeAs('user', Str::slug($request->name)  . '-' . str_replace('.', '', microtime(true)) . '.' . $request->file('avatar')->extension());
+            $user->avatar = $request->file('avatar')->storeAs(env('AWS_PASTA') . 'user', Str::slug($request->name)  . '-' . str_replace('.', '', microtime(true)) . '.' . $request->file('avatar')->extension());
         }
 
         if(!$user->save()){
@@ -242,7 +242,7 @@ class UserController extends Controller
                       ($user->admin == '1' && $user->client == '0' ? 'Administrador' :
                       ($user->admin == '0' && $user->client == '1' ? 'Cliente' : 'Cliente')));
             Storage::delete($user->avatar);
-            Cropper::flush($user->avatar);
+            //Cropper::flush($user->avatar);
             $user->delete();
         }
         return redirect()->route('admin.users.team')->with(['color' => 'success', 'message' => $perfil.' removido com sucesso!']);
@@ -279,7 +279,7 @@ class UserController extends Controller
                       ($user->admin == '1' && $user->client == '0' ? 'Administrador' :
                       ($user->admin == '0' && $user->client == '1' ? 'Cliente' : 'Cliente')));
             Storage::delete($user->avatar);
-            Cropper::flush($user->avatar);
+            //Cropper::flush($user->avatar);
             $user->delete();
         }
         return redirect()->route('admin.users.index')->with(['color' => 'success', 'message' => $perfil.' removido com sucesso!']);

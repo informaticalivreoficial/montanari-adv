@@ -49,7 +49,7 @@ class Slide extends Model
 
     public function getimagem()
     {
-        if(empty($this->imagem) || !Storage::disk()->exists(env('AWS_PASTA') . $this->imagem)) {
+        if(empty($this->imagem) || !Storage::disk()->exists($this->imagem)) {
             return url(asset('backend/assets/images/image.jpg'));
         } 
         return Storage::url($this->imagem);
