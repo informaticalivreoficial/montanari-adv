@@ -22,11 +22,11 @@ class PostsGb extends Model
 
     public function getUrlCroppedAttribute()
     {
-        return Storage::url(env('AWS_PASTA') . $this->path);
+        return Storage::url($this->path);
     }
 
     public function getUrlImageAttribute()
     {
-        return Storage::url(env('AWS_PASTA') . $this->path);
+        return Storage::url($this->path);
     }
 }
