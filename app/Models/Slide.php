@@ -49,17 +49,16 @@ class Slide extends Model
 
     public function getimagem()
     {
-        $image = $this->imagem;        
-        if(empty($this->imagem) || !File::exists('../public/storage/' . $image)) {
+        if(empty($this->imagem) || !Storage::disk()->exists(env('AWS_PASTA') . $this->imagem)) {
             return url(asset('backend/assets/images/image.jpg'));
         } 
-        return Storage::url(Cropper::thumb($this->imagem, 1920, 1100));
+        return Storage::url($this->imagem);
     }
 
     public function getUrlImagemAttribute()
     {
         if (!empty($this->imagem)) {
-            return Storage::url(Cropper::thumb($this->imagem, 500, 500));
+            return Storage::url($this->imagem);
         }
         return '';
     }    
