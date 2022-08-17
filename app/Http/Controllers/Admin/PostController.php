@@ -140,7 +140,7 @@ class PostController extends Controller
             foreach ($request->allFiles()['files'] as $image) {
                 $postImage = new PostsGb();
                 $postImage->post = $postUpdate->id;
-                $postImage->path = $image->storeAs(env('AWS_PASTA') . $secao.'/' . $postUpdate->id, Str::slug($request->titulo) . '-' . str_replace('.', '', microtime(true)) . '.' . $image->extension());
+                $postImage->path = $image->storeAs($secao.'/' . $postUpdate->id, Str::slug($request->titulo) . '-' . str_replace('.', '', microtime(true)) . '.' . $image->extension());
                 $postImage->save();
                 unset($postImage);
             }
