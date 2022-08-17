@@ -46,49 +46,7 @@ class WebController extends Controller
             'artigos' => $artigos
         ]);
     }
-
-    // public function projeto(Request $request)
-    // {
-    //     $Configuracoes = Configuracoes::where('id', '1')->first();
-    //     $projeto = Projeto::where('slug', $request->slug)->available()->first();
-        
-    //     $head = $this->seo->render($projeto->titulo . ' - ' . $Configuracoes->nomedosite ?? 'Informática Livre',
-    //         strip_tags($projeto->getContentWebAttribute()) ?? 'Informática Livre desenvolvimento de sistemas web desde 2005',
-    //         route('web.projeto', ['slug' => $projeto->slug]),
-    //         url($projeto->cover() ?? Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg'))
-    //     ); 
-        
-    //     $projeto->views = $projeto->views + 1;
-    //     $projeto->save();
-
-    //     $projetonext = Projeto::where('id', '>', $projeto->id)->first();
-        
-    //     return view('web.projeto', [
-    //         'projeto' => $projeto,
-    //         'head' => $head,
-    //         'Configuracoes' => $Configuracoes,
-    //         'projetonext' =>$projetonext
-    //     ]);
-    // }
-
-    // public function projetos()
-    // {
-    //     $Configuracoes = Configuracoes::where('id', '1')->first();
-    //     $projetos = Projeto::orderBy('created_at', 'DESC')->available()->paginate(9);
-
-    //     $head = $this->seo->render('Projetos ' . $Configuracoes->nomedosite ?? 'Informática Livre',
-    //         $Configuracoes->descricao ?? 'Informática Livre desenvolvimento de sistemas web desde 2005',
-    //         route('web.projetos'),
-    //         Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
-    //     ); 
-
-    //     return view('web.projetos', [
-    //         'projetos' => $projetos,
-    //         'Configuracoes' => $Configuracoes,
-    //         'head' => $head
-    //     ]);
-    // }
-
+    
     public function servicos()
     {
         $Configuracoes = Configuracoes::where('id', '1')->first();
@@ -106,7 +64,6 @@ class WebController extends Controller
             'head' => $head
         ]);
     }
-
     
     public function servico(Request $request)
     {
@@ -152,12 +109,6 @@ class WebController extends Controller
         $Configuracoes = Configuracoes::where('id', '1')->first();        
         $search = $request->search;
 
-        // $projetos = Projeto::orderBy('created_at', 'DESC')
-        //             ->where('titulo', 'LIKE', '%'.$search.'%')
-        //             ->orWhere('categoria', 'LIKE', '%'.$search.'%')
-        //             ->orWhere('metatags', 'LIKE', '%'.$search.'%')
-        //             ->orWhere('headline', 'LIKE', '%'.$search.'%')
-        //             ->get();
         $artigos = Post::orderBy('created_at', 'DESC')
                     ->where('tipo', '=', 'artigo')
                     ->where('titulo', 'LIKE', '%'.$search.'%')
@@ -171,11 +122,6 @@ class WebController extends Controller
                     ->orWhere('tags', 'LIKE', '%'.$search.'%')
                     ->get();
 
-        // if(!empty($projetos)){
-        //     $c1 = $projetos->count();
-        // }else{
-        //     $c1 = '0';
-        // }
         if(!empty($artigos)){
             $c2 = $artigos->count();
         }else{

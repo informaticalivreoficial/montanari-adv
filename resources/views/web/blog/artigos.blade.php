@@ -20,7 +20,7 @@
     </div>
 </section>
 
-@if($posts->count())
+@if(!empty($posts->count()) && $posts->count() > 0)
 <!-- :: Blog -->
 <section class="bolg py-100">
     <div class="container">                
