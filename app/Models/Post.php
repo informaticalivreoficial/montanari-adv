@@ -95,7 +95,7 @@ class Post extends Model
             return url(asset('backend/assets/images/image.jpg'));
         }
 
-        return Storage::url(env('AWS_PASTA') . $cover['path']);
+        return Storage::url($cover['path']);
     }
 
     public function sitecover()
@@ -112,7 +112,7 @@ class Post extends Model
             return url(asset('backend/assets/images/image.jpg'));
         }
 
-        return Storage::url(env('AWS_PASTA') . $cover['path']);
+        return Storage::url($cover['path']);
     }
 
     public function nocover()
@@ -129,7 +129,7 @@ class Post extends Model
             return url(asset('backend/assets/images/image.jpg'));
         }
 
-        return Storage::url(env('AWS_PASTA') . $cover['path']);
+        return Storage::url($cover['path']);
     }
     
     public function setStatusAttribute($value)
