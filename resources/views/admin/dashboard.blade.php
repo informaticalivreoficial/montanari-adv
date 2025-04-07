@@ -81,7 +81,7 @@
                         <span class="info-box-icon bg-info"><i class="ion ion-person-add"></i></span>
                         <div class="info-box-content">
                           <span class="info-box-text">Visitas/Hoje</span>
-                          <span class="info-box-number">{{$visitasHoje->count()}}</span>
+                          <span class="info-box-number">{{--$visitasHoje->count()--}}</span>
                         </div>
                       </div>                      
                   </div>
@@ -90,12 +90,13 @@
                       <span class="info-box-icon bg-info"><i class="ion ion-person-add"></i></span>  
                       <div class="info-box-content">
                         <span class="info-box-text">Total/Últimos 6 meses</span>
-                        <span class="info-box-number">                   
+                        <span class="info-box-number">  
+                          {{--                
                           @php                      
                             $json_file = json_encode($analyticsData->totalsForAllResults);
                             $json_str = json_decode($json_file, true);
                             echo $json_str['ga:sessions'] + $json_str['ga:visitors'];
-                          @endphp
+                          @endphp--}} 
                         </span>
                       </div>
                     </div>
@@ -359,157 +360,6 @@
             alwaysShowClose: true
             });
         });
-
-        var areaChartData = {
-        labels  : [
-          @foreach($analyticsData->rows as $dataMonth)                
-              'Mês/{{substr($dataMonth[0], -2)}}',                                 
-          @endforeach
-          ],
-        datasets: [
-            {
-            label               : 'Visitas Únicas',
-            backgroundColor     : 'rgba(60,141,188,0.9)',
-            borderColor         : 'rgba(60,141,188,0.8)',
-            pointRadius          : false,
-            pointColor          : '#3b8bba',
-            pointStrokeColor    : 'rgba(60,141,188,1)',
-            pointHighlightFill  : '#fff',
-            pointHighlightStroke: 'rgba(60,141,188,1)',
-            data                : [
-                                  @foreach($analyticsData->rows as $dataMonth)                
-                                      '{{$dataMonth[2]}}',                                 
-                                  @endforeach
-                                  ]
-            },
-            {
-            label               : 'Visitas',
-            backgroundColor     : 'rgba(210, 214, 222, 1)',
-            borderColor         : 'rgba(210, 214, 222, 1)',
-            pointRadius         : false,
-            pointColor          : 'rgba(210, 214, 222, 1)',
-            pointStrokeColor    : '#c1c7d1',
-            pointHighlightFill  : '#fff',
-            pointHighlightStroke: 'rgba(220,220,220,1)',
-            data                : [
-                                  @foreach($analyticsData->rows as $dataMonth)                
-                                      '{{$dataMonth[1]}}',                                 
-                                  @endforeach
-                                  ]
-            },
-        ]
-        }
-
-        
-        //-------------
-        //- BAR CHART -
-        //-------------
-        var barChartCanvas = $('#barChart').get(0).getContext('2d');
-        var barChartData = jQuery.extend(true, {}, areaChartData);
-        var temp0 = areaChartData.datasets[0]
-        var temp1 = areaChartData.datasets[1]
-        barChartData.datasets[0] = temp1
-        barChartData.datasets[1] = temp0
-
-        var barChartOptions = {
-        responsive              : true,
-        maintainAspectRatio     : false,
-        datasetFill             : false
-        }
-
-        var barChart = new Chart(barChartCanvas, {
-        type: 'bar', 
-        data: barChartData,
-        options: barChartOptions
-        });
-
-        function dynamicColors() {
-        var r = Math.floor(Math.random() * 255);
-        var g = Math.floor(Math.random() * 255);
-        var b = Math.floor(Math.random() * 255);
-        return "rgba(" + r + "," + g + "," + b + ", 0.5)";
-    }
-        
-    
-    // var donutChartCanvasProjetos = $('#donutChartprojetos').get(0).getContext('2d');
-    // var donutDataprojetos        = {
-    //       labels: [ 
-    //         'Projetos Inativos', 
-    //         'Projetos Disponíveis',             
-    //       ],
-    //       datasets: [
-    //         {
-    //           data: [{{-- $projetosUnavailable --}},{{-- $projetosAvailable --}}],
-    //             backgroundColor : ['#d2d6de', '#00a65a'],
-    //         }
-    //       ]
-    //     }
-    //     var donutOptions     = {
-    //       maintainAspectRatio : false,
-    //       responsive : true,
-    //     }
-
-    //     var donutChart = new Chart(donutChartCanvasProjetos, {
-    //       type: 'doughnut',
-    //       data: donutDataprojetos,
-    //       options: donutOptions      
-    //     });
-
-
-        //-------------
-        //- DONUT CHART -
-        //-------------
-        // Get context with jQuery - using jQuery's .get() method.
-        var donutChartCanvas = $('#donutChart').get(0).getContext('2d');
-        var donutData        = {
-          labels: [
-              @if(!empty($top_browser))
-                @foreach($top_browser as $browser)
-                  '{{$browser['browser']}}',
-                @endforeach
-              @else
-                'Chrome', 
-                'IE',
-                'FireFox', 
-                'Safari', 
-                'Opera', 
-                'Navigator',
-              @endif               
-          ],
-          datasets: [
-            {
-              data: [
-                @if(!empty($top_browser))
-                  @foreach($top_browser as $key => $browser)
-                    {{$browser['sessions']}},
-                  @endforeach
-                @else
-                  700,500,400,600,300,100
-                @endif                
-                ],
-              backgroundColor : [
-                @foreach($top_browser as $key => $browser)
-                  dynamicColors(),
-                @endforeach
-                ],
-            }
-          ]
-        }
-        var donutOptions     = {
-          maintainAspectRatio : false,
-          responsive : true,
-        }
-
-        //Create pie or douhnut chart
-        // You can switch between pie and douhnut using the method below.
-        var donutChart = new Chart(donutChartCanvas, {
-          type: 'doughnut',
-          data: donutData,
-          options: donutOptions      
-        });
-        
-        
-       
        
     });
 </script>
