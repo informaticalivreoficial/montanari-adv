@@ -193,7 +193,7 @@
                                     </li>                             
                                 </ul>
                             </li>                            
-                            @can('Listar Artigos')
+                            
                             <li class="nav-item has-treeview {{ isActiveMenu('admin.artigos') }} {{ isActiveMenu('admin.categorias') }}">
                                 <a href="javascript:void(0)" class="nav-link {{ isActive('admin.artigos') }} {{ isActive('admin.categorias') }}">
                                     <i class="nav-icon fas fa-pen"></i>
@@ -223,7 +223,7 @@
                                     </li>                                    
                                 </ul>
                             </li>    
-                            @endcan 
+                           
                                                    
                             <li class="nav-item has-treeview {{ isActiveMenu('admin.email') }}">
                                 <a href="javascript:void(0)" class="nav-link {{ isActive('admin.email') }}">
@@ -243,7 +243,7 @@
                                 </ul>
                             </li>
                             {{-- Configurações --}}
-                            @can('Listar Permissões')
+                           
                             <li class="nav-item has-treeview {{ isActiveMenu('admin.permission') }} {{ isActiveMenu('admin.role') }}">
                                 <a href="javascript:void(0)" class="nav-link {{ isActive('admin.permission') }} {{ isActive('admin.role') }}">
                                     <i class="nav-icon fas fa-lock"></i>
@@ -267,16 +267,16 @@
                                     </li>                                                                 
                                 </ul>
                             </li> 
-                            @endcan
+                           
                             {{-- Configurações --}}
-                            @can('Editar Configurações')
+                            
                             <li class="nav-item">
                                 <a href="{{ route('admin.configuracoes.edit', '1') }}" class="nav-link {{ isActive('admin.configuracoes.edit') }}">
                                     <i class="nav-icon fas fa-cog"></i>
                                     <p>Configurações</p>
                                 </a>                                
                             </li>
-                            @endcan
+                           
                         </ul>
                     </nav>
                     <!-- /.sidebar-menu -->
