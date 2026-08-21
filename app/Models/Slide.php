@@ -4,11 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use App\Support\Cropper;
-
 
 class Slide extends Model
 {
@@ -17,22 +14,28 @@ class Slide extends Model
     protected $table = 'slides';
 
     protected $fillable = [
-        'titulo',
-        'imagem',
+        'title',
+        'image',
         'content',
         'link',
         'target',
         'slug',
-        'expira',
+        'category',
+        'expired_at',
         'status',
-        'exibir_titulo',
-        'categoria'
+        'view_title',
+    ];
+
+    protected $casts = [
+        'target' => 'boolean',
+        'status' => 'boolean',
+        'view_title' => 'boolean',
+        'expired_at' => 'date',
     ];
 
     /**
      * Scopes
      */
-
     public function scopeAvailable($query)
     {
         return $query->where('status', 1);
@@ -44,46 +47,50 @@ class Slide extends Model
     }
 
     /**
-     * Accerssors and Mutators
+     * Accessors & Mutators
      */
-
-    public function getimagem()
+    public function getImageAttribute()
     {
-        if(empty($this->imagem) || !Storage::disk()->exists($this->imagem)) {
+        if (empty($this->attributes['image']) || !Storage::disk()->exists($this->attributes['image'])) {
             return url(asset('backend/assets/images/image.jpg'));
-        } 
-        return Storage::url($this->imagem);
+        }
+        return Storage::url($this->attributes['image']);
     }
 
-    public function getUrlImagemAttribute()
+    public function getUrlImageAttribute()
     {
-        if (!empty($this->imagem)) {
-            return Storage::url($this->imagem);
+        if (!empty($this->attributes['image'])) {
+            return Storage::url($this->attributes['image']);
         }
         return '';
-    }    
-
-    public function setExpiraAttribute($value)
-    {
-        $this->attributes['expira'] = (!empty($value) ? $this->convertStringToDate($value) : null);
     }
 
-    public function setTargetAttribute($value)
+    public function setExpiredAtAttribute($value)
     {
-        $this->attributes['target'] = ($value == '1' ? 1 : 0);
+        $this->attributes['expired_at'] = (!empty($value) ? $this->convertStringToDate($value) : null);
     }
 
-    public function setStatusAttribute($value)
-    {
-        $this->attributes['status'] = ($value == '1' ? 1 : 0);
-    }
-    
-    public function getExpiraAttribute($value)
+    public function getExpiredAtAttribute($value)
     {
         if (empty($value)) {
             return null;
         }
         return date('d/m/Y', strtotime($value));
+    }
+
+    public function setTargetAttribute($value)
+    {
+        $this->attributes['target'] = ($value == '1' || $value === true ? 1 : 0);
+    }
+
+    public function setStatusAttribute($value)
+    {
+        $this->attributes['status'] = ($value == '1' || $value === true ? 1 : 0);
+    }
+
+    public function setViewTitleAttribute($value)
+    {
+        $this->attributes['view_title'] = ($value == '1' || $value === true ? 1 : 0);
     }
 
     public function getCreatedAtAttribute($value)
@@ -96,13 +103,13 @@ class Slide extends Model
 
     public function setSlug()
     {
-        if(!empty($this->titulo)){
-            $post = Slide::where('titulo', $this->titulo)->first(); 
-            if(!empty($post) && $post->id != $this->id){
-                $this->attributes['slug'] = Str::slug($this->titulo) . '-' . $this->id;
-            }else{
-                $this->attributes['slug'] = Str::slug($this->titulo);
-            }            
+        if (!empty($this->title)) {
+            $slide = Slide::where('title', $this->title)->first();
+            if (!empty($slide) && $slide->id != $this->id) {
+                $this->attributes['slug'] = Str::slug($this->title) . '-' . $this->id;
+            } else {
+                $this->attributes['slug'] = Str::slug($this->title);
+            }
             $this->save();
         }
     }

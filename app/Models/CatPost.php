@@ -2,54 +2,85 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use App\Models\Post;
 
 class CatPost extends Model
 {
-    protected $table = 'cat_posts';
+    use HasFactory;
+
+    protected $table = 'cat_post';
 
     protected $fillable = [
-        'titulo',
+        'id_pai',
+        'title',
         'content',
         'slug',
         'tags',
-        'tipo',
+        'views',
+        'type',
         'status',
-        'id_pai'
     ];
 
+    protected $casts = [
+        'status' => 'boolean',
+    ];
+
+    protected static function booted()
+    {
+        static::saving(function ($catpost) {
+            $catpost->setSlug();
+        });        
+    }
+
     /**
-     * A Category has many child categories
-     *
-     * @return void
+     * Scopes
      */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
+
+    /**
+     * Relacionamentos
+     */
+    public function parent()
+    {
+        return $this->belongsTo(CatPortifolio::class, 'id_pai');
+    }
+
     public function children()
     {
         return $this->hasMany(CatPost::class, 'id_pai', 'id');
     }
 
-    public function setStatusAttribute($value)
+    public function posts()
     {
-        $this->attributes['status'] = ($value == '1' ? 1 : 0);
+        return $this->hasMany(Post::class, 'category');
     }
 
-    public function countposts()
-    {
-        return $this->hasMany(Post::class, 'categoria', 'id')->count();
-    }
-
+    /**
+     * Accerssors and Mutators
+     */ 
     public function setSlug()
     {
-        if(!empty($this->titulo)){
-            $categoria = CatPost::where('titulo', $this->titulo)->first(); 
-            if(!empty($categoria) && $categoria->id != $this->id){
-                $this->attributes['slug'] = Str::slug($this->titulo) . '-' . $this->id;
-            }else{
-                $this->attributes['slug'] = Str::slug($this->titulo);
-            }            
-            $this->save();
+        if (!empty($this->title)) {
+    
+            $baseSlug = Str::slug($this->title);
+            $slug = $baseSlug;
+            $count = 1;
+    
+            while (
+                CatPost::where('slug', $slug)
+                    ->where('id', '!=', $this->id)
+                    ->exists()
+            ) {
+                $slug = $baseSlug . '-' . str_pad($count, 2, '0', STR_PAD_LEFT);
+                $count++;
+            }
+    
+            $this->attributes['slug'] = $slug;
         }
     }
 }

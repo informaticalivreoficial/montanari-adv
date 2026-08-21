@@ -2,258 +2,114 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
-use App\Support\Cropper;
-use Spatie\Permission\Traits\HasRoles;
+use Laravel\Sanctum\HasApiTokens;
+use App\Notifications\ResetPasswordNotification;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'email1',
-        'password',
-        'remember_token',
-        'senha',
-        'genero',
+        'name', 'password', 'remember_token',
+        'gender',
         'cpf',
         'rg',
-        'rg_expedicao',
-        'nasc',
-        'naturalidade',
-        'estado_civil',
-        'avatar',
-        'profissao',
-        'renda',
-        'profissao_empresa',
-        'cep',
-        'rua',
-        'num',
-        'complemento',
-        'bairro',
-        'uf',
-        'cidade',
-        'telefone',
-        'celular',
-        'whatsapp',
-        'skype',
-        'facebook',
-        'twitter',
-        'instagram',
-        'linkedin',
-        'vimeo',
-        'youtube',
-        'fliccr',
-        'soundclound',
-        'snapchat',
-        'tipo_de_comunhao',
-        'nome_conjuje',
-        'genero_conjuje',
-        'cpf_conjuje',
-        'rg_conjuje',
-        'rg_expedicao_conjuje',
-        'nasc_conjuje',
-        'naturalidade_conjuje',
-        'admin',
-        'client',
-        'editor',
-        'superadmin',
+        'rg_expedition',
+        'birthday',
+        'naturalness',
+        'civil_status',
+        'avatar',  
+        //Address      
+        'zipcode', 'street', 'number', 'complement', 'neighborhood', 'state', 'city',
+        //Contact
+        'phone', 'cell_phone', 'whatsapp', 'telegram', 'email', 'additional_email',
+        //Social
+        'facebook', 'twitter', 'instagram', 'linkedin',        
         'status',
-    ];
+        'information'
+    ];    
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
+
+    protected static function booted()
+    {
+        static::deleting(function ($user) {
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+        });
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('super-admin');
+    }
+
+    public function isManager(): bool
+    {
+        return $this->hasRole('manager');
+    }
+
+    public function isEmployee(): bool
+    {
+        return $this->hasRole('employee');
+    }
+
+    /**
+     * Envia o e-mail de redefinição de senha com link correto (rota nomeada).
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
 
     /**
      * Relacionamentos
-     */
-    public function companies()
-    {
-        return $this->hasMany(Empresa::class, 'user', 'id');
-    }
+    */
 
-    public function imoveis()
-    {
-        return $this->hasMany(Imovel::class, 'proprietario', 'id');
-    }
-
-     /**
+    /**
      * Scopes
-     */
-
-     /**
-     * Accerssors and Mutators
-     */
-    
-    //Exibe a função do usuário
-    public function getFuncao() {
-        if($this->admin == 1 && $this->client == 0 && $this->superadmin == 0){
-            return 'Administrador';
-        }elseif($this->admin == 0 && $this->client == 1 && $this->superadmin == 0){
-            return 'Cliente';
-        }elseif($this->admin == 0 && $this->client == 0 && $this->editor == 1 && $this->superadmin == 0){
-            return 'Editor';
-        }elseif($this->admin == 1 && $this->client == 1 && $this->superadmin == 0){
-            return 'Administrador/Cliente'; 
-        }else{
-            return 'Super Administrador'; 
-        }
-    }    
-    
-    public function getCivilStatusTranslateAttribute(string $status, string $genre)
+    */
+    public function scopeAvailable($query)
     {
-        if ($genre === 'feminino') {
-            if ($status === 'casado') {
-                return 'casada';
-            } elseif ($status === 'separado') {
-                return 'separada';
-            } elseif ($status === 'solteiro') {
-                return 'solteira';
-            } elseif ($status === 'divorciado') {
-                return 'divorciada';
-            } elseif ($status === 'viuvo') {
-                return 'viúva';
-            } else {
-                return '';
-            }
-        } else {
-            if ($status === 'masculino') {
-                return 'casado';
-            } elseif ($status === 'separado') {
-                return 'separado';
-            } elseif ($status === 'solteiro') {
-                return 'solteiro';
-            } elseif ($status === 'divorciado') {
-                return 'divorciado';
-            } elseif ($status === 'viuvo') {
-                return 'viúvo';
-            } else {
-                return '';
-            }
-        }
+        return $query->where('status', 1);
+    }
 
-    }    
-    
+    public function scopeUnavailable($query)
+    {
+        return $query->where('status', 0);
+    }
+
+    /**
+     * Accerssors and Mutators
+    */
     public function getUrlAvatarAttribute()
     {
         if (!empty($this->avatar)) {
-            //return Storage::url(Cropper::thumb($this->avatar, 500, 500));
             return Storage::url($this->avatar);
         }
         return '';
     }
 
-    public function setCpfAttribute($value)
+    public function setCellPhoneAttribute($value)
     {
-        $this->attributes['cpf'] = (!empty($value) ? $this->clearField($value) : null);
+        $this->attributes['cell_phone'] = (!empty($value) ? $this->clearField($value) : null);
     }
     
-    public function getCpfAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-
-        return
-            substr($value, 0, 3) . '.' .
-            substr($value, 3, 3) . '.' .
-            substr($value, 6, 3) . '-' .
-            substr($value, 9, 2);
-    }
-
-    public function setRgAttribute($value)
-    {
-        $this->attributes['rg'] = (!empty($value) ? $this->clearField($value) : null);
-    }
-    
-    public function getRgAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-
-        return
-            substr($value, 0, 2) . '.' .
-            substr($value, 2, 3) . '.' .
-            substr($value, 5, 3) . '-' .
-            substr($value, 8, 1);
-    }
-    
-    public function setNascAttribute($value)
-    {
-        $this->attributes['nasc'] = (!empty($value) ? $this->convertStringToDate($value) : null);
-    }
-    
-    public function getNascAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-        return date('d/m/Y', strtotime($value));
-    }
-
-    public function setCepAttribute($value)
-    {
-        $this->attributes['cep'] = (!empty($value) ? $this->clearField($value) : null);
-    }
-    
-    public function getCepAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-
-        return substr($value, 0, 5) . '-' . substr($value, 5, 3);
-    }
-    
-    public function setTelefoneAttribute($value)
-    {
-        $this->attributes['telefone'] = (!empty($value) ? $this->clearField($value) : null);
-    }
-    //Formata o telefone para exibir
-    public function getTelefoneAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-        return  
-            substr($value, 0, 0) . '(' .
-            substr($value, 0, 2) . ') ' .
-            substr($value, 2, 4) . '-' .
-            substr($value, 6, 4) ;
-    }
-    
-    public function setCelularAttribute($value)
-    {
-        $this->attributes['celular'] = (!empty($value) ? $this->clearField($value) : null);
-    }
-    //Formata o celular para exibir
-    public function getCelularAttribute($value)
+    public function getCellPhoneAttribute($value)
     {
         if (empty($value)) {
             return null;
@@ -264,12 +120,12 @@ class User extends Authenticatable
             substr($value, 2, 5) . '-' .
             substr($value, 7, 4) ;
     }
-    
+
     public function setWhatsappAttribute($value)
     {
         $this->attributes['whatsapp'] = (!empty($value) ? $this->clearField($value) : null);
     }
-    //Formata o celular para exibir
+    
     public function getWhatsappAttribute($value)
     {
         if (empty($value)) {
@@ -281,110 +137,34 @@ class User extends Authenticatable
             substr($value, 2, 5) . '-' .
             substr($value, 7, 4) ;
     }
-    
-    public function setPasswordAttribute($value)
+
+    public function setBirthdayAttribute($value)
+    {
+        $this->attributes['birthday'] = (!empty($value) ? $this->convertStringToDate($value) : null);
+    }
+
+    public function getBirthdayAttribute($value)
     {
         if (empty($value)) {
-            unset($this->attributes['password']);
-            return;
+            return null;
         }
-        $this->attributes['senha'] = $value;
-        $this->attributes['password'] = bcrypt($value);
-    }    
-    
-    public function setCpfconjujeAttribute($value)
-    {
-        $this->attributes['cpf_conjuje'] = (!empty($value) ? $this->clearField($value) : null);
+        return \Carbon\Carbon::parse($value)->format('d/m/Y');
     }
-    
-    public function getCpfconjujeAttribute($value)
+
+    public function setZipcodeAttribute($value)
+    {
+        $this->attributes['zipcode'] = (!empty($value) ? $this->clearField($value) : null);
+    }
+
+    public function getZipcodeAttribute($value)
     {
         if (empty($value)) {
             return null;
         }
 
-        return
-            substr($value, 0, 3) . '.' .
-            substr($value, 3, 3) . '.' .
-            substr($value, 6, 3) . '-' .
-            substr($value, 9, 2);
-    }
-    
-    public function setRgconjujeAttribute($value)
-    {
-        $this->attributes['rg_conjuje'] = (!empty($value) ? $this->clearField($value) : null);
-    }
-    
-    public function getRgconjujeAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-
-        return
-            substr($value, 0, 2) . '.' .
-            substr($value, 2, 3) . '.' .
-            substr($value, 5, 3) . '-' .
-            substr($value, 8, 1);
-    }
-    
-    public function setNascconjujeAttribute($value)
-    {
-        $this->attributes['nasc_conjuje'] = (!empty($value) ? $this->convertStringToDate($value) : null);
-    }
-    
-    public function getNascconjujeAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-
-        return date('d/m/Y', strtotime($value));
-    }
-    
-    public function getCreatedAtAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-
-        return date('d/m/Y', strtotime($value));
+        return substr($value, 0, 5) . '-' . substr($value, 5, 3);
     }
 
-    public function setAdminAttribute($value)
-    {
-        $this->attributes['admin'] = ($value === true || $value === 'on' ? 1 : 0);
-    }
-
-    public function setEditorAttribute($value)
-    {
-        $this->attributes['editor'] = ($value === true || $value === 'on' ? 1 : 0);
-    }
-
-    public function setClientAttribute($value)
-    {
-        $this->attributes['client'] = ($value === true || $value === 'on' ? 1 : 0);
-    }
-    
-    public function setSuperAdminAttribute($value)
-    {
-        $this->attributes['superadmin'] = ($value === true || $value === 'on' ? 1 : 0);
-    }
-    
-    public function setRendaAttribute($value)
-    {
-        $this->attributes['renda'] = (!empty($value) ? floatval($this->convertStringToDouble($value)) : null);
-    }
-
-    public function getRendaAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-
-        return number_format($value, 2, ',', '.');
-    }
-    
     private function convertStringToDouble(?string $param)
     {
         if (empty($param)) {
@@ -393,7 +173,7 @@ class User extends Authenticatable
 
         return str_replace(',', '.', str_replace('.', '', $param));
     }
-    
+
     private function convertStringToDate(?string $param)
     {
         if (empty($param)) {

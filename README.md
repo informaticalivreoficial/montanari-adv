@@ -4,10 +4,10 @@
     </a>
 </p>
 
-## Super Imóveis
+## Montanari Adv
 
-Super Imóveis é um sistema de gerenciamento de imóveis completo e com suporte a APIs, desenvolvido com tecnologias modernas como PHP Laravel
+Montanari Adv é um sistema de gerenciamento de escritório de advocacia completo e com suporte a APIs, desenvolvido com tecnologias modernas como PHP Laravel.
 
 ## License
 
-Super Imóveis é um sistema open-source licensiado por [MIT license](https://opensource.org/licenses/MIT).
+Montanari Adv é um sistema open-source licenciado por [MIT license](https://opensource.org/licenses/MIT).

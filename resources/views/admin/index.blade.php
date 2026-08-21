@@ -29,10 +29,9 @@
     
 <div class="login-box mt-5">
   <div class="login-logo mt-5">
-    <img width="{{env('LOGOMARCA_GERENCIADOR_WIDTH')}}" height="{{env('LOGOMARCA_GERENCIADOR_HEIGHT')}}" src="{{$configuracoes->getlogoadmin()}}" alt="{{$configuracoes->nomedosite}}" class="elevation-3">
+    <img width="{{env('LOGOMARCA_GERENCIADOR_WIDTH')}}" height="{{env('LOGOMARCA_GERENCIADOR_HEIGHT')}}" src="{{($configuracoes ?? (object)[])->logo_admin}}" alt="{{($configuracoes ?? (object)[])->app_name}}" class="elevation-3">
   </div>
     
-   
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">

@@ -14,3 +14,9 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 .vscode
+google-credentials.json
+/public/error_log
+/public/sitemap.xml
+opencode.json
+/.opencode
+AGENTS.md

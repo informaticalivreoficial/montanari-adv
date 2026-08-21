@@ -1,3 +1,6 @@
 <?php
 
-Route::get('imoveis', 'Api\ImovelApiController@index');
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ImovelApiController;
+
+Route::get('imoveis', [ImovelApiController::class, 'index']);
