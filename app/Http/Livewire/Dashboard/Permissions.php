@@ -3,11 +3,14 @@
 namespace App\Http\Livewire\Dashboard;
 
 use Livewire\Component;
+use App\Traits\HasAlerts;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 class Permissions extends Component
 {
+    use HasAlerts;
+
     public $roles = [];
     public $permissions = [];
     public $roleName, $permissionName;
@@ -30,11 +33,10 @@ class Permissions extends Component
         ]);
 
         Role::create(['name' => $this->roleName]);
-        
-        $this->successMessage = 'Função criada com sucesso!';
+
         $this->roleName = '';
-        
-        $this->dispatchBrowserEvent('role-created');
+        $this->roles = Role::all();
+        $this->toastSuccess('Função criada com sucesso!');
     }
 
     public function updateRole()
@@ -47,18 +49,18 @@ class Permissions extends Component
         $role->name = $this->roleName;
         $role->save();
 
-        $this->successMessage = 'Função atualizada com sucesso!';
         $this->editRoleMode = false;
         $this->roleName = '';
+        $this->roles = Role::all();
+        $this->toastSuccess('Função atualizada com sucesso!');
     }
 
     public function deleteRole($id)
     {
-        $role = Role::findOrFail($id);
-        $role->delete();
-        
-        $this->errorMessage = 'Função excluída com sucesso!';
-        $this->dispatchBrowserEvent('role-deleted');
+        Role::findOrFail($id)->delete();
+
+        $this->roles = Role::all();
+        $this->toastWarning('Função excluída!');
     }
 
     public function createPermission()
@@ -68,17 +70,15 @@ class Permissions extends Component
         ]);
 
         Permission::create(['name' => $this->permissionName, 'guard_name' => 'web']);
-        
-        $this->successMessage = 'Permissão criada com sucesso!';
+
         $this->permissionName = '';
-        
-        $this->dispatchBrowserEvent('permission-created');
+        $this->permissions = Permission::all();
+        $this->toastSuccess('Permissão criada com sucesso!');
     }
 
     public function updatePermission()
     {
-        // Implementation could be added here
-        $this->successMessage = 'Permissão atualizada!';
+        $this->toastSuccess('Permissão atualizada!');
     }
 
     public function render()

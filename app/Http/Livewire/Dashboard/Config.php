@@ -4,9 +4,12 @@ namespace App\Http\Livewire\Dashboard;
 
 use Livewire\Component;
 use App\Models\Configuracoes;
+use App\Traits\HasAlerts;
 
 class Config extends Component
 {
+    use HasAlerts;
+
     public $app_name, $social_name, $init_date, $phone, $cell_phone, $whatsapp, $email;
     public $successMessage = '';
     public $errorMessage = '';
@@ -54,8 +57,8 @@ class Config extends Component
             $config->save();
         }
 
-        $this->successMessage = 'Configurações salvas com sucesso!';
         $this->loadConfig();
+        $this->toastSuccess('Configurações salvas com sucesso!');
     }
 
     public function render()

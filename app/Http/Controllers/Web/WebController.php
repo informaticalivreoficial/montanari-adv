@@ -23,8 +23,8 @@ class WebController extends Controller
     public function home()
     {
         $Configuracoes = Configuracoes::where('id', '1')->first();
-        $head = $this->seo->render($Configuracoes->nomedosite ?? 'Informática Livre',
-            $Configuracoes->descricao ?? 'Informática Livre desenvolvimento de sistemas web desde 2005',
+        $head = $this->seo->render($Configuracoes->app_name ?? 'Montanari Advocacia',
+            $Configuracoes->information ?? 'Montanari Advocacia - Escritório de Advocacia',
             route('web.home'),
             Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
         ); 
@@ -52,8 +52,8 @@ class WebController extends Controller
         $Configuracoes = Configuracoes::where('id', '1')->first();
         $servicos = Post::orderBy('created_at', 'DESC')->where('tipo', '=', 'pagina')->postson()->paginate(9);
 
-        $head = $this->seo->render('Serviços ' . $Configuracoes->nomedosite ?? 'Informática Livre',
-            $Configuracoes->descricao ?? 'Informática Livre desenvolvimento de sistemas web desde 2005',
+        $head = $this->seo->render('Serviços ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
+            $Configuracoes->information ?? 'Montanari Advocacia - Escritório de Advocacia',
             route('web.servicos'),
             Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
         ); 
@@ -69,8 +69,8 @@ class WebController extends Controller
     {
         $Configuracoes = Configuracoes::where('id', '1')->first();
         $servico = Post::where('slug', $request->slug)->where('tipo', '=', 'pagina')->postson()->first();
-        $head = $this->seo->render($servico->titulo . ' - ' . $Configuracoes->nomedosite ?? 'Informática Livre',
-            strip_tags($servico->getContentWebSiteAttribute()) ?? 'Informática Livre desenvolvimento de sistemas web desde 2005',
+        $head = $this->seo->render($servico->titulo . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
+            strip_tags($servico->getContentWebSiteAttribute()) ?? 'Montanari Advocacia - Escritório de Advocacia',
             route('web.servico', ['slug' => $servico->slug]),
             url($servico->cover() ?? Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg'))
         ); 
@@ -92,8 +92,8 @@ class WebController extends Controller
     {
         $Configuracoes = Configuracoes::where('id', '1')->first();
         
-        $head = $this->seo->render('Política de Privacidade - ' . $Configuracoes->nomedosite ?? 'Informática Livre',
-            'Política de privacidade ' . $Configuracoes->nomedosite ?? 'Informática Livre desenvolvimento de sistemas web desde 2005',
+        $head = $this->seo->render('Política de Privacidade - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
+            'Política de privacidade ' . $Configuracoes->app_name ?? 'Montanari Advocacia - Escritório de Advocacia',
             route('web.politica-de-privacidade'),
             Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
         ); 
@@ -134,7 +134,7 @@ class WebController extends Controller
         }
         $ctotal = $c2 + $c3;
 
-        $head = $this->seo->render('Pesquisa no site - '.$Configuracoes->nomedosite ?? 'Informática Livre',
+        $head = $this->seo->render('Pesquisa no site - '.$Configuracoes->app_name ?? 'Montanari Advocacia',
             'Resultados da pesquisa por '.$search,
             route('web.pesquisa'),
             Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
@@ -186,7 +186,7 @@ class WebController extends Controller
             return response()->json(['error' => $json]);
         }else{
             $data = [
-                'sitename' => $Configuracoes->nomedosite,
+                'sitename' => $Configuracoes->app_name,
                 'siteemail' => $Configuracoes->email,
                 'reply_name' => $request->nome,
                 'reply_email' => $request->email,
@@ -229,7 +229,7 @@ class WebController extends Controller
         $Configuracoes = Configuracoes::where('id', '1')->first();
         $posts = Post::orderBy('created_at', 'DESC')->where('tipo', '=', 'artigo')->postson()->paginate(12);
 
-        $head = $this->seo->render('Blog - ' . $Configuracoes->nomedosite ?? 'Informática Livre',
+        $head = $this->seo->render('Blog - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             'Confira nossos artigos sobre arquitetura, design e dicas para sua obra!!',
             route('web.blog.artigos'),
             Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
@@ -255,7 +255,7 @@ class WebController extends Controller
         $post->views = $post->views + 1;
         $post->save();
 
-        $head = $this->seo->render($post->titulo . ' - ' . $Configuracoes->nomedosite ?? 'Informática Livre',
+        $head = $this->seo->render($post->titulo . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             strip_tags($post->getContentWebAttribute()),
             route('web.blog.artigo', ['slug' => $post->slug]),
             url($post->cover() ?? Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg'))
@@ -277,7 +277,7 @@ class WebController extends Controller
         $categoria = CatPost::where('slug', '=', $request->slug)->where('tipo', '=', 'artigo')->first();
         $posts = Post::orderBy('created_at', 'DESC')->where('categoria', '=', $categoria->id)->where('tipo', '=', 'artigo')->postson()->paginate(15);
         
-        $head = $this->seo->render('Blog - ' . $categoria->titulo . ' - ' . $Configuracoes->nomedosite ?? 'Informática Livre',
+        $head = $this->seo->render('Blog - ' . $categoria->titulo . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             $categoria->titulo,
             route('web.blog.categoria', ['slug' => $request->slug]),
             Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')

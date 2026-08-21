@@ -3,7 +3,7 @@
 @section('content')
 
 <!-- :: Breadcrumb Header -->
-<section class="breadcrumb-header" id="page" style="background-image: url({{url($configuracoes->gettopodosite())}})">
+<section class="breadcrumb-header" id="page" style="background-image: url({{url($configuracoes->getheadersite())}})">
     <div class="overlay"></div>
     <div class="container">
         <div class="row">
@@ -30,7 +30,7 @@
                     <div class="col-md-12">
                         <div class="blog-item">                           
                             <div class="text-box">
-                                {!! $Configuracoes->politica_privacidade !!} 
+                                {!! $Configuracoes->privacy_policy !!} 
                             </div>
                         </div>
                     </div>

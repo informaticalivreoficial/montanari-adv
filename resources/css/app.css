@@ -1,1 +1,35 @@
 @import "tailwindcss";
+
+/* Flatpickr customização */
+.flatpickr-calendar {
+    border-radius: 0.75rem !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e5e7eb !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: #d97706 !important;
+    border-color: #d97706 !important;
+}
+
+.flatpickr-day.today:hover {
+    background: #fef3c7 !important;
+    border-color: #d97706 !important;
+}
+
+.flatpickr-months .flatpickr-month {
+    background: #f8fafc !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year {
+    font-weight: 600 !important;
+    color: #1e293b !important;
+}
+
+/* Toastify customização */
+.toastify {
+    font-family: 'Inter', system-ui, sans-serif !important;
+}

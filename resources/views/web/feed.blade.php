@@ -3,9 +3,9 @@
 ?>
 <rss version="2.0">
     <channel>
-        <title><![CDATA[ {{ $Configuracoes->nomedosite }} ]]></title>
+        <title><![CDATA[ {{ $Configuracoes->app_name }} ]]></title>
         <link><![CDATA[ {{url('feed')}} ]]></link>
-        <description><![CDATA[ {{ $Configuracoes->descricao }} ]]></description>
+        <description><![CDATA[ {{ $Configuracoes->information }} ]]></description>
         <language>pt-br</language>
         <pubDate>{{ now() }}</pubDate>
 
@@ -42,7 +42,7 @@
                 <image>{{ $projeto->cover() }}</image>
                 <description><![CDATA[{!! strip_tags($projeto->getContentWebAttribute()) !!}]]></description>
                 <category>{{ $projeto->categoria }}</category>
-                <author><![CDATA[ {{ $Configuracoes->nomedosite }} ]]></author>
+                <author><![CDATA[ {{ $Configuracoes->app_name }} ]]></author>
                 <guid>{{ $projeto->id }}</guid>
                 <pubDate>{{ $projeto->created_at }}</pubDate>
             </item>

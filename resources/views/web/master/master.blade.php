@@ -7,10 +7,10 @@
         <meta name="language" content="{{ str_replace('_', '-', app()->getLocale()) }}" />
         
         <meta name="author" content="Renato Montanari"/>
-        <meta name="copyright" content="{{$configuracoes->ano_de_inicio}} {{$configuracoes->nomedosite}}">
-        <meta name="description" content="{{$configuracoes->descricao}}" />    
-        <meta name="url" content="{{$configuracoes->dominio}}" />
-        <meta name="title" content="{{$configuracoes->nomedosite}}" />
+        <meta name="copyright" content="{{$configuracoes->init_date}} {{$configuracoes->app_name}}">
+        <meta name="description" content="{{$configuracoes->information}}" />    
+        <meta name="url" content="{{$configuracoes->domain}}" />
+        <meta name="title" content="{{$configuracoes->app_name}}" />
         <meta name="keywords" content="{{$configuracoes->metatags}}" />
         
         {!! $head ?? '' !!}
@@ -69,7 +69,7 @@
                                 <li>{{$configuracoes->email}}</li>
                             @endif
                             @if(!empty($configuracoes->whatsapp))
-                                <li><i style="font-size:1.2em;color:#6ebf58;" class="fab fa-whatsapp"></i> <a href="{{getNumZap($Configuracoes->whatsapp, 'Atendimento '.$configuracoes->nomedosite)}}">{{$configuracoes->whatsapp}}</a></li>
+                                <li><i style="font-size:1.2em;color:#6ebf58;" class="fab fa-whatsapp"></i> <a href="{{getNumZap($configuracoes->whatsapp, 'Atendimento '.$configuracoes->app_name)}}">{{$configuracoes->whatsapp}}</a></li>
                             @endif  
                         </ul>
                         <ul class="icon-follow">
@@ -100,7 +100,7 @@
                         <div class="logo">
                             <a href="{{route('web.home')}}" class="logo-nav">
                                 <img class="img-fluid one" src="{{url(asset('frontend/assets/images/logo/01_logo.png'))}}" alt="{{url(asset('frontend/assets/images/logo/01_logo.png'))}}">
-                                <img class="img-fluid two" src="{{$configuracoes->getlogomarca()}}" alt="{{$configuracoes->getlogomarca()}}">
+                                <img class="img-fluid two" src="{{$configuracoes->getlogo()}}" alt="{{$configuracoes->getlogo()}}">
                             </a>
                             <a href="#open-nav-bar-menu" class="open-nav-bar">
                                 <span></span>
@@ -120,7 +120,7 @@
                             <i class="flaticon-call"></i>
                             <div class="contact-nav">
                                 <p>
-                                    @if($configuracoes->telefone1) <a href="tel:{{$configuracoes->telefone1}}">{{$configuracoes->telefone1}}</a> @endif
+                                    @if($configuracoes->phone) <a href="tel:{{$configuracoes->phone}}">{{$configuracoes->phone}}</a> @endif
                                 </p>
                             </div>
                         </div>
@@ -144,7 +144,7 @@
         <div class="menu-box">
             <div class="inner-menu">
                 <div class="website-info">
-                    <a href="{{route('web.home')}}" class="logo"><img class="img-fluid" src="{{$configuracoes->getlogomarca()}}" alt="{{$configuracoes->nomedosite}}"></a>                    
+                    <a href="{{route('web.home')}}" class="logo"><img class="img-fluid" src="{{$configuracoes->getlogo()}}" alt="{{$configuracoes->app_name}}"></a>                    
                 </div>
                 <div class="contact-info">
                     <h4>Atendimento</h4>
@@ -152,9 +152,9 @@
                         <i class="flaticon-call"></i>
                         <div class="box">
                             <p>
-                                @if($configuracoes->telefone1) <a style="color:#23406C;" href="tel:{{$configuracoes->telefone1}}">{{$configuracoes->telefone1}}</a> @endif
-                                @if($configuracoes->telefone2) <br><a style="color:#23406C;" href="tel:{{$configuracoes->telefone2}}">{{$configuracoes->telefone2}}</a> @endif
-                                @if($configuracoes->telefone3) <br><a style="color:#23406C;" href="tel:{{$configuracoes->telefone3}}">{{$configuracoes->telefone3}}</a> @endif
+                                @if($configuracoes->phone) <a style="color:#23406C;" href="tel:{{$configuracoes->phone}}">{{$configuracoes->phone}}</a> @endif
+                                @if($configuracoes->cell_phone) <br><a style="color:#23406C;" href="tel:{{$configuracoes->cell_phone}}">{{$configuracoes->cell_phone}}</a> @endif
+                                @if($configuracoes->whatsapp) <br><a style="color:#23406C;" href="tel:{{$configuracoes->whatsapp}}">{{$configuracoes->whatsapp}}</a> @endif
                             </p>
                         </div>
                     </div>
@@ -163,23 +163,23 @@
                         <div class="box">
                             <p>
                                 @if($configuracoes->email) <a style="color:#23406C;" href="mailto:{{$configuracoes->email}}">{{$configuracoes->email}}</a> @endif
-                                @if($configuracoes->email1) <br><a style="color:#23406C;" href="mailto:{{$configuracoes->email1}}">{{$configuracoes->email1}}</a> @endif    
+                                @if($configuracoes->additional_email) <br><a style="color:#23406C;" href="mailto:{{$configuracoes->additional_email}}">{{$configuracoes->additional_email}}</a> @endif    
                             </p>
                         </div>
                     </div>
                     <div class="contact-box">
                         <i class="flaticon-location"></i>
                         <div class="box">
-                            <p>{{$configuracoes->rua}}    
-                                @if(!empty($configuracoes->num) && !empty($configuracoes->rua))
-                                , {{$configuracoes->num}}
+                            <p>{{$configuracoes->street}}    
+                                @if(!empty($configuracoes->number) && !empty($configuracoes->street))
+                                , {{$configuracoes->number}}
                                 @endif
-                                @if(!empty($configuracoes->bairro) && !empty($configuracoes->rua))
-                                - {{$configuracoes->bairro}}
+                                @if(!empty($configuracoes->neighborhood) && !empty($configuracoes->street))
+                                - {{$configuracoes->neighborhood}}
                                 @endif
-                                @if(!empty($configuracoes->cidade))
+                                @if(!empty($configuracoes->city))
                                 @php
-                                    echo getCidadeNome($configuracoes->cidade, 'cidades').' - Brasil';
+                                    echo getCidadeNome($configuracoes->city, 'cidades').' - Brasil';
                                 @endphp
                                 @endif</p>
                         </div>
@@ -216,8 +216,8 @@
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-5">
                         <div class="logo">
-                            <img class="img-fluid" src="{{url('frontend/assets/images/logo/01_logo.png')}}" alt="{{$Configuracoes->nomedosite}}">
-                            <p>{{$configuracoes->descricao}}</p>
+                            <img class="img-fluid" src="{{url('frontend/assets/images/logo/01_logo.png')}}" alt="{{$Configuracoes->app_name}}">
+                            <p>{{$configuracoes->information}}</p>
                             <ul>
                                 @if(!empty($configuracoes->facebook))
                                     <li><a target="_blank" href="{{$configuracoes->facebook}}" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
@@ -266,7 +266,7 @@
             </div>
             <div class="copyright" style="padding-bottom: 0;">
                 <div class="container">
-                    <p>© {{$configuracoes->ano_de_inicio}} {{$configuracoes->nomedosite}} - Todos os direitos reservados</p>
+                    <p>© {{$configuracoes->init_date}} {{$configuracoes->app_name}} - Todos os direitos reservados</p>
                     <ul>
                         <li><a href="{{route('web.politica-de-privacidade')}}">Política de Privacidade</a></li>
                     </ul>

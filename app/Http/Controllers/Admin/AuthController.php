@@ -124,9 +124,9 @@ class AuthController extends Controller
         }
 
         $data = [
-            'sitename' => $Configuracoes->nomedosite,
-            'telefone1' => $Configuracoes->telefone1,
-            'ano_de_inicio' => $Configuracoes->ano_de_inicio,
+            'sitename' => $Configuracoes->app_name,
+            'telefone1' => $Configuracoes->phone,
+            'ano_de_inicio' => $Configuracoes->init_date,
             'emailsite' => $Configuracoes->email,
             'username' => $user->name,
             'email' => $request->email,

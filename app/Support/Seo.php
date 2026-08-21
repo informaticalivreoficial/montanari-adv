@@ -18,11 +18,11 @@ class Seo
     public function __construct()
     {
         //chama as configuracoes do site
-        $Configuracoes = Configuracoes::where('id', '1')->first();
+        $configuracoes = Configuracoes::where('id', '1')->first();
 
         $this->optimizer = new Optimizer();
         $this->optimizer->openGraph(
-            $Configuracoes->nomedosite ?? 'Informática Livre',
+            $configuracoes->app_name ?? 'Montanari Advocacia',
             'pt_BR',
             'article'
         )->publisher(

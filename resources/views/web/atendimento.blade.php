@@ -2,7 +2,7 @@
 
 @section('content')
 <!-- :: Breadcrumb Header -->
-<section class="breadcrumb-header" id="page" style="background-image: url({{url($configuracoes->gettopodosite())}})">
+<section class="breadcrumb-header" id="page" style="background-image: url({{url($configuracoes->getheadersite())}})">
     <div class="overlay"></div>
     <div class="container">
         <div class="row">
@@ -30,26 +30,26 @@
                 <div class="row">
                     <div class="col-lg-5">
                         <p>
-                            @if($configuracoes->telefone1) <i class="fas fa-phone"></i> <a class="link-contact" href="tel:{{$configuracoes->telefone1}}">{{$configuracoes->telefone1}}</a> @endif
-                            @if($configuracoes->telefone2) <br><i class="fas fa-phone"></i> <a class="link-contact" href="tel:{{$configuracoes->telefone2}}">{{$configuracoes->telefone2}}</a> @endif
-                            @if($configuracoes->telefone3) <br><i class="fas fa-phone"></i> <a class="link-contact" href="tel:{{$configuracoes->telefone3}}">{{$configuracoes->telefone3}}</a> @endif 
+                            @if($configuracoes->phone) <i class="fas fa-phone"></i> <a class="link-contact" href="tel:{{$configuracoes->phone}}">{{$configuracoes->phone}}</a> @endif
+                            @if($configuracoes->cell_phone) <br><i class="fas fa-phone"></i> <a class="link-contact" href="tel:{{$configuracoes->cell_phone}}">{{$configuracoes->cell_phone}}</a> @endif
+                            @if($configuracoes->whatsapp) <br><i class="fas fa-phone"></i> <a class="link-contact" href="tel:{{$configuracoes->whatsapp}}">{{$configuracoes->whatsapp}}</a> @endif 
                         </p>
                         <p>
                             @if(!empty($Configuracoes->whatsapp))
-                            <i style="font-size:1.7em;color:#6ebf58;" class="fab fa-whatsapp"></i> <a class="link-contact" style="border:none;" target="_blank" href="{{getNumZap($Configuracoes->whatsapp, 'Atendimento '.$configuracoes->nomedosite)}}">{{$Configuracoes->whatsapp}}</a>
+                            <i style="font-size:1.7em;color:#6ebf58;" class="fab fa-whatsapp"></i> <a class="link-contact" style="border:none;" target="_blank" href="{{getNumZap($Configuracoes->whatsapp, 'Atendimento '.$configuracoes->app_name)}}">{{$Configuracoes->whatsapp}}</a>
                             @endif  
                         </p>
                         <p>
                             @if($configuracoes->email) <i class="fas fa-envelope"></i> <a class="link-contact" href="mailto:{{$configuracoes->email}}">{{$configuracoes->email}}</a> @endif
-                            @if($configuracoes->email1) <br><i class="fas fa-envelope"></i> <a class="link-contact" href="mailto:{{$configuracoes->email1}}">{{$configuracoes->email1}}</a> @endif    
+                            @if($configuracoes->additional_email) <br><i class="fas fa-envelope"></i> <a class="link-contact" href="mailto:{{$configuracoes->additional_email}}">{{$configuracoes->additional_email}}</a> @endif    
                         </p>
                         
                         <p><i class="fas fa-map-marker"></i> 
-                            {{$configuracoes->rua}}    
-                            @if(!empty($configuracoes->num) && !empty($configuracoes->rua))
+                            {{$configuracoes->street}}    
+                            @if(!empty($configuracoes->num) && !empty($configuracoes->street))
                             , {{$configuracoes->num}}
                             @endif
-                            @if(!empty($configuracoes->bairro) && !empty($configuracoes->rua))
+                            @if(!empty($configuracoes->bairro) && !empty($configuracoes->street))
                             - {{$configuracoes->bairro}}
                             @endif
                             @if(!empty($configuracoes->cidade))

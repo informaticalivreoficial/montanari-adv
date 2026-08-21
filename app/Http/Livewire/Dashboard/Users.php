@@ -4,11 +4,14 @@ namespace App\Http\Livewire\Dashboard;
 
 use Livewire\Component;
 use App\Models\User;
+use App\Traits\HasAlerts;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 class Users extends Component
 {
+    use HasAlerts;
+
     public $name, $email, $password, $role, $permissions = [];
     public $editMode = false;
     public $userId;
@@ -46,11 +49,9 @@ class Users extends Component
             $user->givePermissionTo($this->permissions);
         }
 
-        $this->successMessage = 'Usuário criado com sucesso!';
         $this->reset(['name', 'email', 'password', 'role', 'permissions']);
-        
-        // Refresh users list after 2 seconds
-        $this->dispatchBrowserEvent('user-created', ['message' => 'Usuário criado']);
+        $this->users = User::with('roles')->get();
+        $this->toastSuccess('Usuário criado com sucesso!');
     }
 
     public function edit($id)
@@ -86,16 +87,16 @@ class Users extends Component
         // Atualizar permissões
         $user->permissions()->sync($this->permissions ?? []);
 
-        $this->successMessage = 'Usuário atualizado com sucesso!';
+        $this->users = User::with('roles')->get();
         $this->editMode = false;
+        $this->toastSuccess('Usuário atualizado com sucesso!');
     }
 
     public function delete($id)
     {
         User::findOrFail($id)->delete();
-        $this->errorMessage = 'Usuário excluído com sucesso!';
-        
-        $this->dispatchBrowserEvent('user-deleted');
+        $this->users = User::with('roles')->get();
+        $this->toastWarning('Usuário excluído com sucesso!');
     }
 
     public function render()
