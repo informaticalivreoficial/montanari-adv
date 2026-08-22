@@ -3,10 +3,10 @@
  *
  * Inicializa todas as bibliotecas e integra com Livewire.
  *
- * Disponível globalmente:
- *   window.MontanariAlert    → SweetAlert2
- *   window.MontanariToast    → ToastifyJS
- *   window.MontanariConfirm  → SweetAlert2 confirm
+ * Tudo agora usa SweetAlert2:
+ *   window.MontanariAlert    → SweetAlert2 (alertas e confirmações)
+ *   window.MontanariToast    → SweetAlert2 (toasts)
+ *   window.MontanariConfirm  → SweetAlert2 (confirmações)
  */
 
 import { initFlatpickr } from './flatpickr';
@@ -14,13 +14,16 @@ import { initIMask, destroyIMask } from './imask-helper';
 import MontanariAlert, { initSweetAlert, MontanariConfirm } from './sweetalert';
 import MontanariToast, { initToast } from './toast';
 import { initQuillEditors, destroyQuillEditors } from './quill-editor';
+import './fullcalendar';
+import './chartjs';
+import { initSortable, initImagePreview, initFsLightbox } from './image-gallery';
 
 // Expor globalmente
 window.MontanariAlert = MontanariAlert;
 window.MontanariToast = MontanariToast;
 window.MontanariConfirm = MontanariConfirm;
 
-// Helpers de conveniência
+// Helpers de conveniência — todos usam SweetAlert2
 window.showToast = (message, type = 'success') => MontanariToast.show({ message, type });
 window.showAlert = (title, options = {}) => MontanariAlert.success(title, options);
 window.showError = (title, options = {}) => MontanariAlert.error(title, options);
@@ -35,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('livewire:initialized', () => {
         const livewire = window.Livewire;
 
-        // Registra eventos Livewire para Alert e Toast
+        // Registra eventos Livewire para Alert e Toast (ambos SweetAlert2)
         initSweetAlert(livewire);
         initToast(livewire);
 
@@ -44,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             initFlatpickr(el);
             initIMask(el);
             initQuillEditors(el);
+            initFsLightbox();
         });
 
         // Limpa antes de destruir componente

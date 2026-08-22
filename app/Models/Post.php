@@ -13,12 +13,13 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $table = 'posts'; 
+    protected $table = 'posts';
 
+    // $fillable usa nomes REAIS do banco (português)
     protected $fillable = [
         'autor',
-        'type',
-        'title',
+        'tipo',
+        'titulo',
         'content',
         'slug',
         'tags',
@@ -26,24 +27,24 @@ class Post extends Model
         'readingTime',
         'metaDescription',
         'excerpt',
-        'category',
+        'categoria',
         'comments',
         'highlight',
-        'cat_pai',        
+        'cat_pai',
         'status',
         'menu',
         'thumb_caption',
-        'publish_at'
+        'publish_at',
     ];
 
     protected $casts = [
         'status' => 'boolean',
-        'coments' => 'boolean',
+        'comments' => 'boolean',
     ];
 
     protected static function boot()
     {
-        parent::boot();        
+        parent::boot();
     }
 
     protected static function booted()
@@ -53,31 +54,31 @@ class Post extends Model
         });
 
         static::deleting(function ($post) {
-            // Deleta a pasta inteira com todas as imagens
             Storage::disk('public')->deleteDirectory("posts/{$post->id}");
-
-            // Deleta os registros do banco
             $post->images()->delete();
         });
     }
 
-    /**
-     * Scopes
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes
+    |--------------------------------------------------------------------------
+    */
     public function scopePostson($query)
     {
         return $query->where('status', 1);
     }
-    
+
     public function scopePostsoff($query)
     {
         return $query->where('status', 0);
     }
 
-    /**
-     * Relacionamentos
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
     */
-
     public function user()
     {
         return $this->belongsTo(User::class, 'autor', 'id');
@@ -85,19 +86,29 @@ class Post extends Model
 
     public function category()
     {
-        return $this->hasOne(CatPost::class, 'id', 'category');
+        return $this->hasOne(CatPost::class, 'id', 'categoria');
     }
-    
+
+    public function categoriaObject()
+    {
+        return $this->hasOne(CatPost::class, 'id', 'categoria');
+    }
+
     public function categoryObject()
     {
-        return $this->hasOne(CatPost::class, 'id', 'category');
+        return $this->hasOne(CatPost::class, 'id', 'categoria');
     }
-    
+
     public function userObject()
     {
-        return $this->hasOne(User::class, 'id', 'category');
+        return $this->hasOne(User::class, 'id', 'autor');
     }
-    
+
+    public function countposts()
+    {
+        return $this->hasMany(Post::class, 'categoria')->count();
+    }
+
     public function images()
     {
         return $this->hasMany(PostGb::class, 'post', 'id')->orderBy('cover', 'ASC');
@@ -108,15 +119,46 @@ class Post extends Model
         return $this->hasMany(PostGb::class, 'post', 'id')->count();
     }
 
-    /**
-     * Accerssors and Mutators
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors (inglês para compatibilidade com admin/Livewire)
+    |--------------------------------------------------------------------------
+    */
+    public function getTitleAttribute(): string
+    {
+        return $this->attributes['titulo'] ?? '';
+    }
 
+    public function getTypeAttribute(): string
+    {
+        return $this->attributes['tipo'] ?? '';
+    }
+
+    public function getCategoryAttribute()
+    {
+        return $this->attributes['categoria'] ?? null;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors de conteúdo
+    |--------------------------------------------------------------------------
+    */
     public function getContentWebAttribute()
     {
         return Str::words($this->content, '20', ' ...');
     }
 
+    public function getContentWebSiteAttribute()
+    {
+        return Str::words($this->content, '40', ' ...');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Capa
+    |--------------------------------------------------------------------------
+    */
     public function cover()
     {
         $images = $this->images();
@@ -128,42 +170,58 @@ class Post extends Model
         }
 
         return Storage::url(Cropper::thumb($cover['path'], 720, 480));
-    }    
+    }
 
     public function nocover()
     {
         $images = $this->images();
-
-        // Pega capa, se não existir usa a primeira imagem
         $cover = $images->where('cover', 1)->first(['path'])
             ?? $images->first(['path']);
 
         if (empty($cover['path']) || !Storage::disk()->exists($cover['path'])) {
             return asset('theme/images/image.jpg');
         }
-        
+
         return Storage::url($cover['path']);
-    } 
-    
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mutator: mapeia nomes em inglês para colunas reais do banco (português)
+    |--------------------------------------------------------------------------
+    */
+    public function setAttribute($key, $value)
+    {
+        $map = [
+            'title'    => 'titulo',
+            'type'     => 'tipo',
+            'category' => 'categoria',
+        ];
+
+        if (isset($map[$key])) {
+            $key = $map[$key];
+        }
+
+        parent::setAttribute($key, $value);
+    }
+
     public function setStatusAttribute($value)
     {
         $this->attributes['status'] = ($value == '1' ? 1 : 0);
     }
-    
+
     public function setPublishAtAttribute($value)
     {
         $this->attributes['publish_at'] = (!empty($value) ? $this->convertStringToDate($value) : null);
     }
-    
-        
+
     public function setSlug()
     {
-        if (!empty($this->title)) {
-    
-            $baseSlug = Str::slug($this->title);
+        if (!empty($this->titulo)) {
+            $baseSlug = Str::slug($this->titulo);
             $slug = $baseSlug;
             $count = 1;
-    
+
             while (
                 Post::where('slug', $slug)
                     ->where('id', '!=', $this->id)
@@ -172,11 +230,11 @@ class Post extends Model
                 $slug = $baseSlug . '-' . str_pad($count, 2, '0', STR_PAD_LEFT);
                 $count++;
             }
-    
+
             $this->attributes['slug'] = $slug;
         }
     }
-    
+
     private function convertStringToDate(?string $param)
     {
         if (empty($param)) {

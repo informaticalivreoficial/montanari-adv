@@ -4,12 +4,13 @@ namespace App\Http\Livewire\Dashboard;
 
 use Livewire\Component;
 use App\Traits\HasAlerts;
+use App\Traits\HasValidations;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 class Permissions extends Component
 {
-    use HasAlerts;
+    use HasAlerts, HasValidations;
 
     public $roles = [];
     public $permissions = [];

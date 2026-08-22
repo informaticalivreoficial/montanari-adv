@@ -12,8 +12,37 @@ use App\Http\Livewire\Dashboard\Users\Create as UserCreate;
 use App\Http\Livewire\Dashboard\Users\Edit as UserEdit;
 use App\Http\Livewire\Dashboard\Settings\Config;
 use App\Http\Livewire\Dashboard\Permissions;
-use App\Http\Livewire\Dashboard\Profile;
+use App\Http\Livewire\Dashboard\Users\Profile;
 use App\Http\Livewire\Auth\Register;
+use App\Http\Livewire\Dashboard\Legal\Processes\ListProcesses;
+use App\Http\Livewire\Dashboard\Legal\Processes\CreateProcess;
+use App\Http\Livewire\Dashboard\Legal\Processes\EditProcess;
+use App\Http\Livewire\Dashboard\Legal\Deadlines\ListDeadlines;
+use App\Http\Livewire\Dashboard\Legal\Deadlines\CreateDeadline;
+use App\Http\Livewire\Dashboard\Legal\Tasks\ListTasks;
+use App\Http\Livewire\Dashboard\Legal\Tasks\CreateTask;
+use App\Http\Livewire\Dashboard\Legal\Agenda\Agenda;
+use App\Http\Livewire\Dashboard\Legal\Documents\ListDocuments;
+use App\Http\Livewire\Dashboard\SiteAnalytics;
+use App\Http\Livewire\Dashboard\Posts\Articles\ListArticles;
+use App\Http\Livewire\Dashboard\Posts\Articles\CreateArticle;
+use App\Http\Livewire\Dashboard\Posts\Articles\EditArticle;
+use App\Http\Livewire\Dashboard\Posts\Pages\ListPages;
+use App\Http\Livewire\Dashboard\Posts\Pages\CreatePage;
+use App\Http\Livewire\Dashboard\Posts\Pages\EditPage;
+use App\Http\Livewire\Dashboard\Posts\Categories\ListCategories;
+use App\Http\Livewire\Dashboard\Posts\Categories\CreateCategory;
+use App\Http\Livewire\Dashboard\Posts\Categories\EditCategory;
+use App\Http\Livewire\Client\ClientLogin;
+use App\Http\Livewire\Client\Dashboard as ClientDashboard;
+use App\Http\Livewire\Client\ProcessList;
+use App\Http\Livewire\Client\ProcessDetail;
+use App\Http\Livewire\Client\ClientDocuments;
+use App\Http\Livewire\Client\ClientMessages;
+use App\Http\Livewire\Client\ClientDeadlines;
+use App\Http\Livewire\Client\ClientProfile;
+use App\Http\Livewire\Client\ClientProfileEdit;
+use App\Http\Livewire\Client\ClientPasswordChange;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -70,13 +99,79 @@ Route::middleware('auth')->group(function () {
     Route::livewire('/dashboard/usuarios/{id}/editar', UserEdit::class)->name('dashboard.users.edit');
     Route::livewire('/dashboard/config', Config::class)->name('dashboard.config');
     Route::livewire('/dashboard/permissions', Permissions::class)->name('dashboard.permissions');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Módulo Jurídico
+    |--------------------------------------------------------------------------
+    */
+    // Processos
+    Route::livewire('/dashboard/processos', ListProcesses::class)->name('dashboard.legal.processes');
+    Route::livewire('/dashboard/processos/criar', CreateProcess::class)->name('dashboard.legal.processes.create');
+    Route::livewire('/dashboard/processos/{id}/editar', EditProcess::class)->name('dashboard.legal.processes.edit');
+
+    // Prazos
+    Route::livewire('/dashboard/prazos', ListDeadlines::class)->name('dashboard.legal.deadlines');
+    Route::livewire('/dashboard/prazos/criar', CreateDeadline::class)->name('dashboard.legal.deadlines.create');
+
+    // Tarefas
+    Route::livewire('/dashboard/tarefas', ListTasks::class)->name('dashboard.legal.tasks');
+    Route::livewire('/dashboard/tarefas/criar', CreateTask::class)->name('dashboard.legal.tasks.create');
+
+    // Agenda
+    Route::livewire('/dashboard/agenda', Agenda::class)->name('dashboard.legal.agenda');
+
+    // Documentos
+    Route::livewire('/dashboard/documentos', ListDocuments::class)->name('dashboard.legal.documents');
+
+    // Analytics
+    Route::livewire('/dashboard/analytics', SiteAnalytics::class)->name('dashboard.analytics');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Módulo Posts
+    |--------------------------------------------------------------------------
+    */
+    // Artigos
+    Route::livewire('/dashboard/artigos', ListArticles::class)->name('dashboard.posts.articles');
+    Route::livewire('/dashboard/artigos/criar', CreateArticle::class)->name('dashboard.posts.articles.create');
+    Route::livewire('/dashboard/artigos/{id}/editar', EditArticle::class)->name('dashboard.posts.articles.edit');
+
+    // Páginas
+    Route::livewire('/dashboard/paginas', ListPages::class)->name('dashboard.posts.pages');
+    Route::livewire('/dashboard/paginas/criar', CreatePage::class)->name('dashboard.posts.pages.create');
+    Route::livewire('/dashboard/paginas/{id}/editar', EditPage::class)->name('dashboard.posts.pages.edit');
+
+    // Categorias
+    Route::livewire('/dashboard/categorias', ListCategories::class)->name('dashboard.posts.categories');
+    Route::livewire('/dashboard/categorias/criar', CreateCategory::class)->name('dashboard.posts.categories.create');
+    Route::livewire('/dashboard/categorias/{id}/editar', EditCategory::class)->name('dashboard.posts.categories.edit');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Testes
+| Área do Cliente
 |--------------------------------------------------------------------------
 */
-Route::get('/test-livewire', function () {
-    return view('livewire.test-component');
-})->name('test-livewire');
+Route::middleware('guest')->group(function () {
+    Route::livewire('/cliente', ClientLogin::class)->name('client.login');
+});
+
+Route::middleware('client')->prefix('cliente')->name('client.')->group(function () {
+    Route::post('/logout', function () {
+        Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
+        return redirect()->route('client.login');
+    })->name('logout');
+
+    Route::livewire('/dashboard', ClientDashboard::class)->name('dashboard');
+    Route::livewire('/processos', ProcessList::class)->name('processes');
+    Route::livewire('/processo/{id}', ProcessDetail::class)->name('process.show');
+    Route::livewire('/prazos', ClientDeadlines::class)->name('deadlines');
+    Route::livewire('/documentos', ClientDocuments::class)->name('documents');
+    Route::livewire('/mensagens', ClientMessages::class)->name('messages');
+    Route::livewire('/perfil', ClientProfile::class)->name('profile');
+    Route::livewire('/perfil/editar', ClientProfileEdit::class)->name('profile.edit');
+    Route::livewire('/perfil/senha', ClientPasswordChange::class)->name('profile.password');
+});

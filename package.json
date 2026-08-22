@@ -13,9 +13,17 @@
         "vite": "^8.2.2"
     },
     "dependencies": {
+        "@fullcalendar/core": "^6.1.21",
+        "@fullcalendar/daygrid": "^6.1.21",
+        "@fullcalendar/interaction": "^6.1.21",
+        "@fullcalendar/luxon3": "^6.1.21",
+        "chart.js": "^4.5.1",
         "flatpickr": "^4.6.13",
+        "fslightbox": "^3.7.6",
         "imask": "^7.6.1",
+        "luxon": "^3.7.2",
         "quill": "^2.0.3",
+        "sortablejs": "^1.15.7",
         "sweetalert2": "^11.26.25",
         "toastify-js": "^1.12.0"
     }

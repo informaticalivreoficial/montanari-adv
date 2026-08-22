@@ -3,6 +3,8 @@
 use Database\Seeders\ConfigTableSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Database\Seeders\UsersTableSeeder;
+use Database\Seeders\LegalModuleSeeder;
+use Database\Seeders\PostsModuleSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,6 +20,8 @@ class DatabaseSeeder extends Seeder
             ConfigTableSeeder::class,
             RolesAndPermissionsSeeder::class,
             UsersTableSeeder::class,
+            LegalModuleSeeder::class,
+            PostsModuleSeeder::class,
         ]);
     }
 }

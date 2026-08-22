@@ -6,12 +6,18 @@ function getCidadeNome($id, $tabela)
     if (empty($id) && empty($tabela)) {
         return null;
     }
-    $cidade = Illuminate\Support\Facades\DB::table(''.$tabela.'')->where('cidade_id', '=', $id)->get();
-    if(!empty($cidade)){
-        return $cidade[0]->cidade_nome.'/'.$cidade[0]->cidade_uf;
-    }else{
-        return null;
+    try {
+        if (!Illuminate\Support\Facades\Schema::hasTable($tabela)) {
+            return null;
+        }
+        $cidade = Illuminate\Support\Facades\DB::table($tabela)->where('cidade_id', '=', $id)->first();
+        if (!empty($cidade)) {
+            return $cidade->cidade_nome . '/' . $cidade->cidade_uf;
+        }
+    } catch (\Exception $e) {
+        // Tabela não existe (legado)
     }
+    return null;
 }
 
 // pega o nome da cidade a partir de um ID relacionado
@@ -20,30 +26,42 @@ function getCidade($id, $tabela)
     if (empty($id) && empty($tabela)) {
         return null;
     }
-    $cidade = Illuminate\Support\Facades\DB::table(''.$tabela.'')->where('cidade_id', '=', $id)->get();
-    if(!empty($cidade)){
-        return $cidade[0]->cidade_nome;
-    }else{
-        return null;
+    try {
+        if (!Illuminate\Support\Facades\Schema::hasTable($tabela)) {
+            return null;
+        }
+        $cidade = Illuminate\Support\Facades\DB::table($tabela)->where('cidade_id', '=', $id)->first();
+        if (!empty($cidade)) {
+            return $cidade->cidade_nome;
+        }
+    } catch (\Exception $e) {
+        // Tabela não existe (legado)
     }
+    return null;
 }
 
-// pega o nome da cidade a partir de um ID relacionado
+// pega o nome do estado a partir de um ID relacionado
 function getEstado($id, $tabela, $campo = null)
 {
     if (empty($id) && empty($tabela)) {
         return null;
     }
-    $estado = Illuminate\Support\Facades\DB::table(''.$tabela.'')->where('estado_id', '=', $id)->get();
-    if(!empty($estado)){
-        if($campo == null){
-            return $estado[0]->estado_nome;
-        }else{
-            return $estado[0]->{$campo};
+    try {
+        if (!Illuminate\Support\Facades\Schema::hasTable($tabela)) {
+            return null;
         }
-    }else{
-        return null;
+        $estado = Illuminate\Support\Facades\DB::table($tabela)->where('estado_id', '=', $id)->first();
+        if (!empty($estado)) {
+            if ($campo == null) {
+                return $estado->estado_nome;
+            } else {
+                return $estado->{$campo};
+            }
+        }
+    } catch (\Exception $e) {
+        // Tabela não existe (legado)
     }
+    return null;
 }
 
 /**

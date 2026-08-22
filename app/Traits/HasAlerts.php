@@ -5,21 +5,9 @@ namespace App\Traits;
 /**
  * Trait HasAlerts
  *
- * Fornece métodos de conveniência para SweetAlert2 e ToastifyJS
- * em componentes Livewire.
+ * Alertas via SweetAlert2 — usa $this->dispatch() (Livewire v4).
  *
- * Uso no componente:
- *   use HasAlerts;
- *
- *   public function save()
- *   {
- *       // ... salvar
- *       $this->toastSuccess('Salvo com sucesso!');
- *       // ou
- *       $this->alertSuccess('Registro salvo!');
- *       // ou
- *       $this->swalConfirm('Excluir registro?');
- *   }
+ * JS escuta via Livewire.on() ou window.addEventListener('swal:fire')
  */
 trait HasAlerts
 {
@@ -28,7 +16,15 @@ trait HasAlerts
      */
     public function toastSuccess(string $message): void
     {
-        session()->flash('toast_success', $message);
+        $this->dispatch('swal:fire', [
+            'icon'  => 'success',
+            'title' => $message,
+            'timer' => 2500,
+            'showConfirmButton' => false,
+            'toast' => true,
+            'position' => 'top-end',
+            'timerProgressBar' => true,
+        ]);
     }
 
     /**
@@ -36,7 +32,15 @@ trait HasAlerts
      */
     public function toastError(string $message): void
     {
-        session()->flash('toast_error', $message);
+        $this->dispatch('swal:fire', [
+            'icon'  => 'error',
+            'title' => $message,
+            'timer' => 4000,
+            'showConfirmButton' => false,
+            'toast' => true,
+            'position' => 'top-end',
+            'timerProgressBar' => true,
+        ]);
     }
 
     /**
@@ -44,7 +48,15 @@ trait HasAlerts
      */
     public function toastWarning(string $message): void
     {
-        session()->flash('toast_warning', $message);
+        $this->dispatch('swal:fire', [
+            'icon'  => 'warning',
+            'title' => $message,
+            'timer' => 3500,
+            'showConfirmButton' => false,
+            'toast' => true,
+            'position' => 'top-end',
+            'timerProgressBar' => true,
+        ]);
     }
 
     /**
@@ -52,7 +64,15 @@ trait HasAlerts
      */
     public function toastInfo(string $message): void
     {
-        session()->flash('toast_success', $message);
+        $this->dispatch('swal:fire', [
+            'icon'  => 'info',
+            'title' => $message,
+            'timer' => 3000,
+            'showConfirmButton' => false,
+            'toast' => true,
+            'position' => 'top-end',
+            'timerProgressBar' => true,
+        ]);
     }
 
     /**
@@ -60,12 +80,12 @@ trait HasAlerts
      */
     public function toast(string $message, string $type = 'success'): void
     {
-        $key = match($type) {
-            'error' => 'toast_error',
-            'warning' => 'toast_warning',
-            default => 'toast_success',
+        match ($type) {
+            'error'   => $this->toastError($message),
+            'warning' => $this->toastWarning($message),
+            'info'    => $this->toastInfo($message),
+            default   => $this->toastSuccess($message),
         };
-        session()->flash($key, $message);
     }
 
     /**
@@ -73,7 +93,17 @@ trait HasAlerts
      */
     public function alertSuccess(string $title, ?string $text = null): void
     {
-        $this->toastSuccess($title);
+        $payload = array_merge([
+            'icon'  => 'success',
+            'title' => $title,
+            'timer' => 2500,
+            'showConfirmButton' => false,
+            'toast' => true,
+            'position' => 'top-end',
+            'timerProgressBar' => true,
+        ], $text ? ['text' => $text] : []);
+
+        $this->dispatch('swal:fire', $payload);
     }
 
     /**
@@ -81,7 +111,17 @@ trait HasAlerts
      */
     public function alertError(string $title, ?string $text = null): void
     {
-        $this->toastError($title);
+        $payload = array_merge([
+            'icon'  => 'error',
+            'title' => $title,
+            'timer' => 4000,
+            'showConfirmButton' => false,
+            'toast' => true,
+            'position' => 'top-end',
+            'timerProgressBar' => true,
+        ], $text ? ['text' => $text] : []);
+
+        $this->dispatch('swal:fire', $payload);
     }
 
     /**
@@ -101,30 +141,23 @@ trait HasAlerts
     }
 
     /**
-     * SweetAlert2 de confirmação — dispara um método do componente ao confirmar
-     *
-     * @param string $title      Título da confirmação
-     * @param string $method     Método do componente a ser chamado
-     * @param array  $params     Parâmetros para o método
-     * @param string $text       Texto descritivo
-     * @param string $confirmBtn Texto do botão de confirmação
-     * @param string $cancelBtn  Texto do botão de cancelamento
+     * SweetAlert2 de confirmação — dispara método do componente ao confirmar
      */
     public function swalConfirm(
         string $title,
         string $method = 'confirm',
-        array $params = [],
+        array  $params = [],
         ?string $text = null,
         string $confirmBtn = 'Sim, confirmar',
         string $cancelBtn = 'Cancelar'
     ): void {
-        session()->flash('swal_confirm', [
-            'title' => $title,
-            'text' => $text,
-            'method' => $method,
-            'params' => $params,
+        $this->dispatch('swal:confirm', [
+            'title'            => $title,
+            'text'             => $text,
+            'method'           => $method,
+            'params'           => $params,
             'confirmButtonText' => $confirmBtn,
-            'cancelButtonText' => $cancelBtn,
+            'cancelButtonText'  => $cancelBtn,
         ]);
     }
 
@@ -133,12 +166,6 @@ trait HasAlerts
      */
     public function swal(array $options): void
     {
-        $type = $options['icon'] ?? 'success';
-        $title = $options['title'] ?? '';
-        match($type) {
-            'error' => $this->toastError($title),
-            'warning' => $this->toastWarning($title),
-            default => $this->toastSuccess($title),
-        };
+        $this->dispatch('swal:fire', $options);
     }
 }

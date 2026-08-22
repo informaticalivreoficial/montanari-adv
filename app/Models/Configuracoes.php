@@ -63,15 +63,15 @@ class Configuracoes extends Model
 
     /**
      * Accerssors and Mutators
-    */
+    */    
     public function getmetaimg()
     {
         if(empty($this->metaimg) || !Storage::disk()->exists($this->metaimg)) {
             return url(asset('theme/images/image.jpg'));
-        }
+        } 
         return Storage::url($this->metaimg);
     }
-
+    
     public function getlogo()
     {
         if (empty($this->logo) || !Storage::disk()->exists($this->logo)) {
@@ -80,36 +80,37 @@ class Configuracoes extends Model
 
         return Storage::url($this->logo);
     }
-
+    
     public function getlogoadmin()
     {
-        if(empty($this->logo_admin) || !Storage::disk()->exists($this->logo_admin)) {
-            return url(asset('theme/images/image.jpg'));
+        if (empty($this->logo_admin) || !Storage::disk('public')->exists($this->logo_admin)) {
+            return asset('theme/images/image.jpg');
         }
+
         return Storage::url($this->logo_admin);
     }
-
+    
     public function getfaveicon()
     {
         if(empty($this->favicon) || !Storage::disk()->exists($this->favicon)) {
             return url(asset('theme/images/image.jpg'));
-        }
+        } 
         return Storage::url($this->favicon);
     }
-
+    
     public function getwatermark()
     {
         if(empty($this->watermark) || !Storage::disk()->exists($this->watermark)) {
             return url(asset('theme/images/image.jpg'));
-        }
+        } 
         return Storage::url($this->watermark);
     }
-
+    
     public function getheadersite()
     {
         if(empty($this->imgheader) || !Storage::disk()->exists($this->imgheader)) {
             return url(asset('theme/images/image.jpg'));
-        }
+        } 
         return Storage::url($this->imgheader);
     }
 
@@ -117,7 +118,7 @@ class Configuracoes extends Model
     {
         if(empty($this->logo_footer) || !Storage::disk()->exists($this->logo_footer)) {
             return url(asset('theme/images/image.jpg'));
-        }
+        } 
         return Storage::url($this->logo_footer);
     }
 

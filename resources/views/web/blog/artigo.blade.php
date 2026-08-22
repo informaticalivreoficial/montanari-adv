@@ -1,196 +1,164 @@
 @extends('web.master.master')
 
-@section('css')
-<link href="{{url(asset('frontend/assets/js/shadowbox/shadowbox.css'))}}" rel="stylesheet" type="text/css"/>
-@endsection
-
 @section('content')
 
-<!-- :: Breadcrumb Header -->
-<section class="breadcrumb-header" id="page" style="background-image: url({{$post->nocover()}})">
-    <div class="overlay"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="banner">
-                    <h1>{{$post->titulo}}</h1>
-                    <ul>
-                        <li><a href="{{url('web.home')}}">Início</a></li>
-                        <li><i class="fas fa-angle-right"></i></li>
-                        <li><a href="{{url('web.blog.artigos')}}">Blog</a></li>
-                        <li><i class="fas fa-angle-right"></i></li>
-                        <li>{{$post->titulo}}</li>
-                    </ul>
-                </div>
+{{-- Breadcrumb Hero --}}
+<section class="relative py-32 bg-navy-900 overflow-hidden breadcrumb-hero">
+    <div class="absolute inset-0">
+        @if($post->nocover())
+            <img src="{{ $post->nocover() }}" alt="{{ $post->titulo }}" class="w-full h-full object-cover opacity-20">
+        @endif
+        <div class="hero-overlay absolute inset-0"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="gold-line"></div>
+                <span class="px-3 py-1.5 bg-gold-500/20 text-gold-400 text-xs font-medium rounded-full">
+                    {{ $post->categoriaObject->titulo }}
+                </span>
+            </div>
+            <h1 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">{{ $post->titulo }}</h1>
+            <div class="flex flex-wrap items-center gap-4 text-white/50 text-sm">
+                <span class="flex items-center gap-2">
+                    <i class="far fa-calendar text-gold-500"></i>
+                    {{ optional($post->publish_at)->format('d/m/Y') }}
+                </span>
+                <span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                <span class="flex items-center gap-2">
+                    <i class="far fa-clock text-gold-500"></i>
+                    {{ $post->reading_time ?? '5 min de leitura' }}
+                </span>
             </div>
         </div>
     </div>
 </section>
 
-<!-- :: Single Blog -->
-<section class="single-bolg py-100-70">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="blog-item">
-                            <div class="img-box">
-                                <a class="open-post">
-                                    <img class="img-fluid" src="{{$post->nocover()}}" alt="{{$post->cover()}}">
+{{-- Article Content --}}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-3 gap-12">
+
+            {{-- Main Content --}}
+            <div class="lg:col-span-2">
+                <article class="prose prose-lg prose-slate max-w-none
+                    prose-headings:font-heading prose-headings:text-navy-800
+                    prose-a:text-navy-700 prose-a:no-underline hover:prose-a:text-gold-600
+                    prose-img:rounded-2xl">
+                    <div class="text-gray-700 leading-relaxed text-base" style="white-space: pre-wrap;">
+                        {!! $post->content !!}
+                    </div>
+                </article>
+
+                {{-- Gallery --}}
+                @if($post->images()->get()->count())
+                    <div class="mt-12">
+                        <h3 class="font-heading text-xl font-bold text-navy-800 mb-6">Galeria</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            @foreach($post->images() as $image)
+                                <a href="{{ $image->getUrlImageAttribute() }}" target="_blank"
+                                   class="block rounded-xl overflow-hidden aspect-square group">
+                                    <img src="{{ $image->getUrlCroppedAttribute() }}" alt="{{ $post->titulo }}"
+                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                 </a>
-                                <ul>
-                                    <li><a href="{{route('web.blog.categoria', ['slug' => $post->slug] )}}">{{$post->categoriaObject->titulo}}</a></li>
-                                </ul>
-                            </div>
-                            <div class="text-box">
-                                {!! $post->content !!}  
-
-                                @if($post->images()->get()->count())
-                                    <div class="row"> 
-                                        @foreach($post->images()->get() as $image)
-                                            <div class="col-3">
-                                                <div class="mb-4">
-                                                    <a href="{{ $image->getUrlImageAttribute() }}" title="{{ $post->titulo }}" rel="shadowbox[gallery]">
-                                                        <img class="img-fluid" src="{{ $image->getUrlCroppedAttribute() }}" alt="{{ $image->getUrlCroppedAttribute() }}" title="{{ $post->titulo }}">
-                                                    </a>
-                                                </div>
-                                            </div>                                                
-                                        @endforeach
-                                    </div>
-                                @endif                                
-                                <div class="share-post">
-                                    <span>Compartilhar Artigo :</span>
-                                    <div style="margin-right: 10px;" class="fb-share-button" data-href="{{url()->current()}}" data-layout="button_count" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{url()->current()}}&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Compartilhar</a></div>
-                                    <a style="background-color: #6ebf58;color:#fff;border:none;padding:5px 10px;font-size:0.875em;margin-top:-12px;" class="btn btn-front" target="_blank" href="https://web.whatsapp.com/send?text={{url()->current()}}" data-action="share/whatsapp/share"><i class="fab fa-whatsapp"></i> Compartilhar</a>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
+                @endif
 
-                   
-                    
+                {{-- Share --}}
+                <div class="mt-12 pt-8 border-t border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-heading font-bold text-navy-800">Compartilhar</h4>
+                        <div class="flex items-center gap-3">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" target="_blank"
+                               class="w-10 h-10 bg-navy-50 hover:bg-blue-600 rounded-lg flex items-center justify-center text-navy-600 hover:text-white transition-all duration-300">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://web.whatsapp.com/send?text={{ url()->current() }}" target="_blank"
+                               class="w-10 h-10 bg-navy-50 hover:bg-green-500 rounded-lg flex items-center justify-center text-navy-600 hover:text-white transition-all duration-300">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?url={{ url()->current() }}" target="_blank"
+                               class="w-10 h-10 bg-navy-50 hover:bg-sky-500 rounded-lg flex items-center justify-center text-navy-600 hover:text-white transition-all duration-300">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ url()->current() }}" target="_blank"
+                               class="w-10 h-10 bg-navy-50 hover:bg-blue-700 rounded-lg flex items-center justify-center text-navy-600 hover:text-white transition-all duration-300">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <div class="widget">
-                    <div class="widget-body">
-                        <div class="search">
-                            <form action="{{ route('web.pesquisa') }}" method="post" autocomplete="off">
-                            <input type="search" name="search" placeholder="Pesquisar no site...">
-                            <button type="submit" class="click"><i class="fas fa-search"></i></button>
-                            </form>
+
+            {{-- Sidebar --}}
+            <div class="lg:col-span-1 space-y-8">
+                {{-- Search --}}
+                <div class="bg-gray-50 rounded-2xl p-6">
+                    <h4 class="font-heading font-bold text-navy-800 mb-4">Pesquisar</h4>
+                    <form action="{{ route('web.pesquisa') }}" method="POST">
+                        @csrf
+                        <div class="flex gap-2">
+                            <input type="search" name="search" placeholder="Pesquisar..."
+                                   class="flex-1 px-4 py-3 border border-gray-200 rounded-lg text-sm bg-white focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20">
+                            <button type="submit" class="px-4 py-3 bg-navy-700 text-white rounded-lg hover:bg-navy-800 transition-colors">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {{-- Categories --}}
+                @if(!empty($categorias) && $categorias->count())
+                    <div class="bg-gray-50 rounded-2xl p-6">
+                        <h4 class="font-heading font-bold text-navy-800 mb-4">Categorias</h4>
+                        <div class="space-y-2">
+                            @foreach($categorias as $categoria)
+                                @if($categoria->children)
+                                    @foreach($categoria->children as $subcategoria)
+                                        @if($subcategoria->countposts() >= 1)
+                                            <a href="{{ route('web.blog.categoria', ['slug' => $subcategoria->slug]) }}"
+                                               class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-white transition-colors group">
+                                                <span class="text-sm text-gray-600 group-hover:text-navy-700 transition-colors flex items-center gap-2">
+                                                    <i class="fas fa-folder-open text-gold-500/50 text-xs"></i>
+                                                    {{ $subcategoria->titulo }}
+                                                </span>
+                                                <span class="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full">{{ $subcategoria->countposts() }}</span>
+                                            </a>
+                                        @endif
+                                    @endforeach
+                                @endif
+                            @endforeach
                         </div>
                     </div>
-                </div>                        
-                <div class="widget">
-                    <div class="widget-title">
-                        <h3>Siga-nos</h3>
-                    </div>
-                    <div class="widget-body">
-                        <div class="follow">
-                            <ul class="icon">
-                                @if(!empty($configuracoes->facebook))
-                                    <li><a target="_blank" href="{{$configuracoes->facebook}}" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
-                                @endif
-                                @if(!empty($configuracoes->twitter))
-                                    <li><a target="_blank" href="{{$configuracoes->twitter}}" title="Twitter"><i class="fab fa-twitter"></i></a></li>
-                                @endif
-                                @if(!empty($configuracoes->linkedin))
-                                    <li><a target="_blank" href="{{$configuracoes->linkedin}}" title="Linkedin"><i class="fab fa-linkedin"></i></a></li>
-                                @endif
-                                @if(!empty($configuracoes->instagram))
-                                    <li><a target="_blank" href="{{$configuracoes->instagram}}" title="Instagram"><i class="fab fa-instagram"></i></a></li>
-                                @endif                                
-                                @if(!empty($configuracoes->fliccr))
-                                    <li><a target="_blank" href="{{$configuracoes->fliccr}}" title="Flickr"><i class="fab fa-flickr"></i></a></li>
-                                @endif                                
-                                @if(!empty($configuracoes->youtube))
-                                    <li><a target="_blank" href="{{$configuracoes->youtube}}" title="Youtube"><i class="fab fa-youtube"></i></a></li>
-                                @endif
-                            </ul> 
-                        </div>
-                    </div>
-                </div>
-                <div class="widget">
-                    <div class="widget-title">
-                        <h3>categorias</h3>
-                    </div>
-                    <div class="categories">
-                        <ul>
-                            @if(!empty($categorias) && $categorias->count() > 0)
-                                @foreach($categorias as $categoria)                                    
-                                    @if($categoria->children)
-                                        @foreach($categoria->children as $subcategoria)
-                                            @if($subcategoria->countposts() >= 1)
-                                                <li><a href="{{route('web.blog.categoria', ['slug' => $subcategoria->slug] )}}"><i class="fas fa-folder-open"></i> {{ $subcategoria->titulo }} <span><i class="fas fa-angle-right"></i></span></a></li>
-                                            @endif                                            
-                                        @endforeach
-                                    @endif                                                                                                                             
-                                @endforeach
-                            @endif
-                        </ul>
-                    </div>
-                </div>
-                <div class="widget">
-                    <div class="widget-title">
-                        <h3>Veja Também :</h3>
-                    </div>
-                    <div class="news-box">
-                        @if($postsMais->count())                            
-                            @foreach($postsMais as $postsmais)
-                            <div class="news-item">
-                                <img src="{{$postsmais->cover()}}" alt="{{$postsmais->titulo}}" class="img-fluid">
-                                <div class="item-content">
-                                    <a class="title-blog" href="{{route('web.blog.artigo', ['slug' => $postsmais->slug] )}}">
-                                        <h5>
-                                            {{$postsmais->titulo}}
+                @endif
+
+                {{-- Recent Posts --}}
+                @if(!empty($postsMais) && $postsMais->count())
+                    <div class="bg-gray-50 rounded-2xl p-6">
+                        <h4 class="font-heading font-bold text-navy-800 mb-4">Veja Também</h4>
+                        <div class="space-y-4">
+                            @foreach($postsMais as $postMais)
+                                <a href="{{ route('web.blog.artigo', ['slug' => $postMais->slug]) }}"
+                                   class="flex gap-3 group">
+                                    <img src="{{ $postMais->cover() }}" alt="{{ $postMais->titulo }}"
+                                         class="w-16 h-16 rounded-lg object-cover flex-shrink-0 group-hover:scale-105 transition-transform">
+                                    <div>
+                                        <h5 class="text-sm font-semibold text-navy-800 group-hover:text-gold-600 transition-colors line-clamp-2 leading-tight">
+                                            {{ $postMais->titulo }}
                                         </h5>
-                                    </a>
-                                </div>
-                            </div>                            
-                            @endforeach                            
-                        @endif                         
-                        
-                    </div>
-                </div>
-                <div class="widget">
-                    <div class="widget-title">
-                        <h3>Tags</h3>
-                    </div>
-                    <div class="widget-body">
-                        <div class="tags">
-                            @if($postsTags->count())
-                                <ul>
-                                @foreach($postsTags as $posttags)                                
-                                    <li>
-                                        @php
-                                            $array = explode(",", $posttags->tags);
-                                            foreach($array as $tags){
-                                                $tag = trim($tags);                                                       
-                                                echo '<a href="'.route('web.blog.artigo', ['slug' => $posttags->slug]).'">'.$tag.'</a>';
-                                            }
-                                        @endphp                                                                         
-                                    </li>                                                                                        
-                                @endforeach
-                                </ul>
-                            @endif                            
+                                        <span class="text-xs text-gray-400 mt-1 block">{{ optional($postMais->publish_at)->format('d/m/Y') }}</span>
+                                    </div>
+                                </a>
+                            @endforeach
                         </div>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
     </div>
 </section>
 
 @endsection
-
-@section('js')
-<script src="{{url(asset('frontend/assets/js/shadowbox/shadowbox.js'))}}"></script>
-<script>
-    Shadowbox.init();
-</script>
-<div id="fb-root"></div>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/pt_BR/sdk.js#xfbml=1&version=v11.0&appId=1787040554899561&autoLogAppEvents=1" nonce="1eBNUT9J"></script>
-@endsection
-

@@ -10,12 +10,14 @@ class PostGb extends Model
 {
     use HasFactory;
 
-    protected $table = 'post_gb'; 
+    protected $table = 'posts_gb';
 
     protected $fillable = [
         'post',
         'path',
-        'cover'
+        'cover',
+        'order',
+        'thumb_caption',
     ];
 
     /**

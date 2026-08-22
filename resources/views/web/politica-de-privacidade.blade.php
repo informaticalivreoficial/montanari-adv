@@ -2,41 +2,31 @@
 
 @section('content')
 
-<!-- :: Breadcrumb Header -->
-<section class="breadcrumb-header" id="page" style="background-image: url({{url($configuracoes->getheadersite())}})">
-    <div class="overlay"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="banner">
-                    <h1>Política de Privacidade</h1>
-                    <ul>
-                        <li><a href="{{url('web.home')}}">Início</a></li>
-                        <li><i class="fas fa-angle-right"></i></li>
-                        <li>Política de Privacidade</li>
-                    </ul>
-                </div>
+{{-- Breadcrumb Hero --}}
+<section class="relative py-32 bg-navy-900 overflow-hidden breadcrumb-hero">
+    <div class="absolute inset-0 pattern-dots opacity-5"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-2xl">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="gold-line"></div>
             </div>
+            <h1 class="font-heading text-4xl md:text-5xl font-bold text-white mb-4">Política de Privacidade</h1>
+            <nav class="flex items-center gap-2 text-white/50 text-sm">
+                <a href="{{ route('web.home') }}" class="hover:text-gold-400 transition-colors">Início</a>
+                <i class="fas fa-chevron-right text-[10px] text-gold-500/40"></i>
+                <span class="text-white/80">Política de Privacidade</span>
+            </nav>
         </div>
     </div>
 </section>
 
-<!-- :: Single Blog -->
-<section class="single-bolg py-100-70">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="blog-item">                           
-                            <div class="text-box">
-                                {!! $Configuracoes->privacy_policy !!} 
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>            
+<section class="py-24 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="prose prose-lg prose-slate max-w-none
+            prose-headings:font-heading prose-headings:text-navy-800
+            prose-a:text-navy-700 prose-a:no-underline hover:prose-a:text-gold-600">
+            {!! $Configuracoes->privacy_policy !!}
         </div>
     </div>
 </section>

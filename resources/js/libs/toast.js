@@ -1,119 +1,57 @@
-import Toastify from 'toastify-js';
-import 'toastify-js/src/toastify.css';
+import Swal from 'sweetalert2';
 
 /**
- * Helper global do ToastifyJS para Livewire.
+ * MontanariToast — SweetAlert2 em modo toast.
  *
  * Uso via JavaScript:
- *   window.MontanariToast.success('Salvo com sucesso!')
- *   window.MontanariToast.error('Erro ao salvar.')
- *   window.MontanariToast.warning('Atenção!')
- *   window.MontanariToast.info('Informação')
- *
- * Uso via Livewire (no componente PHP):
- *   $this->dispatch('toast:success', 'Salvo com sucesso!');
- *   $this->dispatch('toast:error', 'Erro ao salvar.');
- *   $this->dispatch('toast:show', ['message' => 'Customizado', 'type' => 'success']);
- *
- * Opções:
- *   message  → texto
- *   type     → success | error | warning | info
- *   duration → ms (padrão: 3000)
- *   gravity  → top | bottom
- *   position → left | center | right
- *   stopOnFocus → pausa ao hover
+ *   MontanariToast.success('Salvo com sucesso!')
+ *   MontanariToast.error('Erro ao salvar.')
  */
 
-const TOAST_STYLES = {
-    success: {
-        background: 'linear-gradient(135deg, #059669, #10b981)',
-    },
-    error: {
-        background: 'linear-gradient(135deg, #dc2626, #ef4444)',
-    },
-    warning: {
-        background: 'linear-gradient(135deg, #d97706, #f59e0b)',
-    },
-    info: {
-        background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
-    },
-};
-
 const MontanariToast = {
-    /**
-     * Exibe um toast
-     */
     show(options = {}) {
         const type = options.type || 'info';
-        const style = TOAST_STYLES[type] || TOAST_STYLES.info;
+        const iconMap = { success: 'success', error: 'error', warning: 'warning', info: 'info' };
+        const timerMap = { success: 2500, error: 3500, warning: 3000, info: 3000 };
 
-        const toast = Toastify({
-            text: options.message || options.text || '',
-            duration: options.duration || 3000,
-            gravity: options.gravity || 'top',
-            position: options.position || 'right',
-            stopOnFocus: options.stopOnFocus !== false,
-            style: {
-                borderRadius: '8px',
-                padding: '12px 20px',
-                fontSize: '14px',
-                fontFamily: 'Inter, system-ui, sans-serif',
-                color: '#fff',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                ...style,
-                ...(options.style || {}),
+        return Swal.fire({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: options.duration || timerMap[type] || 3000,
+            timerProgressBar: true,
+            icon: iconMap[type] || 'info',
+            title: options.message || options.text || '',
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
             },
-            onClick: options.onClick || undefined,
         });
-
-        toast.showToast();
-        return toast;
     },
 
-    /**
-     * Toast de sucesso
-     */
     success(message, options = {}) {
         return this.show({ message, type: 'success', ...options });
     },
 
-    /**
-     * Toast de erro
-     */
     error(message, options = {}) {
-        return this.show({ message, type: 'error', duration: 4000, ...options });
+        return this.show({ message, type: 'error', ...options });
     },
 
-    /**
-     * Toast de aviso
-     */
     warning(message, options = {}) {
         return this.show({ message, type: 'warning', ...options });
     },
 
-    /**
-     * Toast informativo
-     */
     info(message, options = {}) {
         return this.show({ message, type: 'info', ...options });
     },
 
-    /**
-     * Remove todos os toasts
-     */
     clearAll() {
-        const toasts = document.querySelectorAll('.toastify');
-        toasts.forEach((t) => t.remove());
+        Swal.close();
     },
 };
 
 /**
- * Registra eventos Livewire para ToastifyJS
- *
- * No componente Livewire, faça:
- *   $this->dispatch('toast:success', 'Salvo com sucesso!');
- *   $this->dispatch('toast:error', 'Erro ao salvar.');
- *   $this->dispatch('toast:show', ['message' => 'Customizado', 'type' => 'info', 'duration' => 5000]);
+ * Registra eventos Livewire para MontanariToast
  */
 export function initToast(livewire) {
     livewire.on('toast:success', (message) => {

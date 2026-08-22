@@ -1,161 +1,137 @@
 @extends('web.master.master')
 
 @section('content')
-<!-- :: Breadcrumb Header -->
-<section class="breadcrumb-header" id="page" style="background-image: url({{url($configuracoes->getheadersite())}})">
-    <div class="overlay"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="banner">
-                    <h1>Atendimento</h1>
-                    <ul>
-                        <li><a href="{{url('web.home')}}">Início</a></li>
-                        <li><i class="fas fa-angle-right"></i></li>
-                        <li>Atendimento</li>
-                    </ul>
-                </div>
+
+{{-- Breadcrumb Hero --}}
+<section class="relative py-32 bg-navy-900 overflow-hidden breadcrumb-hero">
+    <div class="absolute inset-0 pattern-dots opacity-5"></div>
+    <div class="absolute top-0 right-0 w-96 h-96 bg-gold-500/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-2xl">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="gold-line"></div>
             </div>
+            <h1 class="font-heading text-4xl md:text-5xl font-bold text-white mb-4">Atendimento</h1>
+            <nav class="flex items-center gap-2 text-white/50 text-sm">
+                <a href="{{ route('web.home') }}" class="hover:text-gold-400 transition-colors">Início</a>
+                <i class="fas fa-chevron-right text-[10px] text-gold-500/40"></i>
+                <span class="text-white/80">Atendimento</span>
+            </nav>
         </div>
     </div>
 </section>
 
-<!-- :: History -->
-<section class="history">            
-   
-    <!-- :: Quote -->
-    <div class="quote">
-        <div class="container">
-            <div class="box">
-                <div class="row">
-                    <div class="col-lg-5">
-                        <p>
-                            @if($configuracoes->phone) <i class="fas fa-phone"></i> <a class="link-contact" href="tel:{{$configuracoes->phone}}">{{$configuracoes->phone}}</a> @endif
-                            @if($configuracoes->cell_phone) <br><i class="fas fa-phone"></i> <a class="link-contact" href="tel:{{$configuracoes->cell_phone}}">{{$configuracoes->cell_phone}}</a> @endif
-                            @if($configuracoes->whatsapp) <br><i class="fas fa-phone"></i> <a class="link-contact" href="tel:{{$configuracoes->whatsapp}}">{{$configuracoes->whatsapp}}</a> @endif 
-                        </p>
-                        <p>
-                            @if(!empty($Configuracoes->whatsapp))
-                            <i style="font-size:1.7em;color:#6ebf58;" class="fab fa-whatsapp"></i> <a class="link-contact" style="border:none;" target="_blank" href="{{getNumZap($Configuracoes->whatsapp, 'Atendimento '.$configuracoes->app_name)}}">{{$Configuracoes->whatsapp}}</a>
-                            @endif  
-                        </p>
-                        <p>
-                            @if($configuracoes->email) <i class="fas fa-envelope"></i> <a class="link-contact" href="mailto:{{$configuracoes->email}}">{{$configuracoes->email}}</a> @endif
-                            @if($configuracoes->additional_email) <br><i class="fas fa-envelope"></i> <a class="link-contact" href="mailto:{{$configuracoes->additional_email}}">{{$configuracoes->additional_email}}</a> @endif    
-                        </p>
-                        
-                        <p><i class="fas fa-map-marker"></i> 
-                            {{$configuracoes->street}}    
-                            @if(!empty($configuracoes->num) && !empty($configuracoes->street))
-                            , {{$configuracoes->num}}
-                            @endif
-                            @if(!empty($configuracoes->bairro) && !empty($configuracoes->street))
-                            - {{$configuracoes->bairro}}
-                            @endif
-                            @if(!empty($configuracoes->cidade))
-                            @php
-                                echo getCidadeNome($configuracoes->cidade, 'cidades').' - Brasil';
-                            @endphp
-                            @endif</p>
-                    </div>
-                    <div class="col-lg-7">
-                        <div class="quote-box">
-                            <div class="sec-title">
-                                <h3>Preencha o Formulário</h3>
+{{-- Contact Section --}}
+<section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-5 gap-16">
+
+            {{-- Contact Info --}}
+            <div class="lg:col-span-2 reveal">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="gold-line"></div>
+                    <span class="text-gold-600 text-sm font-semibold tracking-[0.15em] uppercase">Fale Conosco</span>
+                </div>
+                <h2 class="font-heading text-3xl font-bold text-navy-800 mb-4">Entre em Contato</h2>
+                <p class="text-gray-500 leading-relaxed mb-10">
+                    Estamos à disposição para atender você. Preencha o formulário ou utilize um de nossos canais de atendimento.
+                </p>
+
+                <div class="space-y-6">
+                    @if(!empty($configuracoes->phone))
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-navy-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-phone text-navy-600"></i>
                             </div>
-                            <div class="row">
-                                <div class="col-12">
-                                <form class="j_formsubmit" action="" method="post" autocomplete="off">
-                                    @csrf
-                                    <div id="js-contact-result"></div>                                    
-                                    <!-- HONEYPOT -->
-                                    <input type="hidden" class="noclear" name="bairro" value="" />
-                                    <input type="text" class="noclear" style="display: none;" name="cidade" value="" />
-                                    <div class="col-md-12 form_hide">
-                                        <div class="quote-item">
-                                            <input type="text" name="nome" placeholder="Nome">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 form_hide">
-                                        <div class="quote-item">
-                                            <input type="email" name="email" placeholder="Email">
-                                        </div>
-                                    </div>                                        
-                                    <div class="col-md-12 form_hide">
-                                        <div class="quote-item">
-                                            <div class="quote-item">
-                                                <textarea name="mensagem" placeholder="Digite sua mensagem aqui....."></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12 form_hide">
-                                        <div class="quote-item">
-                                            <button type="submit" id="js-contact-btn" class="btn-1">Enviar Agora</button>
-                                        </div>
-                                    </div>
-                                </form>
-                                </div>
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Telefone</p>
+                                <a href="tel:{{ $configuracoes->phone }}" class="text-navy-800 font-semibold hover:text-gold-600 transition-colors">
+                                    {{ $configuracoes->phone }}
+                                </a>
+                                @if(!empty($configuracoes->cell_phone))
+                                    <br><a href="tel:{{ $configuracoes->cell_phone }}" class="text-navy-800 font-semibold hover:text-gold-600 transition-colors">
+                                        {{ $configuracoes->cell_phone }}
+                                    </a>
+                                @endif
                             </div>
                         </div>
+                    @endif
+
+                    @if(!empty($configuracoes->whatsapp))
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fab fa-whatsapp text-green-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">WhatsApp</p>
+                                <a href="{{ getNumZap($configuracoes->whatsapp, 'Atendimento ' . $configuracoes->app_name) }}"
+                                   target="_blank" class="text-green-600 font-semibold hover:text-green-700 transition-colors">
+                                    {{ $configuracoes->whatsapp }}
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if(!empty($configuracoes->email))
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-navy-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-envelope text-navy-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">E-mail</p>
+                                <a href="mailto:{{ $configuracoes->email }}" class="text-navy-800 font-semibold hover:text-gold-600 transition-colors break-all">
+                                    {{ $configuracoes->email }}
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if(!empty($configuracoes->street))
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-navy-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-map-marker-alt text-navy-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Endereço</p>
+                                <p class="text-navy-800 text-sm leading-relaxed">
+                                    {{ $configuracoes->street }}{{ !empty($configuracoes->number) ? ', ' . $configuracoes->number : '' }}{{ !empty($configuracoes->neighborhood) ? ' - ' . $configuracoes->neighborhood : '' }}
+                                </p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Client Portal --}}
+                <div class="mt-10 p-6 bg-navy-50 rounded-2xl border border-navy-100">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 bg-navy-700 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-user-lock text-white text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-heading font-bold text-navy-800">Área do Cliente</h4>
+                        </div>
                     </div>
+                    <p class="text-gray-500 text-sm mb-4">
+                        Acesse sua área para acompanhar seus processos, enviar documentos e muito mais.
+                    </p>
+                    <a href="/cliente" class="inline-flex items-center gap-2 text-navy-700 font-semibold text-sm hover:text-gold-600 transition-colors">
+                        Acessar <i class="fas fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Form --}}
+            <div class="lg:col-span-3 reveal" style="animation-delay: 0.2s">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 p-8 md:p-10">
+                    <h3 class="font-heading text-2xl font-bold text-navy-800 mb-2">Envie sua Mensagem</h3>
+                    <p class="text-gray-400 text-sm mb-8">Preencha os campos abaixo e entraremos em contato.</p>
+
+                    <livewire:web.contact-form />
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-@endsection
-
-@section('js')
-<script>
-    $(function () {
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        // Seletor, Evento/efeitos, CallBack, Ação
-        $('.j_formsubmit').submit(function (){
-            var form = $(this);
-            var dataString = $(form).serialize();
-
-            $.ajax({
-                url: "{{ route('web.sendEmail') }}",
-                data: dataString,
-                type: 'GET',
-                dataType: 'JSON',
-                beforeSend: function(){
-                    form.find("#js-contact-btn").attr("disabled", true);
-                    form.find('#js-contact-btn').html("Carregando...");                
-                    form.find('.alert').fadeOut(500, function(){
-                        $(this).remove();
-                    });
-                },
-                success: function(resposta){
-                    $('html, body').animate({scrollTop:$('#js-contact-result').offset().top-140}, 'slow');
-                    if(resposta.error){
-                        form.find('#js-contact-result').html('<div class="alert alert-danger error-msg">'+ resposta.error +'</div>');
-                        form.find('.error-msg').fadeIn();                    
-                    }else{
-                        form.find('#js-contact-result').html('<div class="alert alert-success error-msg">'+ resposta.sucess +'</div>');
-                        form.find('.error-msg').fadeIn();                    
-                        form.find('input[class!="noclear"]').val('');
-                        form.find('textarea[class!="noclear"]').val('');
-                        form.find('.form_hide').fadeOut(500);
-                    }
-                },
-                complete: function(resposta){
-                    form.find("#js-contact-btn").attr("disabled", false);
-                    form.find('#js-contact-btn').html("Enviar Agora");                                
-                }
-
-            });
-
-            return false;
-        });
-
-    });
-</script>
 @endsection

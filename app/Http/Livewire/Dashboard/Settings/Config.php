@@ -6,8 +6,8 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Configuracoes;
 use App\Traits\HasAlerts;
+use App\Services\ImageService;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
 
 class Config extends Component
 {
@@ -41,8 +41,6 @@ class Config extends Component
     // Imagens ( TemporaryUploadedFile )
     public $logo = null, $logo_admin = null, $logo_footer = null;
     public $favicon = null, $metaimg = null, $imgheader = null, $watermark = null;
-
-    // Tab ativa
 
     public function mount()
     {
@@ -115,45 +113,45 @@ class Config extends Component
     public function update()
     {
         $this->validate([
-            'app_name'  => 'required|string|max:255',
-            'social_name' => 'nullable|string|max:255',
-            'alias_name' => 'nullable|string|max:255',
-            'slug'       => 'nullable|string|max:255',
-            'init_date'  => 'nullable|integer|min:1900|max:' . date('Y'),
-            'domain'     => 'nullable|string|max:255',
-            'subdomain'  => 'nullable|string|max:255',
-            'template'   => 'nullable|string|max:255',
-            'cnpj'       => 'nullable|string|max:20',
-            'ie'         => 'nullable|string|max:20',
-            'phone'      => 'nullable|string|max:255',
-            'cell_phone' => 'nullable|string|max:255',
-            'whatsapp'   => 'nullable|string|max:255',
-            'telegram'   => 'nullable|string|max:255',
-            'email'      => 'nullable|email|max:255',
+            'app_name'         => 'required|string|max:255',
+            'social_name'      => 'nullable|string|max:255',
+            'alias_name'       => 'nullable|string|max:255',
+            'slug'             => 'nullable|string|max:255',
+            'init_date'        => 'nullable|integer|min:1900|max:' . date('Y'),
+            'domain'           => 'nullable|string|max:255',
+            'subdomain'        => 'nullable|string|max:255',
+            'template'         => 'nullable|string|max:255',
+            'cnpj'             => 'nullable|string|max:20',
+            'ie'               => 'nullable|string|max:20',
+            'phone'            => 'nullable|string|max:255',
+            'cell_phone'       => 'nullable|string|max:255',
+            'whatsapp'         => 'nullable|string|max:255',
+            'telegram'         => 'nullable|string|max:255',
+            'email'            => 'nullable|email|max:255',
             'additional_email' => 'nullable|email|max:255',
-            'zipcode'    => 'nullable|string|max:10',
-            'street'     => 'nullable|string|max:255',
-            'number'     => 'nullable|string|max:20',
-            'complement' => 'nullable|string|max:255',
-            'neighborhood' => 'nullable|string|max:255',
-            'state'      => 'nullable|string|max:2',
-            'city'       => 'nullable|string|max:255',
-            'facebook'   => 'nullable|url|max:255',
-            'twitter'    => 'nullable|url|max:255',
-            'instagram'  => 'nullable|url|max:255',
-            'youtube'    => 'nullable|url|max:255',
-            'linkedin'   => 'nullable|url|max:255',
-            'information' => 'nullable|string',
-            'privacy_policy'  => 'nullable|string',
+            'zipcode'          => 'nullable|string|max:10',
+            'street'           => 'nullable|string|max:255',
+            'number'           => 'nullable|string|max:20',
+            'complement'       => 'nullable|string|max:255',
+            'neighborhood'     => 'nullable|string|max:255',
+            'state'            => 'nullable|string|max:2',
+            'city'             => 'nullable|string|max:255',
+            'facebook'         => 'nullable|url|max:255',
+            'twitter'          => 'nullable|url|max:255',
+            'instagram'        => 'nullable|url|max:255',
+            'youtube'          => 'nullable|url|max:255',
+            'linkedin'         => 'nullable|url|max:255',
+            'information'      => 'nullable|string',
+            'privacy_policy'   => 'nullable|string',
             'terms_conditions' => 'nullable|string',
             'cookies_preference' => 'nullable|string',
-            'metatags'   => 'nullable|string',
-            'analytics_id' => 'nullable|string|max:255',
-            'maps_google' => 'nullable|string',
-            'rss_data'   => 'nullable|string',
-            'sitemap_data' => 'nullable|string',
+            'metatags'         => 'nullable|string',
+            'analytics_id'     => 'nullable|string|max:255',
+            'maps_google'      => 'nullable|string',
+            'rss_data'         => 'nullable|string',
+            'sitemap_data'     => 'nullable|string',
 
-            // Imagens
+            // Imagens — aceita UploadedFile do Livewire
             'logo'       => 'nullable|image|max:2048',
             'logo_admin' => 'nullable|image|max:2048',
             'logo_footer' => 'nullable|image|max:2048',
@@ -161,10 +159,29 @@ class Config extends Component
             'metaimg'    => 'nullable|image|max:4096',
             'imgheader'  => 'nullable|image|max:4096',
             'watermark'  => 'nullable|image|max:4096',
+        ], [
+            'app_name.required' => 'O nome do sistema é obrigatório.',
+            'email.email'       => 'E-mail inválido.',
+            'facebook.url'      => 'URL do Facebook inválida.',
+            'twitter.url'       => 'URL do Twitter inválida.',
+            'instagram.url'     => 'URL do Instagram inválida.',
+            'youtube.url'       => 'URL do YouTube inválida.',
+            'linkedin.url'      => 'URL do LinkedIn inválida.',
+            'logo.image'        => 'O arquivo da logo deve ser uma imagem.',
+            'logo.max'          => 'Logo muito grande. Máximo: 2MB.',
+            'favicon.image'     => 'O arquivo do favicon deve ser uma imagem.',
+            'favicon.max'       => 'Favicon muito grande. Máximo: 1MB.',
+            'metaimg.image'     => 'O arquivo deve ser uma imagem.',
+            'metaimg.max'       => 'Imagem muito grande. Máximo: 4MB.',
+            'imgheader.image'   => 'O arquivo deve ser uma imagem.',
+            'imgheader.max'     => 'Imagem muito grande. Máximo: 4MB.',
+            'watermark.image'   => 'O arquivo deve ser uma imagem.',
+            'watermark.max'     => 'Imagem muito grande. Máximo: 4MB.',
         ]);
 
         $config = Configuracoes::firstOrCreate(['id' => 1]);
 
+        // Salvar campos de texto
         $fields = [
             'app_name', 'social_name', 'alias_name', 'slug', 'init_date',
             'domain', 'subdomain', 'template', 'cnpj', 'ie', 'status',
@@ -183,15 +200,25 @@ class Config extends Component
             }
         }
 
-        // Upload de imagens
+        // Upload de imagens via ImageService
+        $imageService = new ImageService();
         $imageFields = ['logo', 'logo_admin', 'logo_footer', 'favicon', 'metaimg', 'imgheader', 'watermark'];
+
+        $uploadErrors = [];
+
         foreach ($imageFields as $field) {
             if ($this->{$field} && is_object($this->{$field})) {
                 // Remove imagem antiga
-                if ($config->{$field} && Storage::disk()->exists($config->{$field})) {
-                    Storage::disk()->delete($config->{$field});
+                if (!empty($config->{$field}) && Storage::disk('public')->exists($config->{$field})) {
+                    Storage::disk('public')->delete($config->{$field});
                 }
-                $config->{$field} = $this->convertToWebp($this->{$field}, 'config');
+
+                try {
+                    $result = $imageService->convertToWebp($this->{$field}, 'config');
+                    $config->{$field} = $result['path'];
+                } catch (\Throwable $e) {
+                    $uploadErrors[] = "{$field}: " . $e->getMessage();
+                }
             }
         }
 
@@ -200,16 +227,13 @@ class Config extends Component
         $this->loadConfig();
         $this->resetImages();
 
-        $this->toastSuccess('Configurações salvas com sucesso!');
-    }
-
-    protected function convertToWebp($file, string $folder): string
-    {
-        $filename = uniqid() . '.webp';
-        $image = Image::make($file->getRealPath());
-        $image->encode('webp', 85);
-        $image->save(storage_path("app/public/{$folder}/{$filename}"));
-        return "{$folder}/{$filename}";
+        // Feedback via SweetAlert2
+        if (!empty($uploadErrors)) {
+            $errorMsg = "Configurações salvas, mas houve erro no upload:\n" . implode("\n", $uploadErrors);
+            $this->alertError($errorMsg);
+        } else {
+            $this->alertSuccess('Configurações salvas com sucesso!');
+        }
     }
 
     protected function resetImages(): void

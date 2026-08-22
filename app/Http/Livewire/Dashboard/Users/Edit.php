@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\User;
 use App\Traits\HasAlerts;
+use App\Traits\HasValidations;
 use Spatie\Permission\Models\Role;
 use Intervention\Image\Facades\Image;
 

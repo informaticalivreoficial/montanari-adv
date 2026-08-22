@@ -5,10 +5,11 @@ namespace App\Http\Livewire\Dashboard\Users;
 use Livewire\Component;
 use App\Models\User;
 use App\Traits\HasAlerts;
+use App\Traits\HasValidations;
 
 class Users extends Component
 {
-    use HasAlerts;
+    use HasAlerts, HasValidations;
 
     // Propriedades de controle
     public $viewMode = 'all'; // 'all', 'clients', 'team'
