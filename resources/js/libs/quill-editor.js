@@ -1,66 +1,151 @@
 /**
- * Quill Editor Helper
+ * ═══════════════════════════════════════════════════════════
+ * Quill Editor Helper - Montanari Adv
+ * ═══════════════════════════════════════════════════════════
  *
  * Inicializa editores Quill e sincroniza com Livewire.
  *
- * Uso no blade:
- *   <div wire:ignore x-data x-init="initQuill($refs.editor, $wire, 'fieldName')">
- *       <div x-ref="editor"></div>
- *   </div>
- *   <input type="hidden" wire:model="fieldName" />
+ * Disponível globalmente:
+ *   window.initQuill(container, wire, property, options)
+ *   window.destroyQuill(container)
  */
 
 import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 
 const editors = new Map();
 
-const TOOLBAR_OPTIONS = [
-    [{ header: [1, 2, 3, false] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ color: [] }, { background: [] }],
-    [{ list: 'ordered' }, { list: 'bullet' }],
-    [{ align: [] }],
-    ['link', 'blockquote'],
-    ['clean'],
-];
+/**
+ * Toolbars predefinidos
+ */
+const TOOLBARS = {
+    default: [
+        [{ header: [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ color: [] }, { background: [] }],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        [{ align: [] }],
+        ['link', 'blockquote'],
+        ['clean'],
+    ],
+    full: [
+        [{ font: [] }, { size: ['small', false, 'large', 'huge'] }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ color: [] }, { background: [] }],
+        [{ script: 'sub' }, { script: 'super' }],
+        [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+        [{ direction: 'rtl' }],
+        [{ align: [] }],
+        ['link', 'blockquote', 'code-block'],
+        ['clean'],
+    ],
+    minimal: [
+        ['bold', 'italic', 'underline'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link'],
+        ['clean'],
+    ],
+    none: false,
+};
 
 /**
  * Inicializa um editor Quill em um container.
- * @param {HTMLElement} container - Elemento onde o editor será renderizado
- * @param {Object} wire - Instância do componente Livewire ($wire)
- * @param {string} property - Nome da propriedade no Livewire
  */
-window.initQuill = function (container, wire, property) {
-    if (!container || editors.has(container)) return;
+window.initQuill = function (container, wire, property, options = {}) {
+    if (!container) return null;
 
-    const initialContent = wire[property] || '';
+    // Evita dupla inicialização
+    if (editors.has(container)) {
+        return editors.get(container);
+    }
 
-    const quill = new Quill(container, {
+    const {
+        toolbar = 'default',
+        placeholder = 'Digite o conteúdo aqui...',
+        readOnly = false,
+    } = options;
+
+    const toolbarConfig = TOOLBARS[toolbar] !== undefined ? TOOLBARS[toolbar] : TOOLBARS.default;
+
+    const quillOptions = {
         theme: 'snow',
-        modules: {
-            toolbar: TOOLBAR_OPTIONS,
-        },
-        placeholder: 'Digite o conteúdo aqui...',
-    });
+        placeholder,
+        readOnly,
+        modules: {},
+    };
+
+    if (toolbarConfig !== false) {
+        quillOptions.modules.toolbar = toolbarConfig;
+    }
+
+    if (toolbarConfig === false) {
+        const wrapper = container.closest('.quill-editor-wrapper');
+        if (wrapper) wrapper.classList.add('toolbar-none');
+    }
+
+    const quill = new Quill(container, quillOptions);
 
     // Define conteúdo inicial
+    const initialContent = wire[property] || '';
     if (initialContent) {
         quill.root.innerHTML = initialContent;
     }
 
-    // Sincroniza com Livewire a cada mudança (com debounce)
+    // Sincroniza com Livewire (debounce 300ms)
     let timeout;
     quill.on('text-change', () => {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
-            wire[property] = quill.root.innerHTML;
+            try {
+                wire[property] = quill.root.innerHTML;
+            } catch (e) {}
         }, 300);
     });
 
     editors.set(container, quill);
 
+    // Fix: remove aria-hidden from picker dropdowns to prevent a11y errors
+    fixQuillPickers(container.closest('.quill-editor-wrapper') || container);
+
     return quill;
 };
+
+/**
+ * Fix Quill picker aria-hidden accessibility bug.
+ * Quill sets aria-hidden on .ql-picker-options but focus moves inside them.
+ */
+function fixQuillPickers(wrapper) {
+    if (!wrapper || wrapper._quillAriaFixed) return;
+    wrapper._quillAriaFixed = true;
+
+    // Listen for clicks on picker labels to open dropdowns
+    wrapper.addEventListener('click', (e) => {
+        const label = e.target.closest('.ql-picker-label');
+        if (!label) return;
+
+        // After Quill opens the dropdown, remove aria-hidden
+        requestAnimationFrame(() => {
+            const options = label.parentElement?.querySelector('.ql-picker-options');
+            if (options) {
+                options.removeAttribute('aria-hidden');
+            }
+        });
+    });
+
+    // Also handle keyboard navigation
+    wrapper.addEventListener('mousedown', (e) => {
+        const label = e.target.closest('.ql-picker-label');
+        if (!label) return;
+
+        requestAnimationFrame(() => {
+            const options = label.parentElement?.querySelector('.ql-picker-options');
+            if (options) {
+                options.removeAttribute('aria-hidden');
+            }
+        });
+    });
+}
 
 /**
  * Destroi um editor Quill específico.
@@ -81,13 +166,12 @@ export function initQuillEditors(el) {
     containers.forEach((container) => {
         if (!editors.has(container)) {
             const property = container.dataset.quillEditor;
-            // O componente pai do Livewire está disponível via $wire no Alpine
-            // Mas aqui precisamos encontrar o wire component
+            const toolbar = container.dataset.quillToolbar || 'default';
             const wireEl = container.closest('[wire\\:id]');
             if (wireEl && window.Livewire) {
                 const wireComponent = window.Livewire.find(wireEl.getAttribute('wire:id'));
                 if (wireComponent) {
-                    initQuill(container, wireComponent, property);
+                    initQuill(container, wireComponent, property, { toolbar });
                 }
             }
         }

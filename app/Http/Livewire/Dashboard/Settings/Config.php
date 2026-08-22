@@ -86,6 +86,32 @@ class Config extends Component
         $this->sitemap = (bool) $value;
     }
 
+    /**
+     * Auto-complete de endereço via CEP
+     */
+    public function updatedZipcode($value)
+    {
+        $cep = preg_replace('/\D/', '', $value);
+        if (strlen($cep) === 8) {
+            $this->autoCompleteAddress($cep);
+        }
+    }
+
+    protected function autoCompleteAddress($cep)
+    {
+        $response = @file_get_contents("https://viacep.com.br/ws/{$cep}/json/");
+        if ($response) {
+            $data = json_decode($response, true);
+            if (!isset($data['erro'])) {
+                $this->street = $data['logradouro'] ?? '';
+                $this->neighborhood = $data['bairro'] ?? '';
+                $this->city = $data['localidade'] ?? '';
+                $this->state = $data['uf'] ?? '';
+                $this->complement = $data['complemento'] ?? '';
+            }
+        }
+    }
+
     public function update()
     {
         $this->validate([

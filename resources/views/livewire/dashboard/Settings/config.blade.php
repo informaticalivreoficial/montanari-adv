@@ -187,45 +187,7 @@
                 <x-input name="complement" label="Complemento" wire:model="complement" placeholder="Sala 101, Bloco A" />
                 <x-input name="neighborhood" label="Bairro" wire:model="neighborhood" placeholder="Centro" />
                 <x-input name="city" label="Cidade" wire:model="city" placeholder="São Paulo" />
-
-                <div class="space-y-1">
-                    <label class="block text-sm font-medium text-gray-700">Estado</label>
-                    <select
-                        wire:model="state"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition
-                               focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                    >
-                        <option value="">Selecione...</option>
-                        <option value="AC">Acre</option>
-                        <option value="AL">Alagoas</option>
-                        <option value="AP">Amapá</option>
-                        <option value="AM">Amazonas</option>
-                        <option value="BA">Bahia</option>
-                        <option value="CE">Ceará</option>
-                        <option value="DF">Distrito Federal</option>
-                        <option value="ES">Espírito Santo</option>
-                        <option value="GO">Goiás</option>
-                        <option value="MA">Maranhão</option>
-                        <option value="MT">Mato Grosso</option>
-                        <option value="MS">Mato Grosso do Sul</option>
-                        <option value="MG">Minas Gerais</option>
-                        <option value="PA">Pará</option>
-                        <option value="PB">Paraíba</option>
-                        <option value="PR">Paraná</option>
-                        <option value="PE">Pernambuco</option>
-                        <option value="PI">Piauí</option>
-                        <option value="RJ">Rio de Janeiro</option>
-                        <option value="RN">Rio Grande do Norte</option>
-                        <option value="RS">Rio Grande do Sul</option>
-                        <option value="RO">Rondônia</option>
-                        <option value="RR">Roraima</option>
-                        <option value="SC">Santa Catarina</option>
-                        <option value="SP">São Paulo</option>
-                        <option value="SE">Sergipe</option>
-                        <option value="TO">Tocantins</option>
-                    </select>
-                    @error('state') <p class="flex items-center gap-1 text-xs text-red-500"><i class="fa-solid fa-circle-exclamation"></i> {{ $message }}</p> @enderror
-                </div>
+                <x-input name="state" label="UF" wire:model="state" placeholder="SP" class="uppercase" />
             </div>
         </div>
     </div>
@@ -493,7 +455,7 @@
 
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                     <x-input name="analytics_id" label="Google Analytics ID" wire:model="analytics_id" placeholder="G-XXXXXXXXXX" />
-                    <x-forms.tags name="metatags" label="Metatags (palavras-chave)" wire:model="metatags" placeholder="Digite uma tag e pressione Enter..." />
+                    <x-tags name="metatags" label="Metatags (palavras-chave)" wire:model="metatags" placeholder="Digite uma tag e pressione Enter..." />
                 </div>
 
                 <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -526,32 +488,7 @@
                     </div>
                 </div>
 
-                <div class="mt-5 grid grid-cols-1 gap-5">
-                    @if($rss)
-                        <div class="space-y-1">
-                            <label class="block text-sm font-medium text-gray-700">Dados do RSS</label>
-                            <textarea
-                                wire:model="rss_data"
-                                rows="3"
-                                placeholder="Conteúdo adicional do RSS..."
-                                class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition
-                                       focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                            ></textarea>
-                        </div>
-                    @endif
-                    @if($sitemap)
-                        <div class="space-y-1">
-                            <label class="block text-sm font-medium text-gray-700">Dados do Sitemap</label>
-                            <textarea
-                                wire:model="sitemap_data"
-                                rows="3"
-                                placeholder="Configurações adicionais do sitemap..."
-                                class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition
-                                       focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                            ></textarea>
-                        </div>
-                    @endif
-                </div>
+               
             </div>
 
             {{-- Políticas Legais --}}
@@ -567,37 +504,13 @@
                 </div>
 
                 <div class="space-y-6">
-                    <div>
-                        <div class="mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-shield-halved text-xs text-gray-400"></i>
-                            <span class="text-sm font-medium text-gray-700">Política de Privacidade</span>
-                        </div>
-                        <x-forms.quill name="privacy_policy" wire:model="privacy_policy" placeholder="Texto da política de privacidade..." />
-                    </div>
+                    <x-quill name="privacy_policy" label="Política de Privacidade" wire:model="privacy_policy" placeholder="Texto da política de privacidade..." />
 
-                    <div>
-                        <div class="mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-file-contract text-xs text-gray-400"></i>
-                            <span class="text-sm font-medium text-gray-700">Termos e Condições</span>
-                        </div>
-                        <x-forms.quill name="terms_conditions" wire:model="terms_conditions" placeholder="Texto dos termos e condições de uso..." />
-                    </div>
+                    <x-quill name="terms_conditions" label="Termos e Condições" wire:model="terms_conditions" placeholder="Texto dos termos e condições de uso..." />
 
-                    <div>
-                        <div class="mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-cookie-bite text-xs text-gray-400"></i>
-                            <span class="text-sm font-medium text-gray-700">Preferência de Cookies</span>
-                        </div>
-                        <x-forms.quill name="cookies_preference" wire:model="cookies_preference" placeholder="Política de uso de cookies..." />
-                    </div>
+                    <x-quill name="cookies_preference" label="Preferência de Cookies" wire:model="cookies_preference" placeholder="Política de uso de cookies..." />
 
-                    <div>
-                        <div class="mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-circle-info text-xs text-gray-400"></i>
-                            <span class="text-sm font-medium text-gray-700">Informações Adicionais</span>
-                        </div>
-                        <x-forms.quill name="information" wire:model="information" placeholder="Informações gerais sobre o escritório..." />
-                    </div>
+                    <x-quill name="information" label="Informações Adicionais" wire:model="information" placeholder="Informações gerais sobre o escritório..." />
                 </div>
             </div>
         </div>
