@@ -17,6 +17,7 @@ class Permissions extends Component
     public $editRoleMode = false;
     public $editPermissionMode = false;
     public $roleId;
+    public $permissionId;
     public $successMessage = '';
     public $errorMessage = '';
 
@@ -39,6 +40,14 @@ class Permissions extends Component
         $this->toastSuccess('Função criada com sucesso!');
     }
 
+    public function editRole($id)
+    {
+        $role = Role::findOrFail($id);
+        $this->roleId = $id;
+        $this->roleName = $role->name;
+        $this->editRoleMode = true;
+    }
+
     public function updateRole()
     {
         $this->validate([
@@ -53,6 +62,13 @@ class Permissions extends Component
         $this->roleName = '';
         $this->roles = Role::all();
         $this->toastSuccess('Função atualizada com sucesso!');
+    }
+
+    public function cancelEditRole()
+    {
+        $this->editRoleMode = false;
+        $this->roleName = '';
+        $this->roleId = null;
     }
 
     public function deleteRole($id)
@@ -76,9 +92,43 @@ class Permissions extends Component
         $this->toastSuccess('Permissão criada com sucesso!');
     }
 
+    public function editPermission($id)
+    {
+        $permission = Permission::findOrFail($id);
+        $this->permissionId = $id;
+        $this->permissionName = $permission->name;
+        $this->editPermissionMode = true;
+    }
+
     public function updatePermission()
     {
-        $this->toastSuccess('Permissão atualizada!');
+        $this->validate([
+            'permissionName' => 'sometimes|required|string|max:255',
+        ]);
+
+        $permission = Permission::findOrFail($this->permissionId);
+        $permission->name = $this->permissionName;
+        $permission->save();
+
+        $this->editPermissionMode = false;
+        $this->permissionName = '';
+        $this->permissions = Permission::all();
+        $this->toastSuccess('Permissão atualizada com sucesso!');
+    }
+
+    public function cancelEditPermission()
+    {
+        $this->editPermissionMode = false;
+        $this->permissionName = '';
+        $this->permissionId = null;
+    }
+
+    public function deletePermission($id)
+    {
+        Permission::findOrFail($id)->delete();
+
+        $this->permissions = Permission::all();
+        $this->toastWarning('Permissão excluída!');
     }
 
     public function render()

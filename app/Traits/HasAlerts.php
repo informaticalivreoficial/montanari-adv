@@ -26,44 +26,46 @@ trait HasAlerts
     /**
      * Toast de sucesso
      */
-    public function toastSuccess(string $message, int $duration = 3000): void
+    public function toastSuccess(string $message): void
     {
-        $this->dispatch('toast:success', $message, $duration);
+        session()->flash('toast_success', $message);
     }
 
     /**
      * Toast de erro
      */
-    public function toastError(string $message, int $duration = 4000): void
+    public function toastError(string $message): void
     {
-        $this->dispatch('toast:error', $message, $duration);
+        session()->flash('toast_error', $message);
     }
 
     /**
      * Toast de aviso
      */
-    public function toastWarning(string $message, int $duration = 3000): void
+    public function toastWarning(string $message): void
     {
-        $this->dispatch('toast:warning', $message, $duration);
+        session()->flash('toast_warning', $message);
     }
 
     /**
      * Toast informativo
      */
-    public function toastInfo(string $message, int $duration = 3000): void
+    public function toastInfo(string $message): void
     {
-        $this->dispatch('toast:info', $message, $duration);
+        session()->flash('toast_success', $message);
     }
 
     /**
      * Toast customizado
      */
-    public function toast(string $message, string $type = 'info', array $options = []): void
+    public function toast(string $message, string $type = 'success'): void
     {
-        $this->dispatch('toast:show', array_merge([
-            'message' => $message,
-            'type' => $type,
-        ], $options));
+        $key = match($type) {
+            'error' => 'toast_error',
+            'warning' => 'toast_warning',
+            default => 'toast_success',
+        };
+        session()->flash($key, $message);
     }
 
     /**
@@ -71,9 +73,7 @@ trait HasAlerts
      */
     public function alertSuccess(string $title, ?string $text = null): void
     {
-        $payload = ['icon' => 'success', 'title' => $title];
-        if ($text) $payload['text'] = $text;
-        $this->dispatch('swal:fire', $payload);
+        $this->toastSuccess($title);
     }
 
     /**
@@ -81,9 +81,7 @@ trait HasAlerts
      */
     public function alertError(string $title, ?string $text = null): void
     {
-        $payload = ['icon' => 'error', 'title' => $title];
-        if ($text) $payload['text'] = $text;
-        $this->dispatch('swal:fire', $payload);
+        $this->toastError($title);
     }
 
     /**
@@ -91,9 +89,7 @@ trait HasAlerts
      */
     public function alertWarning(string $title, ?string $text = null): void
     {
-        $payload = ['icon' => 'warning', 'title' => $title];
-        if ($text) $payload['text'] = $text;
-        $this->dispatch('swal:fire', $payload);
+        $this->toastWarning($title);
     }
 
     /**
@@ -101,9 +97,7 @@ trait HasAlerts
      */
     public function alertInfo(string $title, ?string $text = null): void
     {
-        $payload = ['icon' => 'info', 'title' => $title];
-        if ($text) $payload['text'] = $text;
-        $this->dispatch('swal:fire', $payload);
+        $this->toastInfo($title);
     }
 
     /**
@@ -124,7 +118,7 @@ trait HasAlerts
         string $confirmBtn = 'Sim, confirmar',
         string $cancelBtn = 'Cancelar'
     ): void {
-        $this->dispatch('swal:confirm', [
+        session()->flash('swal_confirm', [
             'title' => $title,
             'text' => $text,
             'method' => $method,
@@ -139,6 +133,12 @@ trait HasAlerts
      */
     public function swal(array $options): void
     {
-        $this->dispatch('swal:fire', $options);
+        $type = $options['icon'] ?? 'success';
+        $title = $options['title'] ?? '';
+        match($type) {
+            'error' => $this->toastError($title),
+            'warning' => $this->toastWarning($title),
+            default => $this->toastSuccess($title),
+        };
     }
 }

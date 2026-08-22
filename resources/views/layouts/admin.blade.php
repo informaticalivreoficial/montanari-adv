@@ -20,9 +20,27 @@
                     <a href="{{ route('dashboard') }}" class="flex items-center px-3 py-2 rounded text-gray-700 hover:bg-gray-100 {{ request()->routeIs('dashboard') ? 'bg-gray-100 font-semibold' : '' }}">
                         <i class="fa-solid fa-gauge mr-2"></i> Dashboard
                     </a>
-                    <a href="{{ route('dashboard.users') }}" class="flex items-center px-3 py-2 rounded text-gray-700 hover:bg-gray-100 {{ request()->routeIs('dashboard.users') ? 'bg-gray-100 font-semibold' : '' }}">
+
+                    <div class="pt-3 pb-1 px-3">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Conta</p>
+                    </div>
+
+                    <a href="{{ route('dashboard.profile') }}" class="flex items-center px-3 py-2 rounded text-gray-700 hover:bg-gray-100 {{ request()->routeIs('dashboard.profile') ? 'bg-gray-100 font-semibold' : '' }}">
+                        <i class="fa-solid fa-user-circle mr-2"></i> Meu Perfil
+                    </a>
+
+                    <div class="pt-3 pb-1 px-3">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Gestão</p>
+                    </div>
+
+                    <a href="{{ route('dashboard.users') }}" class="flex items-center px-3 py-2 rounded text-gray-700 hover:bg-gray-100 {{ request()->routeIs('dashboard.users*') ? 'bg-gray-100 font-semibold' : '' }}">
                         <i class="fa-solid fa-users mr-2"></i> Usuários
                     </a>
+
+                    <div class="pt-3 pb-1 px-3">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Sistema</p>
+                    </div>
+
                     <a href="{{ route('dashboard.config') }}" class="flex items-center px-3 py-2 rounded text-gray-700 hover:bg-gray-100 {{ request()->routeIs('dashboard.config') ? 'bg-gray-100 font-semibold' : '' }}">
                         <i class="fa-solid fa-gear mr-2"></i> Configurações
                     </a>
@@ -51,5 +69,34 @@
                 </main>
             </div>
         </div>
+
+        {{-- Toast via Session Flash --}}
+        @if(session('toast_success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (typeof MontanariToast !== 'undefined') {
+                        MontanariToast.success('{{ session('toast_success') }}');
+                    }
+                });
+            </script>
+        @endif
+        @if(session('toast_error'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (typeof MontanariToast !== 'undefined') {
+                        MontanariToast.error('{{ session('toast_error') }}');
+                    }
+                });
+            </script>
+        @endif
+        @if(session('toast_warning'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (typeof MontanariToast !== 'undefined') {
+                        MontanariToast.warning('{{ session('toast_warning') }}');
+                    }
+                });
+            </script>
+        @endif
     </body>
 </html>

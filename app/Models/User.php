@@ -15,7 +15,8 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
-        'name', 'password', 'remember_token',
+        'name', 'email', 'password', 'remember_token',
+        'position', 'department', 'biography',
         'gender',
         'cpf',
         'rg',
@@ -23,13 +24,13 @@ class User extends Authenticatable
         'birthday',
         'naturalness',
         'civil_status',
-        'avatar',  
-        //Address      
+        'avatar',
+        //Address
         'zipcode', 'street', 'number', 'complement', 'neighborhood', 'state', 'city',
         //Contact
         'phone', 'cell_phone', 'whatsapp', 'telegram', 'email', 'additional_email',
         //Social
-        'facebook', 'twitter', 'instagram', 'linkedin',        
+        'facebook', 'twitter', 'instagram', 'linkedin',
         'status',
         'information'
     ];    
@@ -91,6 +92,35 @@ class User extends Authenticatable
     public function scopeUnavailable($query)
     {
         return $query->where('status', 0);
+    }
+
+    /**
+     * Clientes: usuários com role "client"
+    */
+    public function scopeClients($query)
+    {
+        return $query->role('client');
+    }
+
+    /**
+     * Time: usuários com roles super-admin, admin ou manager
+    */
+    public function scopeTeam($query)
+    {
+        return $query->role(['super-admin', 'admin', 'manager']);
+    }
+
+    /**
+     * Verifica o tipo do usuário
+    */
+    public function isClient(): bool
+    {
+        return $this->hasRole('client');
+    }
+
+    public function isTeam(): bool
+    {
+        return $this->hasAnyRole(['super-admin', 'admin', 'manager']);
     }
 
     /**

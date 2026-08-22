@@ -7,9 +7,13 @@ use App\Http\Livewire\Auth\Login;
 use App\Http\Livewire\Auth\ForgotPassword;
 use App\Http\Livewire\Auth\ResetPassword;
 use App\Http\Livewire\Dashboard;
-use App\Http\Livewire\Dashboard\Users;
-use App\Http\Livewire\Dashboard\Config;
+use App\Http\Livewire\Dashboard\Users\Users;
+use App\Http\Livewire\Dashboard\Users\Create as UserCreate;
+use App\Http\Livewire\Dashboard\Users\Edit as UserEdit;
+use App\Http\Livewire\Dashboard\Settings\Config;
 use App\Http\Livewire\Dashboard\Permissions;
+use App\Http\Livewire\Dashboard\Profile;
+use App\Http\Livewire\Auth\Register;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -46,6 +50,7 @@ Route::group(['namespace' => 'Web', 'as' => 'web.'], function () {
 */
 Route::middleware('guest')->group(function () {
     Route::livewire('/admin', Login::class)->name('login');
+    Route::livewire('/cadastro', Register::class)->name('register');
     Route::livewire('/forgot-password', ForgotPassword::class)->name('password.request');
     Route::livewire('/reset-password/{token}', ResetPassword::class)->name('password.reset');
 });
@@ -59,7 +64,10 @@ Route::middleware('auth')->group(function () {
     })->name('logout');
 
     Route::livewire('/dashboard', Dashboard::class)->name('dashboard');
+    Route::livewire('/dashboard/perfil', Profile::class)->name('dashboard.profile');
     Route::livewire('/dashboard/usuarios', Users::class)->name('dashboard.users');
+    Route::livewire('/dashboard/usuarios/criar', UserCreate::class)->name('dashboard.users.create');
+    Route::livewire('/dashboard/usuarios/{id}/editar', UserEdit::class)->name('dashboard.users.edit');
     Route::livewire('/dashboard/config', Config::class)->name('dashboard.config');
     Route::livewire('/dashboard/permissions', Permissions::class)->name('dashboard.permissions');
 });

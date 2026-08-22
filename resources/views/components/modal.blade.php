@@ -6,19 +6,6 @@
     'closeable' => true,
 ])
 
-{{--
-  Componente: x-modal
-  Uso:
-    <x-modal name="create-user" title="Novo Usuário" size="lg">
-        <form wire:submit="save">
-            ...
-        </form>
-    </x-modal>
-
-    Para abrir: $this->dispatch('open-modal', name: 'create-user');
-    Para fechar: $this->dispatch('close-modal', name: 'create-user');
---}}
-
 @php
     $sizeClasses = match($size) {
         'sm' => 'max-w-md',
@@ -31,15 +18,16 @@
 
 <div
     x-data="{ open: false }"
-    x-on:open-modal.window="if($event.detail.name === '{{ $name }}') open = true"
-    x-on:close-modal.window="if($event.detail.name === '{{ $name }}') open = false"
-    x-on:keydown.escape.window="open = false"
+    x-on:open-modal.window="if($event.detail.name === '{{ $name }}') { open = true; document.body.classList.add('overflow-hidden'); }"
+    x-on:close-modal.window="if($event.detail.name === '{{ $name }}') { open = false; document.body.classList.remove('overflow-hidden'); }"
+    x-on:keydown.escape.window="if(open) { open = false; document.body.classList.remove('overflow-hidden'); }"
     x-show="open"
     x-cloak
     class="fixed inset-0 z-50 overflow-y-auto"
     aria-labelledby="modal-title-{{ $name }}"
     role="dialog"
     aria-modal="true"
+    x-init="$watch('open', value => { if(value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })"
 >
     <!-- Backdrop -->
     <div
@@ -51,7 +39,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         class="fixed inset-0 bg-gray-500/75 backdrop-blur-sm"
-        x-on:click="{{ $closeable ? 'open = false' : '' }}"
+        x-on:click="{{ $closeable ? 'open = false; document.body.classList.remove(\'overflow-hidden\');' : '' }}"
     ></div>
 
     <!-- Modal -->
@@ -80,7 +68,7 @@
                     @if($closeable)
                         <button
                             type="button"
-                            x-on:click="open = false"
+                            x-on:click="open = false; document.body.classList.remove('overflow-hidden');"
                             class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-500 transition"
                         >
                             <i class="fa-solid fa-times"></i>

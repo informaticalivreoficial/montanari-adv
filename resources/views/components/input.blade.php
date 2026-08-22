@@ -2,8 +2,7 @@
     'name',
     'label' => null,
     'value' => '',
-    'mask' => null,
-    'maskType' => null,
+    'type' => 'text',
     'placeholder' => '',
     'class' => '',
     'required' => false,
@@ -11,11 +10,10 @@
 ])
 
 {{--
-  Componente: x-input-mask
+  Componente: x-input
   Uso:
-    <x-input-mask name="cpf" label="CPF" mask-type="cpf" wire:model="cpf" />
-    <x-input-mask name="phone" label="Telefone" mask-type="phone" wire:model="phone" />
-    <x-input-mask name="cep" label="CEP" mask-type="cep" wire:model.live="zipcode" />
+    <x-input name="nome" label="Nome" wire:model="nome" />
+    <x-input name="email" label="E-mail" type="email" wire:model="email" />
 --}}
 
 @error($name)
@@ -35,19 +33,13 @@
     @endif
 
     <input
-        type="text"
+        type="{{ $type }}"
         id="{{ $name }}"
         name="{{ $name }}"
         value="{{ old($name, $value) }}"
         placeholder="{{ $placeholder }}"
         {{ $required ? 'required' : '' }}
         {{ $disabled ? 'disabled' : '' }}
-        @if($maskType)
-            data-mask-type="{{ $maskType }}"
-            data-imask="1"
-        @elseif($mask)
-            data-imask="{{ $mask }}"
-        @endif
         class="w-full rounded-lg border bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition
                focus:outline-none focus:ring-2
                disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500

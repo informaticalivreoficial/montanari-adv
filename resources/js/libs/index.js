@@ -13,6 +13,7 @@ import { initFlatpickr } from './flatpickr';
 import { initIMask, destroyIMask } from './imask-helper';
 import MontanariAlert, { initSweetAlert, MontanariConfirm } from './sweetalert';
 import MontanariToast, { initToast } from './toast';
+import { initQuillEditors, destroyQuillEditors } from './quill-editor';
 
 // Expor globalmente
 window.MontanariAlert = MontanariAlert;
@@ -42,11 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
         livewire.hook('morph.updated', ({ el }) => {
             initFlatpickr(el);
             initIMask(el);
+            initQuillEditors(el);
         });
 
-        // Limpa IMask antes de destruir componente
+        // Limpa antes de destruir componente
         livewire.hook('morph.removing', ({ el }) => {
             destroyIMask(el);
+            destroyQuillEditors(el);
         });
     });
 });
