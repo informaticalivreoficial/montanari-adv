@@ -43,6 +43,17 @@ class ProcessFactory extends Factory
             'client_interest' => $this->faker->optional(0.7)->randomFloat(2, 5, 30),
             'contract_value' => $this->faker->optional(0.8)->numerify('R$ #.###.##,#') . ',' . $this->faker->randomDigit(),
             'internal_notes' => $this->faker->optional(0.6)->sentence(8),
+
+            // Sincronização
+            'source' => $this->faker->randomElement(['manual', 'manual', 'tribunal', 'api']),
+            'source_provider' => null,
+            'source_id' => null,
+            'last_synced_at' => null,
+            'next_sync_at' => null,
+            'sync_error' => null,
+            'sync_attempts' => 0,
+            'source_data' => null,
+            'metadata' => null,
         ];
     }
 

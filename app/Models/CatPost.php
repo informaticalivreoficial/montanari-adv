@@ -12,15 +12,15 @@ class CatPost extends Model
 
     protected $table = 'cat_post';
 
-    // $fillable usa nomes REAIS do banco (português)
+    // $fillable usa nomes em inglês (padrão do banco)
     protected $fillable = [
         'id_pai',
-        'titulo',
+        'title',
         'content',
         'slug',
         'tags',
         'views',
-        'tipo',
+        'type',
         'status',
     ];
 
@@ -62,46 +62,12 @@ class CatPost extends Model
 
     public function posts()
     {
-        return $this->hasMany(Post::class, 'categoria');
+        return $this->hasMany(Post::class, 'category');
     }
 
     public function countposts()
     {
-        return $this->hasMany(Post::class, 'categoria')->count();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Accessors (inglês para compatibilidade com admin/Livewire)
-    |--------------------------------------------------------------------------
-    */
-    public function getTitleAttribute(): string
-    {
-        return $this->attributes['titulo'] ?? '';
-    }
-
-    public function getTypeAttribute(): string
-    {
-        return $this->attributes['tipo'] ?? '';
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mutator: mapeia nomes em inglês para colunas reais do banco (português)
-    |--------------------------------------------------------------------------
-    */
-    public function setAttribute($key, $value)
-    {
-        $map = [
-            'title' => 'titulo',
-            'type'  => 'tipo',
-        ];
-
-        if (isset($map[$key])) {
-            $key = $map[$key];
-        }
-
-        parent::setAttribute($key, $value);
+        return $this->hasMany(Post::class, 'category')->count();
     }
 
     /*
@@ -111,8 +77,8 @@ class CatPost extends Model
     */
     public function setSlug()
     {
-        if (!empty($this->titulo)) {
-            $baseSlug = Str::slug($this->titulo);
+        if (!empty($this->title)) {
+            $baseSlug = Str::slug($this->title);
             $slug = $baseSlug;
             $count = 1;
 

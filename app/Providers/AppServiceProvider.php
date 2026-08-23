@@ -39,7 +39,12 @@ class AppServiceProvider extends ServiceProvider
         }
         
         Blade::aliasComponent('admin.components.message', 'message');
-        
+
+        // Registra o namespace `mail` dos componentes markdown do Laravel.
+        // Sem isso, qualquer e-mail que use mail::layout / mail::header / mail::footer
+        // falha com "No hint path defined for [mail]".
+        view()->addNamespace('mail', base_path('vendor/laravel/framework/src/Illuminate/Mail/resources/views/html'));
+
         Paginator::useBootstrap();
     }
 }

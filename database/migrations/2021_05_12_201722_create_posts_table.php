@@ -19,13 +19,13 @@ class CreatePostsTable extends Migration
             $table->string('type');
             $table->string('title');
             $table->longText('content')->nullable();
-            $table->integer('readingTime')->nullable();
+            $table->string('readingTime')->nullable();
             $table->string('metaDescription')->nullable();
             $table->string('excerpt')->nullable();
             $table->string('slug')->nullable();
             $table->text('tags')->nullable();
             $table->bigInteger('views')->default(0);
-            $table->foreignId('category')->constrained('cat_post')->cascadeOnDelete();
+            $table->foreignId('category')->nullable()->constrained('cat_post')->cascadeOnDelete();
             $table->integer('cat_pai')->nullable();
             $table->integer('comments')->nullable();
             $table->integer('status')->nullable();

@@ -15,11 +15,11 @@ class Post extends Model
 
     protected $table = 'posts';
 
-    // $fillable usa nomes REAIS do banco (português)
+    // $fillable usa nomes em inglês (padrão do banco)
     protected $fillable = [
         'autor',
-        'tipo',
-        'titulo',
+        'type',
+        'title',
         'content',
         'slug',
         'tags',
@@ -27,7 +27,7 @@ class Post extends Model
         'readingTime',
         'metaDescription',
         'excerpt',
-        'categoria',
+        'category',
         'comments',
         'highlight',
         'cat_pai',
@@ -86,17 +86,17 @@ class Post extends Model
 
     public function category()
     {
-        return $this->hasOne(CatPost::class, 'id', 'categoria');
+        return $this->hasOne(CatPost::class, 'id', 'category');
     }
 
     public function categoriaObject()
     {
-        return $this->hasOne(CatPost::class, 'id', 'categoria');
+        return $this->hasOne(CatPost::class, 'id', 'category');
     }
 
     public function categoryObject()
     {
-        return $this->hasOne(CatPost::class, 'id', 'categoria');
+        return $this->hasOne(CatPost::class, 'id', 'category');
     }
 
     public function userObject()
@@ -106,7 +106,7 @@ class Post extends Model
 
     public function countposts()
     {
-        return $this->hasMany(Post::class, 'categoria')->count();
+        return $this->hasMany(Post::class, 'category')->count();
     }
 
     public function images()
@@ -117,26 +117,6 @@ class Post extends Model
     public function countimages()
     {
         return $this->hasMany(PostGb::class, 'post', 'id')->count();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Accessors (inglês para compatibilidade com admin/Livewire)
-    |--------------------------------------------------------------------------
-    */
-    public function getTitleAttribute(): string
-    {
-        return $this->attributes['titulo'] ?? '';
-    }
-
-    public function getTypeAttribute(): string
-    {
-        return $this->attributes['tipo'] ?? '';
-    }
-
-    public function getCategoryAttribute()
-    {
-        return $this->attributes['categoria'] ?? null;
     }
 
     /*
@@ -185,26 +165,6 @@ class Post extends Model
         return Storage::url($cover['path']);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Mutator: mapeia nomes em inglês para colunas reais do banco (português)
-    |--------------------------------------------------------------------------
-    */
-    public function setAttribute($key, $value)
-    {
-        $map = [
-            'title'    => 'titulo',
-            'type'     => 'tipo',
-            'category' => 'categoria',
-        ];
-
-        if (isset($map[$key])) {
-            $key = $map[$key];
-        }
-
-        parent::setAttribute($key, $value);
-    }
-
     public function setStatusAttribute($value)
     {
         $this->attributes['status'] = ($value == '1' ? 1 : 0);
@@ -212,13 +172,29 @@ class Post extends Model
 
     public function setPublishAtAttribute($value)
     {
-        $this->attributes['publish_at'] = (!empty($value) ? $this->convertStringToDate($value) : null);
+        if (empty($value)) {
+            $this->attributes['publish_at'] = null;
+            return;
+        }
+
+        if ($value instanceof \DateTimeInterface) {
+            $this->attributes['publish_at'] = $value->format('Y-m-d');
+            return;
+        }
+
+        if (is_string($value) && str_contains($value, '/')) {
+            [$day, $month, $year] = explode('/', $value);
+            $this->attributes['publish_at'] = (new \DateTime("{$year}-{$month}-{$day}"))->format('Y-m-d');
+            return;
+        }
+
+        $this->attributes['publish_at'] = $value;
     }
 
     public function setSlug()
     {
-        if (!empty($this->titulo)) {
-            $baseSlug = Str::slug($this->titulo);
+        if (!empty($this->title)) {
+            $baseSlug = Str::slug($this->title);
             $slug = $baseSlug;
             $count = 1;
 

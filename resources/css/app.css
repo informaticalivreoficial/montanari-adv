@@ -33,3 +33,8 @@
 .toastify {
     font-family: 'Inter', system-ui, sans-serif !important;
 }
+
+/* Alpine.js — evita flash de elementos antes da inicialização */
+[x-cloak] {
+    display: none !important;
+}

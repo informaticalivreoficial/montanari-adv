@@ -349,14 +349,14 @@
                 <article class="reveal blog-card bg-white rounded-2xl overflow-hidden border border-gray-100 group"
                          style="animation-delay: {{ $index * 0.1 }}s">
                     <div class="relative h-56 overflow-hidden">
-                        <img src="{{ url($artigo->cover()) }}" alt="{{ $artigo->titulo }}"
+                        <img src="{{ url($artigo->cover()) }}" alt="{{ $artigo->title }}"
                              class="blog-card-image w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                         {{-- Category badge --}}
                         <div class="absolute top-4 left-4">
                             <span class="px-3 py-1.5 bg-navy-800/90 backdrop-blur-sm text-white text-xs font-medium rounded-full">
-                                {{ $artigo->categoriaObject->titulo }}
+                                {{ $artigo->categoriaObject->title }}
                             </span>
                         </div>
                     </div>
@@ -373,7 +373,7 @@
 
                         <a href="{{ route('web.blog.artigo', ['slug' => $artigo->slug]) }}">
                             <h3 class="font-heading text-lg font-bold text-navy-800 mb-3 group-hover:text-gold-600 transition-colors line-clamp-2">
-                                {{ $artigo->titulo }}
+                                {{ $artigo->title }}
                             </h3>
                         </a>
 

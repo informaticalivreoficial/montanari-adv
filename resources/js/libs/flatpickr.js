@@ -30,6 +30,7 @@ export function initFlatpickr(root = document) {
             locale: Portuguese,
             dateFormat: el.dataset.dateFormat || 'd/m/Y',
             altInput: el.dataset.altInput === 'true',
+            altFormat: el.dataset.altFormat || 'd/m/Y',
             time_24hr: el.dataset.time24hr === 'true',
             defaultDate: el.dataset.defaultDate || undefined,
             mode: el.dataset.mode || 'single',

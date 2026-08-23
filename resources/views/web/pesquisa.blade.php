@@ -60,7 +60,7 @@
                         <a href="{{ route('web.blog.artigo', ['slug' => $artigo->slug]) }}"
                            class="block p-5 rounded-xl border border-gray-100 hover:border-gold-200 hover:bg-gold-50/50 transition-all group">
                             <h4 class="font-semibold text-navy-800 group-hover:text-gold-600 transition-colors mb-1">
-                                {{ $artigo->titulo }}
+                                {{ $artigo->title }}
                             </h4>
                             <p class="text-gray-500 text-sm">{{ strip_tags($artigo->getContentWebAttribute()) }}</p>
                         </a>

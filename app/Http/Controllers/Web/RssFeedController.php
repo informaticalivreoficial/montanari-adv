@@ -14,8 +14,8 @@ class RssFeedController extends Controller
     {
         //chama as configuracoes do site
         $Configuracoes = Configuracoes::where('id', '1')->first();
-        $posts = Post::orderBy('created_at', 'DESC')->where('tipo', '=', 'artigo')->postson()->limit(20)->get();
-        $servicos = Post::orderBy('created_at', 'DESC')->where('tipo', '=', 'pagina')->postson()->limit(20)->get();
+        $posts = Post::orderBy('created_at', 'DESC')->where('type', '=', 'artigo')->postson()->limit(20)->get();
+        $servicos = Post::orderBy('created_at', 'DESC')->where('type', '=', 'pagina')->postson()->limit(20)->get();
         //$projetos = Projeto::orderBy('created_at', 'DESC')->available()->limit(20)->get();
 
         return response()->view('web.feed', [

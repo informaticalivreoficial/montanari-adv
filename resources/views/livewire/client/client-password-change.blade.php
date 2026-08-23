@@ -21,20 +21,36 @@
                 <div class="space-y-5">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Senha Atual *</label>
-                        <div class="relative">
-                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                <i class="fa-solid fa-lock text-sm"></i>
-                            </span>
-                            <input
-                                type="password"
-                                wire:model="current_password"
-                                class="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-3 text-sm text-gray-900
-                                       shadow-sm focus:border-[#23406C] focus:ring-2 focus:ring-[#23406C]/20
-                                       focus:outline-none transition @error('current_password') border-red-500 @enderror"
-                                placeholder="Digite sua senha atual"
-                                autocomplete="current-password"
-                            >
-                        </div>
+                    <div class="relative" x-data="{ show: false }">
+                        <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                        </span>
+                        <input
+                            x-show="!show"
+                            wire:model="current_password"
+                            type="password"
+                            class="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm text-gray-900
+                                   shadow-sm focus:border-[#23406C] focus:ring-2 focus:ring-[#23406C]/20
+                                   focus:outline-none transition @error('current_password') border-red-500 @enderror"
+                            placeholder="Digite sua senha atual"
+                            autocomplete="current-password"
+                        >
+                        <input
+                            x-show="show"
+                            wire:model="current_password"
+                            type="text"
+                            class="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm text-gray-900
+                                   shadow-sm focus:border-[#23406C] focus:ring-2 focus:ring-[#23406C]/20
+                                   focus:outline-none transition @error('current_password') border-red-500 @enderror"
+                            placeholder="Digite sua senha atual"
+                            autocomplete="current-password"
+                        >
+                        <button type="button" @click="show = !show"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition hover:text-[#23406C]"
+                            :aria-label="show ? 'Ocultar senha' : 'Mostrar senha'">
+                            <i class="fa-solid" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
                         @error('current_password')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
@@ -42,20 +58,36 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Nova Senha *</label>
-                        <div class="relative">
-                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                <i class="fa-solid fa-key text-sm"></i>
-                            </span>
-                            <input
-                                type="password"
-                                wire:model="new_password"
-                                class="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-3 text-sm text-gray-900
-                                       shadow-sm focus:border-[#23406C] focus:ring-2 focus:ring-[#23406C]/20
-                                       focus:outline-none transition @error('new_password') border-red-500 @enderror"
-                                placeholder="Mínimo 8 caracteres"
-                                autocomplete="new-password"
-                            >
-                        </div>
+                    <div class="relative" x-data="{ show: false }">
+                        <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-key text-sm"></i>
+                        </span>
+                        <input
+                            x-show="!show"
+                            wire:model="new_password"
+                            type="password"
+                            class="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm text-gray-900
+                                   shadow-sm focus:border-[#23406C] focus:ring-2 focus:ring-[#23406C]/20
+                                   focus:outline-none transition @error('new_password') border-red-500 @enderror"
+                            placeholder="Mínimo 8 caracteres"
+                            autocomplete="new-password"
+                        >
+                        <input
+                            x-show="show"
+                            wire:model="new_password"
+                            type="text"
+                            class="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm text-gray-900
+                                   shadow-sm focus:border-[#23406C] focus:ring-2 focus:ring-[#23406C]/20
+                                   focus:outline-none transition @error('new_password') border-red-500 @enderror"
+                            placeholder="Mínimo 8 caracteres"
+                            autocomplete="new-password"
+                        >
+                        <button type="button" @click="show = !show"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition hover:text-[#23406C]"
+                            :aria-label="show ? 'Ocultar senha' : 'Mostrar senha'">
+                            <i class="fa-solid" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
                         @error('new_password')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
@@ -63,20 +95,36 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Confirmar Nova Senha *</label>
-                        <div class="relative">
-                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                <i class="fa-solid fa-key text-sm"></i>
-                            </span>
-                            <input
-                                type="password"
-                                wire:model="new_password_confirmation"
-                                class="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-3 text-sm text-gray-900
-                                       shadow-sm focus:border-[#23406C] focus:ring-2 focus:ring-[#23406C]/20
-                                       focus:outline-none transition"
-                                placeholder="Repita a nova senha"
-                                autocomplete="new-password"
-                            >
-                        </div>
+                    <div class="relative" x-data="{ show: false }">
+                        <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-key text-sm"></i>
+                        </span>
+                        <input
+                            x-show="!show"
+                            wire:model="new_password_confirmation"
+                            type="password"
+                            class="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm text-gray-900
+                                   shadow-sm focus:border-[#23406C] focus:ring-2 focus:ring-[#23406C]/20
+                                   focus:outline-none transition"
+                            placeholder="Repita a nova senha"
+                            autocomplete="new-password"
+                        >
+                        <input
+                            x-show="show"
+                            wire:model="new_password_confirmation"
+                            type="text"
+                            class="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm text-gray-900
+                                   shadow-sm focus:border-[#23406C] focus:ring-2 focus:ring-[#23406C]/20
+                                   focus:outline-none transition"
+                            placeholder="Repita a nova senha"
+                            autocomplete="new-password"
+                        >
+                        <button type="button" @click="show = !show"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition hover:text-[#23406C]"
+                            :aria-label="show ? 'Ocultar senha' : 'Mostrar senha'">
+                            <i class="fa-solid" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
                     </div>
                 </div>
 

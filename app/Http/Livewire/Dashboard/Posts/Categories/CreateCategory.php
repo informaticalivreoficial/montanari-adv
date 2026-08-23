@@ -24,7 +24,7 @@ class CreateCategory extends Component
     protected function rules(): array
     {
         return [
-            'title'   => 'required|string|min:2|max:255|unique:cat_post,titulo',
+            'title'   => 'required|string|min:2|max:255|unique:cat_post,title',
             'content' => 'nullable|string|max:5000',
             'tags'    => 'nullable|string|max:500',
             'type'    => 'required|in:artigo,page',
@@ -74,7 +74,7 @@ class CreateCategory extends Component
     public function updatedTitle(string $value): void
     {
         $this->validateOnly('title', [
-            'title' => 'required|string|min:2|max:255|unique:cat_post,titulo',
+            'title' => 'required|string|min:2|max:255|unique:cat_post,title',
         ]);
     }
 

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Process;
 use App\Models\Deadline;
 use App\Models\Document;
+use App\Models\Message;
 
 class Dashboard extends Component
 {
@@ -14,6 +15,8 @@ class Dashboard extends Component
     public $processes = [];
     public $upcomingDeadlines = [];
     public $recentDocuments = [];
+    public $recentMessages = [];
+    public $unreadCount = 0;
     public $stats = [
         'total' => 0,
         'active' => 0,
@@ -68,6 +71,19 @@ class Dashboard extends Component
 
         $this->stats['pendingDocs'] = Document::whereIn('process_id', $processIds)
             ->where('category', 'requested')
+            ->count();
+
+        // Recent messages (hub de comunicação com o escritório)
+        $this->recentMessages = Message::where('sender_id', $userId)
+            ->orWhere('recipient_id', $userId)
+            ->with(['sender', 'recipient'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get()
+            ->toArray();
+
+        $this->unreadCount = Message::where('recipient_id', $userId)
+            ->where('is_read', false)
             ->count();
     }
 

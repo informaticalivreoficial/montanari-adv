@@ -34,6 +34,8 @@ use App\Http\Livewire\Dashboard\Posts\Categories\ListCategories;
 use App\Http\Livewire\Dashboard\Posts\Categories\CreateCategory;
 use App\Http\Livewire\Dashboard\Posts\Categories\EditCategory;
 use App\Http\Livewire\Client\ClientLogin;
+use App\Http\Livewire\Client\ClientForgotPassword;
+use App\Http\Livewire\Client\ClientResetPassword;
 use App\Http\Livewire\Client\Dashboard as ClientDashboard;
 use App\Http\Livewire\Client\ProcessList;
 use App\Http\Livewire\Client\ProcessDetail;
@@ -84,7 +86,7 @@ Route::middleware('guest')->group(function () {
     Route::livewire('/reset-password/{token}', ResetPassword::class)->name('password.reset');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::post('/logout', function () {
         Auth::logout();
         session()->invalidate();
@@ -155,6 +157,8 @@ Route::middleware('auth')->group(function () {
 */
 Route::middleware('guest')->group(function () {
     Route::livewire('/cliente', ClientLogin::class)->name('client.login');
+    Route::livewire('/cliente/esqueci-senha', ClientForgotPassword::class)->name('client.password.request');
+    Route::livewire('/cliente/resetar-senha/{token}', ClientResetPassword::class)->name('client.password.reset');
 });
 
 Route::middleware('client')->prefix('cliente')->name('client.')->group(function () {

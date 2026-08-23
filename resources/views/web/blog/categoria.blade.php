@@ -12,13 +12,13 @@
             <div class="flex items-center gap-4 mb-6">
                 <div class="gold-line"></div>
             </div>
-            <h1 class="font-heading text-4xl md:text-5xl font-bold text-white mb-4">Blog — {{ $categoria->titulo }}</h1>
+            <h1 class="font-heading text-4xl md:text-5xl font-bold text-white mb-4">Blog — {{ $categoria->title }}</h1>
             <nav class="flex items-center gap-2 text-white/50 text-sm">
                 <a href="{{ route('web.home') }}" class="hover:text-gold-400 transition-colors">Início</a>
                 <i class="fas fa-chevron-right text-[10px] text-gold-500/40"></i>
                 <a href="{{ route('web.blog.artigos') }}" class="hover:text-gold-400 transition-colors">Blog</a>
                 <i class="fas fa-chevron-right text-[10px] text-gold-500/40"></i>
-                <span class="text-white/80">{{ $categoria->titulo }}</span>
+                <span class="text-white/80">{{ $categoria->title }}</span>
             </nav>
         </div>
     </div>
@@ -42,13 +42,13 @@
                 <article class="reveal blog-card bg-white rounded-2xl overflow-hidden border border-gray-100 group"
                          style="animation-delay: {{ $index * 0.1 }}s">
                     <div class="relative h-56 overflow-hidden">
-                        <img src="{{ $artigo->nocover() }}" alt="{{ $artigo->titulo }}"
+                        <img src="{{ $artigo->nocover() }}" alt="{{ $artigo->title }}"
                              class="blog-card-image w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                         <div class="absolute top-4 left-4">
                             <span class="px-3 py-1.5 bg-navy-800/90 backdrop-blur-sm text-white text-xs font-medium rounded-full">
-                                {{ $artigo->categoriaObject->titulo }}
+                                {{ $artigo->categoriaObject->title }}
                             </span>
                         </div>
                     </div>
@@ -61,7 +61,7 @@
 
                         <a href="{{ route('web.blog.artigo', ['slug' => $artigo->slug]) }}">
                             <h3 class="font-heading text-lg font-bold text-navy-800 mb-3 group-hover:text-gold-600 transition-colors line-clamp-2">
-                                {{ $artigo->titulo }}
+                                {{ $artigo->title }}
                             </h3>
                         </a>
 

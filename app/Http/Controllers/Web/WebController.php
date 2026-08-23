@@ -247,7 +247,7 @@ class WebController extends Controller
         $post->views = $post->views + 1;
         $post->save();
 
-        $head = $this->seo->render($post->titulo . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
+        $head = $this->seo->render($post->title . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             strip_tags($post->getContentWebAttribute()),
             route('web.blog.artigo', ['slug' => $post->slug]),
             url($post->cover() ?? Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg'))
@@ -269,8 +269,8 @@ class WebController extends Controller
         $categoria = CatPost::where('slug', '=', $request->slug)->where('type', '=', 'artigo')->first();
         $posts = Post::orderBy('created_at', 'DESC')->where('category', '=', $categoria->id)->where('type', '=', 'artigo')->postson()->paginate(15);
         
-        $head = $this->seo->render('Blog - ' . $categoria->titulo . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
-            $categoria->titulo,
+        $head = $this->seo->render('Blog - ' . $categoria->title . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
+            $categoria->title,
             route('web.blog.categoria', ['slug' => $request->slug]),
             Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
         );

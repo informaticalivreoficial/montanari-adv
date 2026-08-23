@@ -98,8 +98,8 @@ class PostsModuleSeeder extends Seeder
             Post::create([
                 'autor' => $author->id,
                 'type' => 'artigo',
-                'title' => 'Rascunho ' . ($i + 1) . ': ' . $this->faker->sentence(3),
-                'content' => '<p>' . $this->faker->paragraph(2) . '</p>',
+                'title' => 'Rascunho ' . ($i + 1) . ': ' . fake()->sentence(3),
+                    'content' => '<p>' . fake()->paragraph(2) . '</p>',
                 'category' => $categories[array_rand($categories)]->id,
                 'status' => 0,
                 'publish_at' => null,

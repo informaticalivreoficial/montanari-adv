@@ -30,16 +30,10 @@
 
             {{-- Sidebar --}}
             <aside
-                x-show="sidebarOpen"
-                x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="-translate-x-full"
-                x-transition:enter-end="translate-x-0"
-                x-transition:leave="transition ease-in duration-200"
-                x-transition:leave-start="translate-x-0"
-                x-transition:leave-end="-translate-x-full"
-                x-cloak
+                :class="sidebarOpen ? 'translate-x-0' : ''"
                 class="fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl flex flex-col border-r border-gray-200
-                       lg:static lg:translate-x-0 lg:shadow-md"
+                       -translate-x-full transform transition-transform duration-300 ease-in-out
+                       lg:static lg:translate-x-0 lg:flex"
             >
                 {{-- Logo --}}
                 <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">

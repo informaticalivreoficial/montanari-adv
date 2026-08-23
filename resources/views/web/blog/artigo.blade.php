@@ -6,7 +6,7 @@
 <section class="relative py-32 bg-navy-900 overflow-hidden breadcrumb-hero">
     <div class="absolute inset-0">
         @if($post->nocover())
-            <img src="{{ $post->nocover() }}" alt="{{ $post->titulo }}" class="w-full h-full object-cover opacity-20">
+            <img src="{{ $post->nocover() }}" alt="{{ $post->title }}" class="w-full h-full object-cover opacity-20">
         @endif
         <div class="hero-overlay absolute inset-0"></div>
     </div>
@@ -16,10 +16,10 @@
             <div class="flex items-center gap-4 mb-6">
                 <div class="gold-line"></div>
                 <span class="px-3 py-1.5 bg-gold-500/20 text-gold-400 text-xs font-medium rounded-full">
-                    {{ $post->categoriaObject->titulo }}
+                    {{ $post->categoriaObject->title }}
                 </span>
             </div>
-            <h1 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">{{ $post->titulo }}</h1>
+            <h1 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">{{ $post->title }}</h1>
             <div class="flex flex-wrap items-center gap-4 text-white/50 text-sm">
                 <span class="flex items-center gap-2">
                     <i class="far fa-calendar text-gold-500"></i>
@@ -59,7 +59,7 @@
                             @foreach($post->images() as $image)
                                 <a href="{{ $image->getUrlImageAttribute() }}" target="_blank"
                                    class="block rounded-xl overflow-hidden aspect-square group">
-                                    <img src="{{ $image->getUrlCroppedAttribute() }}" alt="{{ $post->titulo }}"
+                                    <img src="{{ $image->getUrlCroppedAttribute() }}" alt="{{ $post->title }}"
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                 </a>
                             @endforeach
@@ -123,7 +123,7 @@
                                                class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-white transition-colors group">
                                                 <span class="text-sm text-gray-600 group-hover:text-navy-700 transition-colors flex items-center gap-2">
                                                     <i class="fas fa-folder-open text-gold-500/50 text-xs"></i>
-                                                    {{ $subcategoria->titulo }}
+                                                    {{ $subcategoria->title }}
                                                 </span>
                                                 <span class="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full">{{ $subcategoria->countposts() }}</span>
                                             </a>
@@ -143,11 +143,11 @@
                             @foreach($postsMais as $postMais)
                                 <a href="{{ route('web.blog.artigo', ['slug' => $postMais->slug]) }}"
                                    class="flex gap-3 group">
-                                    <img src="{{ $postMais->cover() }}" alt="{{ $postMais->titulo }}"
+                                    <img src="{{ $postMais->cover() }}" alt="{{ $postMais->title }}"
                                          class="w-16 h-16 rounded-lg object-cover flex-shrink-0 group-hover:scale-105 transition-transform">
                                     <div>
                                         <h5 class="text-sm font-semibold text-navy-800 group-hover:text-gold-600 transition-colors line-clamp-2 leading-tight">
-                                            {{ $postMais->titulo }}
+                                            {{ $postMais->title }}
                                         </h5>
                                         <span class="text-xs text-gray-400 mt-1 block">{{ optional($postMais->publish_at)->format('d/m/Y') }}</span>
                                     </div>

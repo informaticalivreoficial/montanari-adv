@@ -11,11 +11,11 @@
 
         @foreach($posts as $post)
             <item>
-                <title><![CDATA[{{ $post->titulo }}]]></title>
+                <title><![CDATA[{{ $post->title }}]]></title>
                 <link>{{ url('blog/artigo/'.$post->slug) }}</link>
                 <image>{{ $post->cover() }}</image>
                 <description><![CDATA[{!! strip_tags($post->getContentWebAttribute()) !!}]]></description>
-                <category>{{ $post->categoriaObject->titulo }}</category>
+                <category>{{ $post->categoriaObject->title }}</category>
                 <author><![CDATA[{{ $post->userObject->name }}]]></author>
                 <guid>{{ $post->id }}</guid>
                 <pubDate>{{ $post->created_at }}</pubDate>

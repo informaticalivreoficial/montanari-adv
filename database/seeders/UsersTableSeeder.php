@@ -35,5 +35,10 @@ class UsersTableSeeder extends Seeder
         User::factory(5)->create()->each(function ($user) {
             $user->assignRole('manager');
         });
+
+        // Clients (necessários para o LegalModuleSeeder)
+        User::factory(10)->create()->each(function ($user) {
+            $user->assignRole('client');
+        });
     }
 }

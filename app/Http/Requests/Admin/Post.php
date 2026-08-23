@@ -25,9 +25,9 @@ class Post extends FormRequest
     public function rules()
     {
         return [
-            'titulo' => 'required|min:3',
+            'title' => 'required|min:3',
             'autor' => 'required',
-            'categoria' => 'required',
+            'category' => 'required',
         ];
     }
 }

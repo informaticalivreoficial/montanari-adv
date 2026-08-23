@@ -25,7 +25,7 @@ class CatPost extends FormRequest
     public function rules()
     {
         return [
-            'titulo' => 'required',
+            'title' => 'required',
         ];
     }
 }

@@ -34,13 +34,13 @@ class ClientLogin extends Component
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
             $seconds = RateLimiter::availableIn($key);
-            $this->addError('email', "Conta bloqueada temporariamente. Tente novamente em {$seconds} segundos.");
+            $this->addError('general', "Muitas tentativas. Tente novamente em {$seconds} segundos.");
             return;
         }
 
         if (!Auth::attempt(['email' => $email, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($key, 120);
-            $this->addError('email', 'E-mail ou senha não conferem.');
+            $this->addError('general', 'E-mail ou senha não conferem.');
             return;
         }
 
@@ -50,23 +50,23 @@ class ClientLogin extends Component
 
         if ($user->status != 1) {
             Auth::logout();
-            $this->addError('email', 'Sua conta está desativada. Entre em contato com o escritório.');
+            $this->addError('general', 'Sua conta está desativada. Entre em contato com o escritório.');
             return;
         }
 
         if (!$user->hasRole('client')) {
             Auth::logout();
-            $this->addError('email', 'Acesso não autorizado. Esta é a área do cliente.');
+            $this->addError('general', 'Acesso não autorizado. Esta é a área exclusiva dos clientes.');
             return;
         }
 
         session()->regenerate();
 
-        return redirect()->route('client.dashboard');
+        return redirect()->intended(route('client.dashboard'));
     }
 
     public function render()
     {
-        return view('livewire.client.client-login')->layout('layouts.auth', ['title' => 'Área do Cliente']);
+        return view('livewire.client.client-login')->layout('layouts.client-auth', ['title' => 'Área do Cliente']);
     }
 }
