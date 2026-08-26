@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Deadline;
 use App\Models\Process;
 use App\Models\User;
+use App\Models\Event;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
 
@@ -44,7 +45,7 @@ class CreateDeadline extends Component
 
         $dueDateTime = $this->due_date . ' ' . $this->due_time;
 
-        Deadline::create([
+        $deadline = Deadline::create([
             'process_id' => $this->process_id,
             'responsible_id' => $this->responsible_id ?: null,
             'title' => $this->title,
@@ -54,6 +55,24 @@ class CreateDeadline extends Component
             'priority' => $this->priority,
             'status' => $this->status,
             'notes' => $this->notes ?: null,
+        ]);
+
+        // Espelha o prazo no calendário (Agenda) — event_type 'deadline', cor amber
+        $allDay = $this->due_time === '00:00';
+
+        Event::create([
+            'deadline_id' => $deadline->id,
+            'process_id'  => $deadline->process_id,
+            'user_id'     => auth()->id(),
+            'title'       => $deadline->title,
+            'description' => $deadline->description,
+            'start_date'  => $allDay ? $this->due_date . ' 00:00:00' : $dueDateTime,
+            'end_date'    => null,
+            'all_day'     => $allDay,
+            'event_type'  => 'deadline',
+            'color'       => null, // usa a cor do tipo (amber #f59e0b, legenda "Prazo")
+            'location'    => null,
+            'notes'       => $deadline->notes,
         ]);
 
         return redirect()->route('dashboard.legal.deadlines')

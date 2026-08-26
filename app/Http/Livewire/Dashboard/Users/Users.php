@@ -21,7 +21,7 @@ class Users extends Component
     public $errorMessage = '';
     public $sortBy = 'created_at';
     public $sortDirection = 'desc';
-    public $perPage = 10;
+    public $perPage = 20;
 
     // Dados
     public $users = [];

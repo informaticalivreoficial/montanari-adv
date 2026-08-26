@@ -38,6 +38,11 @@ class Deadline extends Model
         return $this->belongsTo(User::class, 'responsible_id');
     }
 
+    public function event()
+    {
+        return $this->hasOne(Event::class);
+    }
+
     // Scopes
     public function scopePending($query)
     {

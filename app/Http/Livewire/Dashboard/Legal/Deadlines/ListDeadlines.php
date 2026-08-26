@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\Deadline;
 use App\Models\Process;
 use App\Models\User;
+use App\Models\Event;
 use App\Traits\HasAlerts;
 
 class ListDeadlines extends Component
@@ -34,6 +35,10 @@ class ListDeadlines extends Component
     public function delete($id)
     {
         $deadline = Deadline::findOrFail($id);
+
+        // Remove também o evento correspondente do calendário (Agenda)
+        Event::where('deadline_id', $deadline->id)->delete();
+
         $deadline->delete();
         $this->toastSuccess('Prazo excluído com sucesso!');
     }

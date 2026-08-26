@@ -12,6 +12,7 @@ class Event extends Model
 
     protected $fillable = [
         'task_id',
+        'deadline_id',
         'process_id',
         'user_id',
         'title',
@@ -40,6 +41,11 @@ class Event extends Model
     public function task()
     {
         return $this->belongsTo(Task::class);
+    }
+
+    public function deadline()
+    {
+        return $this->belongsTo(Deadline::class);
     }
 
     public function user()
