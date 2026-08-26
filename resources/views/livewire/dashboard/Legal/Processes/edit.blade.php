@@ -30,6 +30,47 @@
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <x-input name="process_number" label="Número do Processo" required placeholder="Ex: 0001234-56.2026.8.26.0001" wire:model="process_number" />
                             <x-input name="cnj_number" label="Número CNJ" placeholder="Número CNJ completo" wire:model="cnj_number" />
+
+                            {{-- Consulta Datajud --}}
+                            <div class="sm:col-span-2 rounded-lg border border-amber-200 bg-amber-50/60 p-3">
+                                <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+                                    <div class="w-full sm:w-1/3">
+                                        <label class="block text-sm font-medium text-gray-700">Tribunal (Datajud)</label>
+                                        <select wire:model="datajud_tribunal" class="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+                                            <option value="">Selecione o tribunal</option>
+                                            @foreach($tribunais as $sigla => $nome)
+                                                <option value="{{ $sigla }}">{{ strtoupper($sigla) }} — {{ $nome }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="w-full sm:w-2/3">
+                                        <button
+                                            type="button"
+                                            wire:click="consultarDatajud"
+                                            wire:loading.attr="disabled"
+                                            wire:target="consultarDatajud"
+                                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-amber-600 bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700 disabled:opacity-50"
+                                        >
+                                            <span wire:loading.remove wire:target="consultarDatajud">
+                                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                                Consultar Datajud
+                                            </span>
+                                            <span wire:loading wire:target="consultarDatajud">
+                                                <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+                                                Consultando...
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                                @if($datajud_error)
+                                    <p class="mt-2 text-xs text-red-600">
+                                        <i class="fa-solid fa-circle-exclamation"></i> {{ $datajud_error }}
+                                    </p>
+                                @endif
+                                <p class="mt-2 text-xs text-gray-500">
+                                    Busca o processo na API Pública do CNJ e pré-preenche o formulário. Revise os dados e salve.
+                                </p>
+                            </div>
                             <x-input name="court_name" label="Nome do Tribunal" placeholder="Ex: Tribunal de Justiça de SP" wire:model="court_name" />
                             <x-input name="court_variable" label="Vara" placeholder="Ex: 1ª Vara Cível" wire:model="court_variable" />
                             <div class="space-y-1">
@@ -333,11 +374,153 @@
                         <div class="mt-4">
                             <x-textarea name="sync_error" label="Erro de Sincronização" rows="2" wire:model="sync_error" />
                         </div>
+                        <label class="mt-4 flex items-center gap-2 text-sm text-gray-700">
+                            <input type="checkbox" wire:model="auto_sync" class="h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500">
+                            Sincronização automática (incluído no agendamento diário)
+                        </label>
                         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <x-textarea name="source_data" label="Dados Brutos da Fonte (JSON)" rows="5" wire:model="source_data" />
                             <x-textarea name="metadata" label="Metadados (JSON)" rows="5" wire:model="metadata" />
                         </div>
                         <p class="mt-2 text-xs text-gray-500">Os campos JSON aceitam objetos válidos, ex.: <code class="rounded bg-gray-100 px-1">{"chave":"valor"}</code>. Deixe em branco para nulo.</p>
+                    </div>
+
+                    {{-- Section: Movimentações (Datajud) --}}
+                    <div class="border-t border-gray-100"></div>
+                    <div class="px-6 py-5">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                                <i class="fa-solid fa-list-check text-sm"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-gray-900">Movimentações (Datajud)</h3>
+                        </div>
+                        @if($process->movements->isEmpty())
+                            <p class="text-sm text-gray-500">Nenhuma movimentação sincronizada.</p>
+                        @else
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full text-sm">
+                                    <thead class="bg-gray-50 border-b border-gray-200 text-xs uppercase tracking-wider text-gray-500">
+                                        <tr>
+                                            <th class="px-3 py-2 text-left">Data/Hora</th>
+                                            <th class="px-3 py-2 text-left">Código</th>
+                                            <th class="px-3 py-2 text-left">Movimentação</th>
+                                            <th class="px-3 py-2 text-left">Órgão</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        @foreach($process->movements->sortByDesc('data_hora') as $mov)
+                                            <tr>
+                                                <td class="px-3 py-2 text-gray-700">{{ $mov->data_hora?->format('d/m/Y H:i') ?? '-' }}</td>
+                                                <td class="px-3 py-2 text-gray-700">{{ $mov->codigo ?? '-' }}</td>
+                                                <td class="px-3 py-2 text-gray-900">{{ $mov->nome }}</td>
+                                                <td class="px-3 py-2 text-gray-700">{{ $mov->orgao_julgador ?? '-' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Section: Partes (Datajud) --}}
+                    <div class="border-t border-gray-100"></div>
+                    <div class="px-6 py-5">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                                <i class="fa-solid fa-users text-sm"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-gray-900">Partes (Datajud)</h3>
+                        </div>
+                        @if($process->parties->isEmpty())
+                            <p class="text-sm text-gray-500">Nenhuma parte sincronizada.</p>
+                        @else
+                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                @foreach($process->parties as $party)
+                                    <div class="rounded-lg border border-gray-200 p-3">
+                                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
+                                            @if($party->tipo === 'ativo') bg-green-50 text-green-700
+                                            @elseif($party->tipo === 'passivo') bg-red-50 text-red-700
+                                            @else bg-gray-100 text-gray-700 @endif">
+                                            {{ ucfirst($party->tipo) }}
+                                        </span>
+                                        <p class="mt-1 text-sm font-medium text-gray-900">{{ $party->nome }}</p>
+                                        @if($party->documento)
+                                            <p class="text-xs text-gray-500">Doc: {{ $party->documento }}</p>
+                                        @endif
+                                        @if($party->categoria)
+                                            <p class="text-xs text-gray-500">{{ $party->categoria }}</p>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Section: Publicações (DJEN) --}}
+                    <div class="border-t border-gray-100"></div>
+                    <div class="px-6 py-5">
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                                    <i class="fa-solid fa-newspaper text-sm"></i>
+                                </div>
+                                <h3 class="text-sm font-semibold text-gray-900">Publicações (DJEN)</h3>
+                            </div>
+                            <button
+                                type="button"
+                                wire:click="syncDjen"
+                                wire:loading.attr="disabled"
+                                wire:target="syncDjen"
+                                class="inline-flex items-center gap-2 rounded-lg border border-amber-600 bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-amber-700 disabled:opacity-50"
+                            >
+                                <span wire:loading.remove wire:target="syncDjen">
+                                    <i class="fa-solid fa-rotate text-xs"></i> Sincronizar DJEN
+                                </span>
+                                <span wire:loading wire:target="syncDjen">
+                                    <i class="fa-solid fa-spinner fa-spin text-xs"></i> Sincronizando...
+                                </span>
+                            </button>
+                        </div>
+                        @if($process->publications->isEmpty())
+                            <p class="text-sm text-gray-500">Nenhuma publicação sincronizada do Diário de Justiça Eletrônico Nacional.</p>
+                        @else
+                            <div class="space-y-4">
+                                @foreach($process->publications->sortByDesc('data_disponibilizacao') as $pub)
+                                    <div class="rounded-lg border border-gray-200 p-4 @if($pub->cancelado) opacity-60 @endif">
+                                        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                                            @if($pub->tipo)
+                                                <span class="rounded-full bg-blue-50 px-2 py-0.5 font-medium text-blue-700">{{ $pub->tipo }}</span>
+                                            @endif
+                                            @if($pub->documento_tipo)
+                                                <span class="rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-700">{{ $pub->documento_tipo }}</span>
+                                            @endif
+                                            @if($pub->data_disponibilizacao)
+                                                <span>Disponibilização: {{ $pub->data_disponibilizacao?->format('d/m/Y') }}</span>
+                                            @endif
+                                            @if($pub->orgao_julgador)
+                                                <span>{{ $pub->orgao_julgador }}</span>
+                                            @endif
+                                            @if($pub->cancelado)
+                                                <span class="rounded-full bg-red-50 px-2 py-0.5 font-medium text-red-700">Cancelada</span>
+                                            @endif
+                                        </div>
+                                        @if($pub->classe)
+                                            <p class="mt-1 text-sm font-medium text-gray-900">{{ $pub->classe }}</p>
+                                        @endif
+                                        @if($pub->assuntos)
+                                            <p class="text-xs text-gray-500">{{ $pub->assuntos }}</p>
+                                        @endif
+                                        <div class="mt-2 max-w-none text-sm leading-relaxed text-gray-700">{!! $pub->texto_html !!}</div>
+                                        @if($pub->certidao_url)
+                                            <a href="{{ $pub->certidao_url }}" target="_blank" rel="noopener"
+                                               class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-amber-700">
+                                                <i class="fa-solid fa-file-pdf"></i> Certidão
+                                            </a>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

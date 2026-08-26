@@ -5,6 +5,10 @@ namespace App\Http\Livewire\Dashboard\Legal\Processes;
 use Livewire\Component;
 use App\Models\Process;
 use App\Models\User;
+use App\Services\DatajudService;
+use App\Services\DjenService;
+use App\Exceptions\DatajudException;
+use App\Exceptions\DjenException;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
 
@@ -35,6 +39,11 @@ class EditProcess extends Component
     public $cnj_number = '';
     public $legacy_number = '';
     public $external_number = '';
+
+    // Datajud (consulta)
+    public $datajud_tribunal = '';
+    public $tribunais = [];
+    public $datajud_error = '';
 
     // Origem / Tribunal
     public $court_acronym = '';
@@ -129,6 +138,7 @@ class EditProcess extends Component
     public $sync_attempts = 0;
     public $source_data = '';
     public $metadata = '';
+    public $auto_sync = true;
 
     public $clients = [];
     public $team = [];
@@ -138,7 +148,78 @@ class EditProcess extends Component
         $this->processId = $id;
         $this->clients = User::role('client')->pluck('name', 'id')->toArray();
         $this->team = User::team()->pluck('name', 'id')->toArray();
+        $this->tribunais = config('datajud.tribunais', []);
         $this->loadProcess();
+    }
+
+    /**
+     * Consulta o Datajud (CNJ) pelo número do processo e pré-preenche o formulário.
+     */
+    public function consultarDatajud()
+    {
+        $this->datajud_error = '';
+
+        $this->validate([
+            'datajud_tribunal' => 'required|string',
+            'process_number'   => 'required|string',
+        ], [], [
+            'datajud_tribunal' => 'Tribunal (Datajud)',
+            'process_number'   => 'Número do processo',
+        ]);
+
+        try {
+            $svc    = new DatajudService();
+            $source = $svc->findByNumero($this->datajud_tribunal, $this->process_number);
+
+            if (!$source) {
+                $this->datajud_error = 'Processo não encontrado no Datajud para o tribunal informado.';
+                return;
+            }
+
+            $map = $svc->normalize($source);
+
+            // Preenche as propriedades do formulário com os dados retornados
+            foreach ($map as $field => $value) {
+                if (property_exists($this, $field) && $value !== null) {
+                    $this->$field = $value;
+                }
+            }
+
+            // Marca a origem como Datajud/API
+            $this->source          = 'api';
+            $this->source_provider = 'datajud';
+            $this->source_id       = $map['cnj_number'];
+            $this->last_synced_at  = now()->format('Y-m-d H:i');
+
+            // Guarda o JSON bruto da fonte para auditoria
+            $this->source_data = json_encode($source, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+            $this->toastSuccess('Dados importados do Datajud. Revise e salve o processo.');
+        } catch (DatajudException $e) {
+            $this->datajud_error = $e->getMessage();
+        }
+    }
+
+    /**
+     * Sincroniza as publicações/intimações do DJEN para este processo (on-demand).
+     */
+    public function syncDjen()
+    {
+        try {
+            $svc = new DjenService();
+            $n = $svc->syncPublications($this->process);
+
+            // Recarrega o modelo (incluindo a relação publications) para a view.
+            $this->loadProcess();
+
+            if ($n > 0) {
+                $this->toastSuccess("{$n} publicação(ões) do DJEN sincronizada(s).");
+            } else {
+                $this->toastSuccess('Nenhuma publicação nova encontrada no DJEN.');
+            }
+        } catch (DjenException $e) {
+            $this->toastError('Erro ao sincronizar DJEN: ' . $e->getMessage());
+        }
     }
 
     public function loadProcess()
@@ -236,6 +317,7 @@ class EditProcess extends Component
         $this->sync_attempts = $this->process->sync_attempts ?: 0;
         $this->source_data = $this->process->source_data ? json_encode($this->process->source_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '';
         $this->metadata = $this->process->metadata ? json_encode($this->process->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '';
+        $this->auto_sync = $this->process->auto_sync ?: true;
     }
 
     public function update()
@@ -274,6 +356,7 @@ class EditProcess extends Component
             'last_synced_at' => 'nullable|date',
             'next_sync_at' => 'nullable|date',
             'sync_attempts' => 'nullable|integer|min:0',
+            'auto_sync' => 'nullable|boolean',
             'source_data' => 'nullable|json',
             'metadata' => 'nullable|json',
         ]);
@@ -368,6 +451,7 @@ class EditProcess extends Component
             'next_sync_at' => $this->next_sync_at ?: null,
             'sync_error' => $this->sync_error ?: null,
             'sync_attempts' => $this->sync_attempts ?: 0,
+            'auto_sync' => $this->auto_sync ? 1 : 0,
             'source_data' => $this->source_data ? json_decode($this->source_data, true) : null,
             'metadata' => $this->metadata ? json_decode($this->metadata, true) : null,
         ]);

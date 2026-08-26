@@ -30,6 +30,47 @@
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <x-input name="process_number" label="Número do Processo" required placeholder="Ex: 0001234-56.2026.8.26.0001" wire:model="process_number" />
                             <x-input name="cnj_number" label="Número CNJ" placeholder="Número CNJ completo" wire:model="cnj_number" />
+
+                            {{-- Consulta Datajud --}}
+                            <div class="sm:col-span-2 rounded-lg border border-amber-200 bg-amber-50/60 p-3">
+                                <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+                                    <div class="w-full sm:w-1/3">
+                                        <label class="block text-sm font-medium text-gray-700">Tribunal (Datajud)</label>
+                                        <select wire:model="datajud_tribunal" class="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+                                            <option value="">Selecione o tribunal</option>
+                                            @foreach($tribunais as $sigla => $nome)
+                                                <option value="{{ $sigla }}">{{ strtoupper($sigla) }} — {{ $nome }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="w-full sm:w-2/3">
+                                        <button
+                                            type="button"
+                                            wire:click="consultarDatajud"
+                                            wire:loading.attr="disabled"
+                                            wire:target="consultarDatajud"
+                                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-amber-600 bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700 disabled:opacity-50"
+                                        >
+                                            <span wire:loading.remove wire:target="consultarDatajud">
+                                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                                Consultar Datajud
+                                            </span>
+                                            <span wire:loading wire:target="consultarDatajud">
+                                                <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+                                                Consultando...
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                                @if($datajud_error)
+                                    <p class="mt-2 text-xs text-red-600">
+                                        <i class="fa-solid fa-circle-exclamation"></i> {{ $datajud_error }}
+                                    </p>
+                                @endif
+                                <p class="mt-2 text-xs text-gray-500">
+                                    Busca o processo na API Pública do CNJ e pré-preenche o formulário. Revise os dados e salve.
+                                </p>
+                            </div>
                             <x-input name="court_name" label="Nome do Tribunal" placeholder="Ex: Tribunal de Justiça de SP" wire:model="court_name" />
                             <x-input name="court_variable" label="Vara" placeholder="Ex: 1ª Vara Cível" wire:model="court_variable" />
                             <div class="space-y-1">

@@ -104,6 +104,7 @@ class Process extends Model
         'sync_attempts',
         'source_data',
         'metadata',
+        'auto_sync',
     ];
 
     protected $casts = [
@@ -140,6 +141,7 @@ class Process extends Model
         'last_synced_at' => 'datetime',
         'next_sync_at' => 'datetime',
         'sync_attempts' => 'integer',
+        'auto_sync' => 'boolean',
         'source_data' => 'array',
         'metadata' => 'array',
     ];
@@ -173,6 +175,21 @@ class Process extends Model
     public function documents()
     {
         return $this->hasMany(Document::class);
+    }
+
+    public function movements()
+    {
+        return $this->hasMany(ProcessMovement::class);
+    }
+
+    public function parties()
+    {
+        return $this->hasMany(ProcessParty::class);
+    }
+
+    public function publications()
+    {
+        return $this->hasMany(ProcessPublication::class);
     }
 
     // Scopes

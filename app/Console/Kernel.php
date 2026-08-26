@@ -24,7 +24,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Re-sincroniza processos vinculados ao Datajud (CNJ) diariamente às 03:00
+        $schedule->command('datajud:sync')->dailyAt('03:00');
     }
 
     /**

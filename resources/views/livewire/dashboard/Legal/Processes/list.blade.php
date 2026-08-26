@@ -119,6 +119,16 @@
                                         <a href="{{ route('dashboard.legal.processes.edit', $process->id) }}" class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-amber-600 transition">
                                             <i class="fa-solid fa-pen-to-square text-sm"></i>
                                         </a>
+                                        @if($process->source_provider === 'datajud')
+                                            <button
+                                                wire:click="resync({{ $process->id }})"
+                                                onclick="return confirm('Re-sincronizar este processo com o Datajud?')"
+                                                class="rounded-lg p-2 text-gray-400 hover:bg-amber-50 hover:text-amber-600 transition"
+                                                title="Re-sincronizar com o Datajud"
+                                            >
+                                                <i class="fa-solid fa-rotate text-sm"></i>
+                                            </button>
+                                        @endif
                                         <button wire:click="delete({{ $process->id }})" onclick="return confirm('Tem certeza que deseja excluir este processo?')" class="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 transition">
                                             <i class="fa-solid fa-trash text-sm"></i>
                                         </button>
