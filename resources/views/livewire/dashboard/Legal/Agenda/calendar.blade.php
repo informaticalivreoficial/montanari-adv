@@ -23,22 +23,25 @@
             x-init="
                 $nextTick(() => {
                     const container = document.getElementById('fullcalendar');
-                    if (container) {
-                        initFullCalendar(container, {
-                            events: @json($events)
-                        });
+                    const eventsEl = document.getElementById('calendar-events');
+                    if (container && eventsEl) {
+                        const events = JSON.parse(eventsEl.textContent || '[]');
+                        initFullCalendar(container, { events });
                     }
                 });
 
                 Livewire.on('loadEvents', (events) => {
                     const container = document.getElementById('fullcalendar');
                     if (container && container._fullCalendarInstance) {
-                        updateFullCalendarEvents(container, events[0]);
+                        updateFullCalendarEvents(container, events);
                     }
                 });
             "
             style="min-height: 600px;"
         ></div>
+
+        {{-- Eventos em JSON isolado (evita quebrar o atributo x-init com aspas do @json) --}}
+        <script type="application/json" id="calendar-events">@json($events)</script>
     </div>
 
     <!-- Event Type Legend -->

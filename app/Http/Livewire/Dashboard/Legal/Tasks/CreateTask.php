@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Task;
 use App\Models\Process;
 use App\Models\User;
+use App\Models\Event;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
 
@@ -44,7 +45,7 @@ class CreateTask extends Component
             $dueDateTime = $this->due_date . ' ' . $this->due_time;
         }
 
-        Task::create([
+        $task = Task::create([
             'process_id' => $this->process_id ?: null,
             'responsible_id' => $this->responsible_id ?: null,
             'title' => $this->title,
@@ -54,6 +55,26 @@ class CreateTask extends Component
             'status' => $this->status,
             'notes' => $this->notes ?: null,
         ]);
+
+        // Espelha a tarefa no calendário (Agenda) quando houver data de vencimento
+        if ($dueDateTime) {
+            $allDay = $this->due_time === '00:00';
+
+            Event::create([
+                'task_id'     => $task->id,
+                'process_id'  => $task->process_id,
+                'user_id'     => auth()->id(),
+                'title'       => $task->title,
+                'description' => $task->description,
+                'start_date'  => $allDay ? $this->due_date . ' 00:00:00' : $dueDateTime,
+                'end_date'    => null,
+                'all_day'     => $allDay,
+                'event_type'  => 'task',
+                'color'       => null, // usa a cor do tipo (verde, legenda "Tarefa")
+                'location'    => null,
+                'notes'       => $task->notes,
+            ]);
+        }
 
         return redirect()->route('dashboard.legal.tasks')
             ->with('toast_success', 'Tarefa criada com sucesso!');

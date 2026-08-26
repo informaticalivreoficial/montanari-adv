@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\Task;
 use App\Models\Process;
 use App\Models\User;
+use App\Models\Event;
 use App\Traits\HasAlerts;
 
 class ListTasks extends Component
@@ -44,6 +45,10 @@ class ListTasks extends Component
     public function delete($id)
     {
         $task = Task::findOrFail($id);
+
+        // Remove também o evento correspondente do calendário (Agenda)
+        Event::where('task_id', $task->id)->delete();
+
         $task->delete();
         $this->toastSuccess('Tarefa excluída com sucesso!');
     }

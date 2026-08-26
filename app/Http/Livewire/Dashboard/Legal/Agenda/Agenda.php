@@ -89,18 +89,19 @@ class Agenda extends Component
         $this->showModal = true;
     }
 
-    public function updateEventDate($data)
+    public function updateEventDate($eventId, $start, $end, $allDay)
     {
-        $event = Event::find($data['event_id']);
+        $event = Event::find($eventId);
         if (!$event) return;
 
         $event->update([
-            'start_date' => $data['start'],
-            'end_date' => $data['end'],
-            'all_day' => $data['all_day'],
+            'start_date' => $start,
+            'end_date' => $end,
+            'all_day' => $allDay,
         ]);
 
         $this->loadEvents();
+        $this->dispatch('loadEvents', $this->events);
         $this->toastSuccess('Evento atualizado!');
     }
 
@@ -148,6 +149,7 @@ class Agenda extends Component
         $this->showModal = false;
         $this->resetForm();
         $this->loadEvents();
+        $this->dispatch('loadEvents', $this->events);
     }
 
     public function deleteEvent()
@@ -158,6 +160,7 @@ class Agenda extends Component
         $this->showModal = false;
         $this->resetForm();
         $this->loadEvents();
+        $this->dispatch('loadEvents', $this->events);
         $this->toastSuccess('Evento excluído com sucesso!');
     }
 

@@ -131,6 +131,7 @@ class CreateProcess extends Component
     public $next_sync_at = '';
     public $sync_error = '';
     public $sync_attempts = 0;
+    public $auto_sync = true;
     public $source_data = '';
     public $metadata = '';
 
@@ -229,6 +230,7 @@ class CreateProcess extends Component
             'last_synced_at' => 'nullable|date',
             'next_sync_at' => 'nullable|date',
             'sync_attempts' => 'nullable|integer|min:0',
+            'auto_sync' => 'nullable|boolean',
             'source_data' => 'nullable|json',
             'metadata' => 'nullable|json',
         ]);
@@ -323,6 +325,7 @@ class CreateProcess extends Component
             'next_sync_at' => $this->next_sync_at ?: null,
             'sync_error' => $this->sync_error ?: null,
             'sync_attempts' => $this->sync_attempts ?: 0,
+            'auto_sync' => $this->auto_sync ? 1 : 0,
             'source_data' => $this->source_data ? json_decode($this->source_data, true) : null,
             'metadata' => $this->metadata ? json_decode($this->metadata, true) : null,
         ]);

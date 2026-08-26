@@ -11,6 +11,7 @@ class Event extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'task_id',
         'process_id',
         'user_id',
         'title',
@@ -34,6 +35,11 @@ class Event extends Model
     public function process()
     {
         return $this->belongsTo(Process::class);
+    }
+
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
     }
 
     public function user()

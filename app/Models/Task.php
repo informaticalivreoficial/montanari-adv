@@ -31,6 +31,11 @@ class Task extends Model
         return $this->belongsTo(Process::class);
     }
 
+    public function event()
+    {
+        return $this->hasOne(Event::class);
+    }
+
     public function responsible()
     {
         return $this->belongsTo(User::class, 'responsible_id');

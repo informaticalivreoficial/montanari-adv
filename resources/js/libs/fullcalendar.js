@@ -7,6 +7,7 @@
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import ptBrLocale from '@fullcalendar/core/locales/pt-br';
 
 window.initFullCalendar = function (containerEl, options = {}) {
     if (containerEl._fullCalendarInstance) {
@@ -16,7 +17,7 @@ window.initFullCalendar = function (containerEl, options = {}) {
     const calendar = new Calendar(containerEl, {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: options.initialView || 'dayGridMonth',
-        locale: 'pt-br',
+        locale: ptBrLocale,
         headerToolbar: options.headerToolbar || {
             left: 'prev,next today',
             center: 'title',
@@ -34,37 +35,23 @@ window.initFullCalendar = function (containerEl, options = {}) {
             day: 'Dia',
         },
         dateClick: function (info) {
-            // Emit to Livewire
-            const livewireComponent = containerEl.closest('[wire\\:id]');
-            if (livewireComponent) {
-                const componentId = livewireComponent.getAttribute('wire:id');
-                if (componentId && window.Livewire) {
-                    window.Livewire.find(componentId).emit('openDateModal', info.dateStr);
-                }
-            }
+            // Dispara evento DOM que o listener $listeners do componente captura.
+            // O "detail" DEVE ser um array (argumentos do método) por causa do
+            // unpack "...$params" usado pelo __dispatch do Livewire 4.
+            window.dispatchEvent(new CustomEvent('openDateModal', { detail: [info.dateStr] }));
         },
         eventClick: function (info) {
-            const livewireComponent = containerEl.closest('[wire\\:id]');
-            if (livewireComponent) {
-                const componentId = livewireComponent.getAttribute('wire:id');
-                if (componentId && window.Livewire) {
-                    window.Livewire.find(componentId).emit('openEventModal', info.event.id);
-                }
-            }
+            window.dispatchEvent(new CustomEvent('openEventModal', { detail: [info.event.id] }));
         },
         eventDrop: function (info) {
-            const livewireComponent = containerEl.closest('[wire\\:id]');
-            if (livewireComponent) {
-                const componentId = livewireComponent.getAttribute('wire:id');
-                if (componentId && window.Livewire) {
-                    window.Livewire.find(componentId).emit('updateEventDate', {
-                        event_id: info.event.id,
-                        start: info.event.startStr,
-                        end: info.event.end ? info.event.endStr : null,
-                        all_day: info.event.allDay,
-                    });
-                }
-            }
+            window.dispatchEvent(new CustomEvent('updateEventDate', {
+                detail: [
+                    info.event.id,
+                    info.event.startStr,
+                    info.event.end ? info.event.endStr : null,
+                    info.event.allDay,
+                ],
+            }));
         },
         ...options,
     });
