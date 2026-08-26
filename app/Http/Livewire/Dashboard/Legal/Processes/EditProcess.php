@@ -245,6 +245,7 @@ class EditProcess extends Component
         $this->legacy_number = $this->process->legacy_number;
         $this->external_number = $this->process->external_number;
         $this->court_acronym = $this->process->court_acronym;
+        $this->datajud_tribunal = strtolower(trim((string) $this->process->court_acronym));
         $this->justice_segment = $this->process->justice_segment;
         $this->instance_level = $this->process->instance_level;
         $this->state = $this->process->state;
@@ -380,7 +381,7 @@ class EditProcess extends Component
             'cnj_number' => $this->cnj_number ?: null,
             'legacy_number' => $this->legacy_number ?: null,
             'external_number' => $this->external_number ?: null,
-            'court_acronym' => $this->court_acronym ?: null,
+            'court_acronym' => $this->court_acronym ?: (trim($this->datajud_tribunal) ? strtoupper($this->datajud_tribunal) : null),
             'justice_segment' => $this->justice_segment ?: null,
             'instance_level' => $this->instance_level ?: null,
             'state' => $this->state ?: null,

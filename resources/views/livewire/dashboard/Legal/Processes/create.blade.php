@@ -27,7 +27,7 @@
                             </div>
                             <h3 class="text-sm font-semibold text-gray-900">Dados do Processo</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             <x-input name="process_number" label="Número do Processo" required placeholder="Ex: 0001234-56.2026.8.26.0001" wire:model="process_number" />
                             <x-input name="cnj_number" label="Número CNJ" placeholder="Número CNJ completo" wire:model="cnj_number" />
 
@@ -102,7 +102,7 @@
                             </div>
                             <h3 class="text-sm font-semibold text-gray-900">Origem / Tribunal</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             <x-input name="legacy_number" label="Número Antigo" wire:model="legacy_number" />
                             <x-input name="external_number" label="Número Externo" wire:model="external_number" />
                             <x-input name="court_acronym" label="Sigla do Tribunal" wire:model="court_acronym" />
@@ -128,7 +128,7 @@
                             </div>
                             <h3 class="text-sm font-semibold text-gray-900">Partes</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             <x-input name="opposing_party" label="Parte Contrária" placeholder="Nome da parte contrária" wire:model="opposing_party" />
                             <x-input name="opposing_lawyer" label="Advogado da Parte Contrária" placeholder="OAB/UF e nome" wire:model="opposing_lawyer" />
                         </div>
@@ -144,7 +144,7 @@
                             </div>
                             <h3 class="text-sm font-semibold text-gray-900">Classificação</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             <x-input name="case_class" label="Classe Processual" wire:model="case_class" />
                             <x-input name="case_class_code" label="Código da Classe" wire:model="case_class_code" />
                             <x-input name="main_subject" label="Assunto Principal" wire:model="main_subject" />
@@ -176,7 +176,7 @@
                             </div>
                             <h3 class="text-sm font-semibold text-gray-900">Fase / Situação</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             <x-input name="process_phase" label="Fase Processual" placeholder="Ex: Conhecimento, Execução" wire:model="process_phase" />
                             <x-input name="court_status" label="Status no Tribunal" wire:model="court_status" />
                             <x-input name="situation" label="Situação" placeholder="Ex: Em andamento, Arquivado" wire:model="situation" />
@@ -196,7 +196,7 @@
                             </div>
                             <h3 class="text-sm font-semibold text-gray-900">Datas Importantes</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                             <x-input name="distribution_date" label="Distribuição" type="text" data-flatpickr data-date-format="Y-m-d" data-alt-input="true" data-alt-format="d/m/Y" wire:model="distribution_date" />
                             <x-input name="filing_date" label="Autuação" type="text" data-flatpickr data-date-format="Y-m-d" data-alt-input="true" data-alt-format="d/m/Y" wire:model="filing_date" />
                             <x-input name="start_date" label="Início" type="text" data-flatpickr data-date-format="Y-m-d" data-alt-input="true" data-alt-format="d/m/Y" wire:model="start_date" />
@@ -220,7 +220,7 @@
                             </div>
                             <h3 class="text-sm font-semibold text-gray-900">Dados Financeiros</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             <x-input name="contract_value" label="Valor do Contrato" placeholder="R$ 0,00" data-mask-type="decimal" wire:model="contract_value" />
                             <x-input name="client_interest" label="% Sucumbência" type="number" wire:model="client_interest" />
                             <x-input name="cause_value" label="Valor da Causa" type="text" data-mask-type="decimal" wire:model="cause_value" />
@@ -294,7 +294,7 @@
                             <h3 class="text-sm font-semibold text-gray-900">Audiências</h3>
                         </div>
                         <label class="flex items-center gap-2 text-sm text-gray-700 mb-4"><input type="checkbox" wire:model="has_hearing" class="h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"> Possui audiência</label>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             <x-input name="next_hearing_at" label="Próxima Audiência" type="text" data-flatpickr data-enable-time="true" data-time-24hr="true" data-date-format="Y-m-d H:i" data-alt-input="true" data-alt-format="d/m/Y H:i" wire:model="next_hearing_at" />
                             <x-input name="next_hearing_type" label="Tipo de Audiência" wire:model="next_hearing_type" />
                             <x-input name="next_hearing_location" label="Local da Audiência" wire:model="next_hearing_location" />
@@ -314,7 +314,7 @@
                             </div>
                             <h3 class="text-sm font-semibold text-gray-900">Sentença / Recurso</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                             <label class="flex items-center gap-2 text-sm text-gray-700"><input type="checkbox" wire:model="has_sentence" class="h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"> Possui sentença</label>
                             <label class="flex items-center gap-2 text-sm text-gray-700"><input type="checkbox" wire:model="has_appeal" class="h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"> Houve recurso</label>
                             <x-input name="sentence_result" label="Resultado da Sentença" wire:model="sentence_result" />
@@ -334,7 +334,7 @@
                             <h3 class="text-sm font-semibold text-gray-900">Observações</h3>
                         </div>
                         <x-textarea name="internal_notes" label="Observações Internas" rows="3" placeholder="Anotações internas sobre este processo..." wire:model="internal_notes" />
-                        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             <x-input name="internal_title" label="Título Interno" wire:model="internal_title" />
                             <x-input name="internal_code" label="Código Interno" wire:model="internal_code" />
                             <x-input name="folder" label="Pasta" wire:model="folder" />
@@ -355,7 +355,7 @@
                             </div>
                             <h3 class="text-sm font-semibold text-gray-900">Sincronização / Metadados</h3>
                         </div>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             <div class="space-y-1">
                                 <label class="block text-sm font-medium text-gray-700">Origem dos Dados</label>
                                 <select wire:model="source" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
@@ -374,7 +374,7 @@
                         <div class="mt-4">
                             <x-textarea name="sync_error" label="Erro de Sincronização" rows="2" wire:model="sync_error" />
                         </div>
-                        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             <x-textarea name="source_data" label="Dados Brutos da Fonte (JSON)" rows="5" wire:model="source_data" />
                             <x-textarea name="metadata" label="Metadados (JSON)" rows="5" wire:model="metadata" />
                         </div>
