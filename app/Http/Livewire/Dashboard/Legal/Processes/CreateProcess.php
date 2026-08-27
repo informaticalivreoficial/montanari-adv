@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Services\DatajudService;
 use App\Exceptions\DatajudException;
 use App\Traits\HasAlerts;
+use App\Notifications\System\ProcessCreated;
+use Illuminate\Support\Facades\Notification;
 use App\Traits\HasValidations;
 
 class CreateProcess extends Component
@@ -293,6 +295,15 @@ class CreateProcess extends Component
             'source_data' => $this->source_data ? json_decode($this->source_data, true) : null,
             'metadata' => $this->metadata ? json_decode($this->metadata, true) : null,
         ]);
+
+        // Notifica admins
+        $admins = User::role(['super-admin', 'admin'])->get();
+        Notification::send($admins, new ProcessCreated(
+            processNumber: $this->process_number,
+            clientName: $this->client_id ? (User::find($this->client_id)?->name ?? 'N/D') : 'N/D',
+            caseTypeLabel: $process->case_type_label,
+            processId: $process->id,
+        ));
 
         return redirect()->route('dashboard.legal.processes')
             ->with('toast_success', 'Processo criado com sucesso!');

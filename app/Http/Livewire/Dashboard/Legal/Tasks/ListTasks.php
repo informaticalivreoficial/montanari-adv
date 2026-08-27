@@ -9,6 +9,8 @@ use App\Models\Process;
 use App\Models\User;
 use App\Models\Event;
 use App\Traits\HasAlerts;
+use App\Notifications\System\TaskCompleted;
+use Illuminate\Support\Facades\Notification;
 
 class ListTasks extends Component
 {
@@ -33,6 +35,16 @@ class ListTasks extends Component
 
         $label = $newStatus === 'completed' ? 'concluída' : 'pendente';
         $this->toastSuccess("Tarefa marcada como {$label}!");
+
+        // Notifica quando concluída
+        if ($newStatus === 'completed') {
+            $admins = User::role(['super-admin', 'admin'])->get();
+            Notification::send($admins, new TaskCompleted(
+                taskTitle: $task->title,
+                completedByName: auth()->user()->name,
+                taskId: $task->id,
+            ));
+        }
     }
 
     public function startProgress($id)

@@ -461,13 +461,13 @@
                 <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
                     <div class="space-y-1">
                         <label class="block text-sm font-medium text-gray-700">Google Maps Embed URL</label>
-                        <input
-                            type="url"
+                        <textarea
                             wire:model="maps_google"
+                            rows="2"
                             placeholder="https://www.google.com/maps/embed?..."
                             class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition
                                    focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                        />
+                        ></textarea>
                     </div>
                     <div class="space-y-3">
                         <label class="block text-sm font-medium text-gray-700">Feeds & Mapa do Site</label>

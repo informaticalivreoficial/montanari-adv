@@ -154,6 +154,13 @@
                         <i class="fa-solid fa-chart-simple shrink-0 w-5 text-center"></i>
                         <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Analytics</span>
                     </a>
+                    <a href="{{ route('dashboard.notifications') }}"
+                       title="Notificações"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.notifications') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
+                       :class="!desktopExpanded ? 'lg:justify-center lg:px-0' : ''">
+                        <i class="fa-solid fa-bell shrink-0 w-5 text-center"></i>
+                        <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Notificações</span>
+                    </a>
                 </nav>
 
                 <!-- Sair -->
@@ -192,8 +199,10 @@
                            class="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
                            title="Ver site">
                             <i class="fa-solid fa-external-link-alt"></i>
-                            <span class="hidden sm:inline">Ver Site</span>
                         </a>
+
+                        {{-- Notificações --}}
+                        <livewire:dashboard.notifications.notifications-dropdown />
 
                         {{-- Avatar + Menu --}}
                         <div class="relative" x-data="{ open: false }" @click.outside="open = false">

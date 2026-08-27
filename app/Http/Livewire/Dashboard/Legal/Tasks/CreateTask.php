@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\Event;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use App\Notifications\System\TaskCreated;
+use Illuminate\Support\Facades\Notification;
 
 class CreateTask extends Component
 {
@@ -74,6 +76,14 @@ class CreateTask extends Component
                 'notes'       => $task->notes,
             ]);
         }
+
+        // Notifica admins
+        $admins = User::role(['super-admin', 'admin'])->get();
+        Notification::send($admins, new TaskCreated(
+            taskTitle: $this->title,
+            responsibleName: $this->responsible_id ? User::find($this->responsible_id)?->name : null,
+            taskId: $task->id,
+        ));
 
         return redirect()->route('dashboard.legal.tasks')
             ->with('toast_success', 'Tarefa criada com sucesso!');

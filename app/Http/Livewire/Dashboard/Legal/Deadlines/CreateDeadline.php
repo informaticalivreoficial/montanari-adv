@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\Event;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use App\Notifications\System\DeadlineCreated;
+use Illuminate\Support\Facades\Notification;
 
 class CreateDeadline extends Component
 {
@@ -71,6 +73,15 @@ class CreateDeadline extends Component
             'location'    => null,
             'notes'       => $deadline->notes,
         ]);
+
+        // Notifica admins
+        $admins = User::role(['super-admin', 'admin'])->get();
+        Notification::send($admins, new DeadlineCreated(
+            title: $this->title,
+            dueDate: \Carbon\Carbon::parse($dueDateTime)->format('d/m/Y H:i'),
+            priorityLabel: ucfirst($this->priority),
+            deadlineId: $deadline->id,
+        ));
 
         return redirect()->route('dashboard.legal.deadlines')
             ->with('toast_success', 'Prazo criado com sucesso!');

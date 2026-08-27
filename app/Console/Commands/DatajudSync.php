@@ -5,9 +5,12 @@ namespace App\Console\Commands;
 use App\Exceptions\DatajudException;
 use App\Exceptions\DjenException;
 use App\Models\Process;
+use App\Models\User;
 use App\Services\DatajudService;
 use App\Services\DjenService;
+use App\Notifications\System\ProcessMovement;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Notification;
 
 /**
  * Re-sincroniza processos locais vinculados ao Datajud (CNJ).
@@ -103,6 +106,17 @@ class DatajudSync extends Command
 
                 $this->line("  [ok] {$process->source_id} sincronizado ({$tribunal}).");
 
+                // Notifica movimentação
+                if (! $this->option('pretend')) {
+                    $admins = User::role(['super-admin', 'admin'])->get();
+                    Notification::send($admins, new ProcessMovement(
+                        processNumber: $process->source_id,
+                        sourceLabel: 'Datajud',
+                        description: "Dados atualizados via API do CNJ ({$tribunal})",
+                        processId: $process->id,
+                    ));
+                }
+
                 // Complemento DJEN: publicações/intimações do Diário oficial.
                 if (! $this->option('pretend')) {
                     try {
@@ -110,6 +124,17 @@ class DatajudSync extends Command
                         $n = $djen->syncPublications($process);
                         if ($n > 0) {
                             $this->line("  [ok] {$process->source_id}: {$n} publicação(ões) do DJEN.");
+
+                            // Notifica publicações DJEN
+                            if (! $this->option('pretend')) {
+                                $admins = User::role(['super-admin', 'admin'])->get();
+                                Notification::send($admins, new ProcessMovement(
+                                    processNumber: $process->source_id,
+                                    sourceLabel: 'DJEN',
+                                    description: "{$n} nova(s) publicação(ões) no Diário Eletrônico",
+                                    processId: $process->id,
+                                ));
+                            }
                         }
                     } catch (DjenException $e) {
                         $this->warn("  [aviso] DJEN para {$process->source_id}: {$e->getMessage()}");

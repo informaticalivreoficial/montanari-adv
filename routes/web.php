@@ -33,6 +33,8 @@ use App\Http\Livewire\Dashboard\Posts\Pages\EditPage;
 use App\Http\Livewire\Dashboard\Posts\Categories\ListCategories;
 use App\Http\Livewire\Dashboard\Posts\Categories\CreateCategory;
 use App\Http\Livewire\Dashboard\Posts\Categories\EditCategory;
+use App\Http\Livewire\Dashboard\Notifications\NotificationsDropdown;
+use App\Http\Livewire\Dashboard\Notifications\ListNotifications;
 use App\Http\Livewire\Client\ClientLogin;
 use App\Http\Livewire\Client\ClientForgotPassword;
 use App\Http\Livewire\Client\ClientResetPassword;
@@ -128,6 +130,9 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
 
     // Analytics
     Route::livewire('/dashboard/analytics', SiteAnalytics::class)->name('dashboard.analytics');
+
+    // Notificações
+    Route::livewire('/dashboard/notificacoes', ListNotifications::class)->name('dashboard.notifications');
 
     /*
     |--------------------------------------------------------------------------
