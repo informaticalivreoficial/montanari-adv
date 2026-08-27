@@ -76,7 +76,7 @@ class GenerateSitemap extends Command
             });
 
         // Páginas publicadas (URL direta com slug)
-        Post::where('type', 'pagina')
+        Post::where('type', 'page')
             ->postson()
             ->orderBy('created_at', 'desc')
             ->chunk(100, function ($posts) use ($sitemap) {

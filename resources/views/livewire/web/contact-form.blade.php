@@ -1,118 +1,92 @@
 <div>
     @if($sent)
         {{-- Success Message --}}
-        <div class="quote-box">
-            <div class="sec-title">
-                <div style="text-align:center; padding: 40px 20px;">
-                    <i class="fas fa-check-circle" style="font-size: 4rem; color: #6ebf58; margin-bottom: 20px; display: block;"></i>
-                    <h3 style="color: #23406C; margin-bottom: 15px;">Mensagem Enviada!</h3>
-                    <p style="color: #666; font-size: 1.1rem;">
-                        Obrigado! Sua mensagem foi enviada com sucesso.<br>
-                        Entraremos em contato em breve.
-                    </p>
-                    <button wire:click="$set('sent', false)" class="btn-1" style="margin-top: 20px;">
-                        Enviar outra mensagem
-                    </button>
-                </div>
-            </div>
+        <div class="text-center py-12">
+            <i class="fas fa-check-circle text-6xl text-green-500 mb-6 block"></i>
+            <h3 class="font-heading text-2xl font-bold text-navy-800 mb-3">Mensagem Enviada!</h3>
+            <p class="text-gray-500 mb-6">
+                Obrigado! Sua mensagem foi enviada com sucesso.<br>
+                Entraremos em contato em breve.
+            </p>
+            <button wire:click="$set('sent', false)"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-navy-700 text-white font-semibold rounded-lg hover:bg-navy-800 transition">
+                Enviar outra mensagem
+            </button>
         </div>
     @else
         {{-- Contact Form --}}
-        <div class="quote-box">
-            <div class="sec-title">
-                <h3>Preencha o Formulário</h3>
-            </div>
+        <h3 class="font-heading text-2xl font-bold text-navy-800 mb-2">Envie sua Mensagem</h3>
+        <p class="text-gray-400 text-sm mb-8">Preencha os campos abaixo e entraremos em contato.</p>
 
-            {{-- Honeypot fields (hidden) --}}
-            <div style="display: none;">
-                <input type="text" wire:model="bairro" tabindex="-1" autocomplete="off">
-                <input type="text" wire:model="cidade" tabindex="-1" autocomplete="off">
-            </div>
-
-            <form wire:submit.prevent="send">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="quote-item" style="margin-bottom: 15px;">
-                            <label style="font-weight: 600; color: #333; margin-bottom: 5px; display: block;">
-                                Nome <span style="color: red;">*</span>
-                            </label>
-                            <input type="text" wire:model="nome" placeholder="Seu nome completo"
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
-                            @error('nome')
-                                <span style="color: #dc3545; font-size: 0.85rem; margin-top: 5px; display: block;">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="quote-item" style="margin-bottom: 15px;">
-                            <label style="font-weight: 600; color: #333; margin-bottom: 5px; display: block;">
-                                E-mail <span style="color: red;">*</span>
-                            </label>
-                            <input type="email" wire:model="email" placeholder="seu@email.com"
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
-                            @error('email')
-                                <span style="color: #dc3545; font-size: 0.85rem; margin-top: 5px; display: block;">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="quote-item" style="margin-bottom: 15px;">
-                            <label style="font-weight: 600; color: #333; margin-bottom: 5px; display: block;">
-                                Telefone
-                            </label>
-                            <input type="text" wire:model="telefone" placeholder="(00) 00000-0000"
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
-                        </div>
-                    </div>
-
-                    <div class="col-md-12">
-                        <div class="quote-item" style="margin-bottom: 15px;">
-                            <label style="font-weight: 600; color: #333; margin-bottom: 5px; display: block;">
-                                Assunto
-                            </label>
-                            <select wire:model="assunto"
-                                    style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; background: #fff;">
-                                <option value="">Selecione o assunto</option>
-                                <option value="Consulta">Consulta</option>
-                                <option value="Novo caso">Novo caso</option>
-                                <option value="Andamento de processo">Andamento de processo</option>
-                                <option value="Documentação">Documentação</option>
-                                <option value="Outro">Outro</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-md-12">
-                        <div class="quote-item" style="margin-bottom: 15px;">
-                            <label style="font-weight: 600; color: #333; margin-bottom: 5px; display: block;">
-                                Mensagem <span style="color: red;">*</span>
-                            </label>
-                            <textarea wire:model="mensagem" placeholder="Descreva sua necessidade aqui..."
-                                      rows="6"
-                                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; resize: vertical;"></textarea>
-                            @error('mensagem')
-                                <span style="color: #dc3545; font-size: 0.85rem; margin-top: 5px; display: block;">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="col-md-12">
-                        <div class="quote-item">
-                            <button type="submit" class="btn-1"
-                                    wire:loading.attr="disabled"
-                                    wire:loading.class="opacity-50"
-                                    style="min-width: 200px;">
-                                <span wire:loading.remove wire:target="send">Enviar Mensagem</span>
-                                <span wire:loading wire:target="send">
-                                    <i class="fas fa-spinner fa-spin"></i> Enviando...
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
+        {{-- Honeypot fields (hidden) --}}
+        <div style="display: none;">
+            <input type="text" wire:model="bairro" tabindex="-1" autocomplete="off">
+            <input type="text" wire:model="cidade" tabindex="-1" autocomplete="off">
         </div>
+
+        <form wire:submit.prevent="send" class="space-y-5">
+            {{-- Nome --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Nome <span class="text-red-500">*</span>
+                </label>
+                <input type="text" wire:model="nome" placeholder="Seu nome completo"
+                       class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition
+                              focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20
+                              @error('nome') border-red-500 focus:border-red-500 focus:ring-red-500/20 @enderror">
+                @error('nome')
+                    <p class="flex items-center gap-1 text-xs text-red-500 mt-1">
+                        <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
+                    </p>
+                @enderror
+            </div>
+
+            {{-- Email --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    E-mail <span class="text-red-500">*</span>
+                </label>
+                <input type="email" wire:model="email" placeholder="seu@email.com"
+                       class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition
+                              focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20
+                              @error('email') border-red-500 focus:border-red-500 focus:ring-red-500/20 @enderror">
+                @error('email')
+                    <p class="flex items-center gap-1 text-xs text-red-500 mt-1">
+                        <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
+                    </p>
+                @enderror
+            </div>
+
+            {{-- Mensagem --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Mensagem <span class="text-red-500">*</span>
+                </label>
+                <textarea wire:model="mensagem" placeholder="Descreva sua necessidade aqui..."
+                          rows="5"
+                          class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition resize-y
+                                 focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20
+                                 @error('mensagem') border-red-500 focus:border-red-500 focus:ring-red-500/20 @enderror"></textarea>
+                @error('mensagem')
+                    <p class="flex items-center gap-1 text-xs text-red-500 mt-1">
+                        <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
+                    </p>
+                @enderror
+            </div>
+
+            {{-- Submit --}}
+            <button type="submit"
+                    wire:loading.attr="disabled"
+                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-semibold rounded-lg
+                           hover:from-gold-600 hover:to-gold-700 transition-all duration-300 shadow-lg shadow-gold-500/25
+                           disabled:opacity-50 disabled:cursor-not-allowed">
+                <span wire:loading.remove wire:target="send">
+                    <i class="fas fa-paper-plane text-xs"></i> Enviar Mensagem
+                </span>
+                <span wire:loading wire:target="send">
+                    <i class="fas fa-spinner fa-spin text-xs"></i> Enviando...
+                </span>
+            </button>
+        </form>
     @endif
 </div>

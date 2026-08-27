@@ -28,7 +28,26 @@
         <div class="grid lg:grid-cols-5 gap-16">
 
             {{-- Contact Info --}}
-            <div class="lg:col-span-2 reveal">
+            <div class="lg:col-span-2 reveal" x-data="{
+                raw: {
+                    phone: '{{ $configuracoes->phone ?? '' }}',
+                    cell: '{{ $configuracoes->cell_phone ?? '' }}',
+                    whats: '{{ $configuracoes->whatsapp ?? '' }}'
+                },
+                phone: '',
+                cell: '',
+                whats: '',
+                mask(v) {
+                    v = v.replace(/\D/g, '');
+                    if (v.length <= 10) return v.replace(/^(\d{2})(\d{0,4})(\d{0,4})/, '($1) $2-$3').replace(/-$/, '');
+                    return v.replace(/^(\d{2})(\d{0,5})(\d{0,4})/, '($1) $2-$3').replace(/-$/, '');
+                },
+                init() {
+                    this.phone = this.mask(this.raw.phone);
+                    this.cell = this.mask(this.raw.cell);
+                    this.whats = this.mask(this.raw.whats);
+                }
+            }">
                 <div class="flex items-center gap-4 mb-6">
                     <div class="gold-line"></div>
                     <span class="text-gold-600 text-sm font-semibold tracking-[0.15em] uppercase">Fale Conosco</span>
@@ -39,20 +58,18 @@
                 </p>
 
                 <div class="space-y-6">
-                    @if(!empty($configuracoes->phone))
+                    @if(!empty($configuracoes->phone) || !empty($configuracoes->cell_phone))
                         <div class="flex items-start gap-4">
                             <div class="w-12 h-12 bg-navy-50 rounded-xl flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-phone text-navy-600"></i>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Telefone</p>
-                                <a href="tel:{{ $configuracoes->phone }}" class="text-navy-800 font-semibold hover:text-gold-600 transition-colors">
-                                    {{ $configuracoes->phone }}
-                                </a>
+                                @if(!empty($configuracoes->phone))
+                                    <a href="tel:{{ $configuracoes->phone }}" class="text-navy-800 font-semibold hover:text-gold-600 transition-colors block" x-text="phone"></a>
+                                @endif
                                 @if(!empty($configuracoes->cell_phone))
-                                    <br><a href="tel:{{ $configuracoes->cell_phone }}" class="text-navy-800 font-semibold hover:text-gold-600 transition-colors">
-                                        {{ $configuracoes->cell_phone }}
-                                    </a>
+                                    <a href="tel:{{ $configuracoes->cell_phone }}" class="text-navy-800 font-semibold hover:text-gold-600 transition-colors block" x-text="cell"></a>
                                 @endif
                             </div>
                         </div>
@@ -66,9 +83,7 @@
                             <div>
                                 <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">WhatsApp</p>
                                 <a href="{{ getNumZap($configuracoes->whatsapp, 'Atendimento ' . $configuracoes->app_name) }}"
-                                   target="_blank" class="text-green-600 font-semibold hover:text-green-700 transition-colors">
-                                    {{ $configuracoes->whatsapp }}
-                                </a>
+                                   target="_blank" class="text-green-600 font-semibold hover:text-green-700 transition-colors" x-text="whats"></a>
                             </div>
                         </div>
                     @endif
@@ -124,9 +139,6 @@
             {{-- Form --}}
             <div class="lg:col-span-3 reveal" style="animation-delay: 0.2s">
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 p-8 md:p-10">
-                    <h3 class="font-heading text-2xl font-bold text-navy-800 mb-2">Envie sua Mensagem</h3>
-                    <p class="text-gray-400 text-sm mb-8">Preencha os campos abaixo e entraremos em contato.</p>
-
                     <livewire:web.contact-form />
                 </div>
             </div>

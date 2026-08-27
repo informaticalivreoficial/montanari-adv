@@ -39,7 +39,7 @@
                 @if(!empty($slide->content))
                     {!! $slide->content !!}
                 @else
-                    {{ $configuracoes->information }}
+                    {{ strip_tags($configuracoes->information) }}
                 @endif
             </div>
 

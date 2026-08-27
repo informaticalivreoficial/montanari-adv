@@ -1,9 +1,11 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Montanari Adv - Painel</title>
+        <title>Gerenciador - {{ $configuracoes->app_name }}</title>
+
+        <link rel="icon" href="{{ asset('theme/images/chave.png')}}" type="image/x-icon">
 
         @vite(['resources/js/app.js'])
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,10 +31,10 @@
                 <!-- Marca -->
                 <div class="px-5 py-5 border-b border-gray-200 flex items-center gap-2"
                      :class="!desktopExpanded ? 'lg:justify-center' : ''">
-                    <i class="fa-solid fa-scale-balanced text-blue-600 text-2xl shrink-0"></i>
+                    <img src="{{ $configuracoes->getfaveicon() }}" alt="{{ $configuracoes->app_name }}">
                     <div class="min-w-0 flex-1" :class="!desktopExpanded ? 'lg:hidden' : ''">
-                        <h1 class="text-base font-bold text-gray-800 truncate">Montanari Adv</h1>
-                        <p class="text-[11px] text-gray-500 truncate">Painel Administrativo</p>
+                        <h1 class="text-[11px] font-bold text-gray-800 truncate">{{ $configuracoes->app_name }}</h1>
+                        <p class="text-[11px] text-gray-500 truncate">Gerenciador</p>
                     </div>
                     <button class="lg:hidden -mr-1 p-1 text-gray-400 hover:text-gray-700 rounded-lg"
                             @click="mobileOpen = false" aria-label="Fechar menu">

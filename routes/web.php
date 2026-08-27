@@ -54,24 +54,27 @@ use Illuminate\Support\Facades\Auth;
 | Rotas Públicas (Site)
 |--------------------------------------------------------------------------
 */
-Route::group(['namespace' => 'Web', 'as' => 'web.'], function () {
+Route::group(['as' => 'web.'], function () {
 
     Route::match(['post', 'get'], '/', [WebController::class, 'home'])->name('home');
 
-    Route::get('/atendimento', 'WebController@atendimento')->name('atendimento');
-    Route::get('/sendEmail', 'WebController@sendEmail')->name('sendEmail');
-    Route::get('/sendNewsletter', 'WebController@sendNewsletter')->name('sendNewsletter');
+    Route::get('/atendimento', [WebController::class, 'atendimento'])->name('atendimento');
+    Route::get('/sendEmail', [WebController::class, 'sendEmail'])->name('sendEmail');
+    Route::get('/sendNewsletter', [WebController::class, 'sendNewsletter'])->name('sendNewsletter');
 
-    Route::get('/area-de-atuacao/{slug}', 'WebController@servico')->name('servico');
-    Route::get('/areas-de-atuacao', 'WebController@servicos')->name('servicos');
+    Route::get('/area-de-atuacao/{slug}', [WebController::class, 'servico'])->name('servico');
+    Route::get('/areas-de-atuacao', [WebController::class, 'servicos'])->name('servicos');
 
-    Route::get('/blog/artigo/{slug}', 'WebController@artigo')->name('blog.artigo');
-    Route::get('/blog/categoria/{slug}', 'WebController@categoria')->name('blog.categoria');
-    Route::get('/blog/artigos', 'WebController@artigos')->name('blog.artigos');
+    Route::get('/blog/artigo/{slug}', [WebController::class, 'artigo'])->name('blog.artigo');
+    Route::get('/blog/categoria/{slug}', [WebController::class, 'categoria'])->name('blog.categoria');
+    Route::get('/blog/artigos', [WebController::class, 'artigos'])->name('blog.artigos');
 
-    Route::match(['post', 'get'], '/pesquisa', 'WebController@pesquisa')->name('pesquisa');
+    Route::match(['post', 'get'], '/pesquisa', [WebController::class, 'pesquisa'])->name('pesquisa');
 
-    Route::get('/politica-de-privacidade', 'WebController@politica')->name('politica-de-privacidade');
+    Route::get('/politica-de-privacidade', [WebController::class, 'politica'])->name('politica-de-privacidade');
+
+    // Páginas dinâmicas (criadas no painel com menu = 1)
+    Route::get('/pagina/{slug}', [WebController::class, 'pagina'])->name('pagina');
 
     Route::get('feed', [RssFeedController::class, 'feed'])->name('feed');
 });

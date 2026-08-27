@@ -4,15 +4,17 @@ namespace App\Http\Livewire\Web;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use App\Models\Configuracoes;
+use App\Models\User;
 use App\Mail\Web\Atendimento;
+use App\Notifications\System\ContactFormNotification;
+use App\Services\TelegramService;
 
 class ContactForm extends Component
 {
     public $nome = '';
     public $email = '';
-    public $telefone = '';
-    public $assunto = '';
     public $mensagem = '';
 
     // Honeypot fields
@@ -25,8 +27,6 @@ class ContactForm extends Component
     protected $rules = [
         'nome' => 'required|string|min:3|max:255',
         'email' => 'required|email|max:255',
-        'telefone' => 'nullable|string|max:20',
-        'assunto' => 'nullable|string|max:255',
         'mensagem' => 'required|string|min:10|max:5000',
     ];
 
@@ -58,7 +58,6 @@ class ContactForm extends Component
     {
         // Honeypot check
         if (!empty($this->bairro) || !empty($this->cidade)) {
-            // Silently reject spam
             $this->sent = true;
             return;
         }
@@ -70,6 +69,7 @@ class ContactForm extends Component
         try {
             $Configuracoes = Configuracoes::where('id', '1')->first();
 
+            // 1. E-mail (já existia)
             $data = [
                 'sitename' => $Configuracoes->app_name ?? 'Montanari Advocacia',
                 'siteemail' => $Configuracoes->email ?? '',
@@ -80,10 +80,30 @@ class ContactForm extends Component
 
             Mail::send(new Atendimento($data));
 
+            // 2. Notificação BD + E-mail para admins
+            $admins = User::role(['super-admin', 'admin'])->get();
+            Notification::send($admins, new ContactFormNotification(
+                nome: $this->nome,
+                email: $this->email,
+                mensagem: $this->mensagem,
+            ));
+
+            // 3. Telegram
+            $telegram = new TelegramService();
+            $text  = "📩 <b>Novo contato via site</b>\n\n";
+            $text .= "<b>Nome:</b> {$this->nome}\n";
+            $text .= "<b>E-mail:</b> {$this->email}\n";
+            $text .= "<b>Mensagem:</b>\n{$this->mensagem}";
+            $telegram->sendHtml($text);
+
             $this->sent = true;
-            $this->reset(['nome', 'email', 'telefone', 'assunto', 'mensagem']);
+            $this->reset(['nome', 'email', 'mensagem']);
         } catch (\Exception $e) {
-            session()->flash('error', 'Erro ao enviar mensagem. Tente novamente ou entre em contato por telefone.');
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'title' => 'Erro ao enviar mensagem',
+                'text' => 'Tente novamente ou entre em contato por telefone.',
+            ]);
         } finally {
             $this->sending = false;
         }

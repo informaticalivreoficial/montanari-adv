@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Configuracoes;
+use App\Models\Post;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -36,6 +37,18 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // Table might not exist or be empty, share null
             View()->share('configuracoes', (object)[]);
+        }
+
+        // Share menu pages (published pages with menu = 1)
+        try {
+            $menuPages = Post::where('type', 'page')
+                ->where('status', 1)
+                ->where('menu', 1)
+                ->orderBy('created_at', 'ASC')
+                ->get();
+            View()->share('menuPages', $menuPages);
+        } catch (\Exception $e) {
+            View()->share('menuPages', collect());
         }
         
         Blade::aliasComponent('admin.components.message', 'message');

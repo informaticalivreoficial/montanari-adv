@@ -42,7 +42,7 @@ class WebController extends Controller
     public function servicos()
     {
         $Configuracoes = Configuracoes::where('id', '1')->first();
-        $servicos = Post::orderBy('created_at', 'DESC')->where('type', '=', 'pagina')->postson()->paginate(9);
+        $servicos = Post::orderBy('created_at', 'DESC')->where('type', '=', 'page')->postson()->paginate(9);
 
         $head = $this->seo->render('Serviços ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             $Configuracoes->information ?? 'Montanari Advocacia - Escritório de Advocacia',
@@ -60,14 +60,14 @@ class WebController extends Controller
     public function servico(Request $request)
     {
         $Configuracoes = Configuracoes::where('id', '1')->first();
-        $servico = Post::where('slug', $request->slug)->where('type', '=', 'pagina')->postson()->first();
+        $servico = Post::where('slug', $request->slug)->where('type', '=', 'page')->postson()->first();
         $head = $this->seo->render($servico->titulo . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             strip_tags($servico->getContentWebSiteAttribute()) ?? 'Montanari Advocacia - Escritório de Advocacia',
             route('web.servico', ['slug' => $servico->slug]),
             url($servico->cover() ?? Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg'))
         ); 
 
-        $postsTags = Post::where('type', '=', 'pagina')->orWhere('id', '!=', $servico->id)->postson()->limit(3)->get();
+        $postsTags = Post::where('type', '=', 'page')->orWhere('id', '!=', $servico->id)->postson()->limit(3)->get();
                 
         $servico->views = $servico->views + 1;
         $servico->save();
@@ -96,6 +96,33 @@ class WebController extends Controller
         ]);
     }
 
+    /**
+     * Exibe uma página dinâmica criada no painel (type = page, menu = 1).
+     */
+    public function pagina($slug)
+    {
+        $Configuracoes = Configuracoes::where('id', '1')->first();
+        $pagina = Post::where('slug', $slug)
+            ->where('type', 'page')
+            ->where('status', 1)
+            ->firstOrFail();
+
+        $pagina->increment('views');
+
+        $head = $this->seo->render(
+            $pagina->title . ' - ' . ($Configuracoes->app_name ?? 'Montanari Advocacia'),
+            $pagina->excerpt ?? strip_tags($pagina->content),
+            url('/pagina/') . '/' . $pagina->slug,
+            $pagina->cover()
+        );
+
+        return view('web.pagina', [
+            'pagina' => $pagina,
+            'head' => $head,
+            'Configuracoes' => $Configuracoes,
+        ]);
+    }
+
     public function pesquisa(Request $request)
     {
         $Configuracoes = Configuracoes::where('id', '1')->first();        
@@ -108,7 +135,7 @@ class WebController extends Controller
                     ->orWhere('tags', 'LIKE', '%'.$search.'%')
                     ->get();
         $servicos = Post::orderBy('created_at', 'DESC')
-                    ->where('type', '=', 'pagina')
+                    ->where('type', '=', 'page')
                     ->where('title', 'LIKE', '%'.$search.'%')
                     ->orWhere('type', 'LIKE', '%'.$search.'%')
                     ->orWhere('tags', 'LIKE', '%'.$search.'%')
@@ -190,31 +217,8 @@ class WebController extends Controller
             $json = "Obrigado {$request->nome} sua mensagem foi enviada com sucesso!"; 
             return response()->json(['sucess' => $json]);
         }
-    }
+    }  
     
-    public function sendNewsletter(Request $request)
-    {
-        if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
-            $json = "O campo <strong>Email</strong> está vazio ou não tem um formato válido!";
-            return response()->json(['error' => $json]);
-        }
-        if(!empty($request->bairro) || !empty($request->cidade)){
-            $json = "<strong>ERRO</strong> Você está praticando SPAM!"; 
-            return response()->json(['error' => $json]);
-        }else{   
-            $validaNews = Newsletter::where('email', $request->email)->first();            
-            if(!empty($validaNews)){
-                Newsletter::where('email', $request->email)->update(['status' => 1]);
-                $json = "Seu e-mail já está cadastrado!"; 
-                return response()->json(['sucess' => $json]);
-            }else{
-                $NewsletterCreate = Newsletter::create($request->all());
-                $NewsletterCreate->save();
-                $json = "Obrigado Cadastrado com sucesso!"; 
-                return response()->json(['sucess' => $json]);
-            }            
-        }
-    }
 
     public function artigos()
     {

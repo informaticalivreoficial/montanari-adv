@@ -2,14 +2,11 @@
 
 namespace App\Notifications\System;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\DatabaseMessage;
 use Illuminate\Notifications\Notification;
 
-class ProcessCreated extends Notification implements ShouldQueue
+class ProcessCreated extends Notification 
 {
-    use Queueable;
 
     public function __construct(
         public string $processNumber,

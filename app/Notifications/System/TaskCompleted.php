@@ -2,13 +2,10 @@
 
 namespace App\Notifications\System;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class TaskCompleted extends Notification implements ShouldQueue
+class TaskCompleted extends Notification 
 {
-    use Queueable;
 
     public function __construct(
         public string $taskTitle,

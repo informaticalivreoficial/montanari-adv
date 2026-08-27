@@ -29,7 +29,7 @@
                         </div>
                         <div class="space-y-4">
                             <x-input name="title" label="Título" required placeholder="Título da página" wire:model="title" />
-                            <x-textarea name="content" label="Conteúdo" rows="12" placeholder="Escreva o conteúdo da página aqui..." wire:model="content" />
+                            <x-quill name="content" label="Conteúdo" toolbar="full" height="300" placeholder="Escreva o conteúdo da página aqui..." wire:model="content" />
                         </div>
                     </div>
 

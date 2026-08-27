@@ -120,17 +120,17 @@
                 </a>
 
                 {{-- Desktop Menu --}}
-                <div class="hidden lg:flex items-center gap-1">
-                    <a href="{{ route('web.home') }}#about-us"
-                       class="px-4 py-2 text-sm font-medium rounded transition-all duration-200 {{ request()->routeIs('web.home') ? 'text-gold-500' : '' }}"
-                       :class="scrolled ? 'text-navy-700 hover:text-gold-600 hover:bg-gold-50' : 'text-white/90 hover:text-white hover:bg-white/10'">
-                        Escritório
-                    </a>
-                    <a href="{{ route('web.servicos') }}"
-                       class="px-4 py-2 text-sm font-medium rounded transition-all duration-200 {{ request()->routeIs('web.servico*') ? 'text-gold-500' : '' }}"
-                       :class="scrolled ? 'text-navy-700 hover:text-gold-600 hover:bg-gold-50' : 'text-white/90 hover:text-white hover:bg-white/10'">
-                        Áreas de Atuação
-                    </a>
+                <div class="hidden lg:flex items-center gap-1">                    
+
+                    {{-- Páginas dinâmicas do menu --}}
+                    @foreach($menuPages as $page)
+                        <a href="{{ url('/pagina/') }}/{{ $page->slug }}"
+                           class="px-4 py-2 text-sm font-medium rounded transition-all duration-200 {{ request()->url() === url('/pagina/'.$page->slug) ? 'text-gold-500' : '' }}"
+                           :class="scrolled ? 'text-navy-700 hover:text-gold-600 hover:bg-gold-50' : 'text-white/90 hover:text-white hover:bg-white/10'">
+                            {{ $page->title }}
+                        </a>
+                    @endforeach
+
                     <a href="{{ route('web.blog.artigos') }}"
                        class="px-4 py-2 text-sm font-medium rounded transition-all duration-200 {{ request()->routeIs('web.blog.*') ? 'text-gold-500' : '' }}"
                        :class="scrolled ? 'text-navy-700 hover:text-gold-600 hover:bg-gold-50' : 'text-white/90 hover:text-white hover:bg-white/10'">
@@ -191,6 +191,15 @@
                        class="py-4 px-4 text-lg font-medium text-white/90 hover:text-gold-400 border-b border-white/10 transition-colors">
                         <i class="fas fa-gavel w-6 text-gold-500/60"></i> Áreas de Atuação
                     </a>
+
+                    {{-- Páginas dinâmicas do menu --}}
+                    @foreach($menuPages as $page)
+                        <a href="{{ url('/pagina/') }}/{{ $page->slug }}" @click="mobileMenuOpen = false"
+                           class="py-4 px-4 text-lg font-medium text-white/90 hover:text-gold-400 border-b border-white/10 transition-colors">
+                            <i class="fas fa-file w-6 text-gold-500/60"></i> {{ $page->title }}
+                        </a>
+                    @endforeach
+
                     <a href="{{ route('web.blog.artigos') }}" @click="mobileMenuOpen = false"
                        class="py-4 px-4 text-lg font-medium text-white/90 hover:text-gold-400 border-b border-white/10 transition-colors">
                         <i class="fas fa-newspaper w-6 text-gold-500/60"></i> Blog
@@ -472,7 +481,7 @@
     @endif
 
     {{-- Scripts --}}
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @vite(['resources/js/frontend.js'])
 
     @hasSection('js')
         @yield('js')

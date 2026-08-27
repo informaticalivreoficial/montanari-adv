@@ -90,8 +90,6 @@
                 <x-input name="app_name" label="Nome do Site" wire:model="app_name" required placeholder="Ex: Montanari Adv" />
                 <x-input name="social_name" label="Nome Social / Fantasia" wire:model="social_name" placeholder="Ex: Montanari Advocacia" />
                 <x-input name="alias_name" label="Nome Alternativo" wire:model="alias_name" placeholder="Ex: MA" />
-                <x-input name="slug" label="Slug" wire:model="slug" placeholder="Ex: montanari-adv" />
-
                 <div class="space-y-1">
                     <label class="block text-sm font-medium text-gray-700">Ano de Início</label>
                     <input
@@ -106,13 +104,10 @@
                     @error('init_date') <p class="flex items-center gap-1 text-xs text-red-500"><i class="fa-solid fa-circle-exclamation"></i> {{ $message }}</p> @enderror
                 </div>
 
-                <x-input name="template" label="Template" wire:model="template" placeholder="Ex: default" />
-
                 <x-input-mask name="cnpj" label="CNPJ" mask-type="cnpj" wire:model="cnpj" placeholder="00.000.000/0000-00" />
                 <x-input name="ie" label="Inscrição Estadual" wire:model="ie" placeholder="Ex: 123456789" />
                 <x-input name="domain" label="Domínio" wire:model="domain" placeholder="Ex: montanariadv.com.br" />
-                <x-input name="subdomain" label="Subdomínio" wire:model="subdomain" placeholder="Ex: www" />
-
+                
                 <div class="space-y-1">
                     <label class="block text-sm font-medium text-gray-700">Status do Sistema</label>
                     <div class="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-2.5">
@@ -510,7 +505,16 @@
 
                     <x-quill name="cookies_preference" label="Preferência de Cookies" wire:model="cookies_preference" placeholder="Política de uso de cookies..." />
 
-                    <x-quill name="information" label="Informações Adicionais" wire:model="information" placeholder="Informações gerais sobre o escritório..." />
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700">Informações Adicionais</label>
+                        <textarea
+                            wire:model="information"
+                            rows="3"
+                            placeholder="Informações gerais sobre o escritório..."
+                            class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition
+                                   focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                        ></textarea>
+                    </div>
                 </div>
             </div>
         </div>

@@ -35,6 +35,7 @@ export default defineConfig({
         rollupOptions: {
             input: [
                 'resources/js/app.js',
+                'resources/js/frontend.js',
                 'resources/css/frontend.css',
             ],
         },

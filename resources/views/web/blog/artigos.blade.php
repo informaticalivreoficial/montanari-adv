@@ -30,7 +30,7 @@
                 <article class="reveal blog-card bg-white rounded-2xl overflow-hidden border border-gray-100 group"
                          style="animation-delay: {{ $index * 0.1 }}s">
                     <div class="relative h-56 overflow-hidden">
-                        <img src="{{ $artigo->sitecover() }}" alt="{{ $artigo->title }}"
+                        <img src="{{ $artigo->cover() }}" alt="{{ $artigo->title }}"
                              class="blog-card-image w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 

@@ -1,4 +1,4 @@
-<div class="relative" x-data="{ open: false }" @click.outside="open = false; $wire.close()">
+<div class="relative" wire:poll.30s="loadData" x-data="{ open: false }" @click.outside="open = false; $wire.close()">
     {{-- Bell Button --}}
     <button
         @click="$wire.toggle(); open = !open"
