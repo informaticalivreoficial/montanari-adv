@@ -1,19 +1,17 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 /*
 |--------------------------------------------------------------------------
 | Console Routes
 |--------------------------------------------------------------------------
 |
-| This file is where you may define all of your Closure based console
-| commands. Each Closure is bound to a command instance allowing a
-| simple approach to interacting with each command's IO methods.
+| This file defines the schedule for commands that run periodically.
 |
 */
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->describe('Display an inspiring quote');
+// Re-sincroniza processos vinculados ao Datajud (CNJ) e gera sitemap
+Schedule::command('sitemap:generate')->everyMinute()->withoutOverlapping();
+Schedule::command('datajud:sync')->everyMinute()->withoutOverlapping();
+Schedule::command('app:clear-logs')->everyMinute()->withoutOverlapping();
