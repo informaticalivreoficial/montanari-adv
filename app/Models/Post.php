@@ -40,6 +40,7 @@ class Post extends Model
     protected $casts = [
         'status' => 'boolean',
         'comments' => 'boolean',
+        'publish_at' => 'datetime',
     ];
 
     protected static function boot()

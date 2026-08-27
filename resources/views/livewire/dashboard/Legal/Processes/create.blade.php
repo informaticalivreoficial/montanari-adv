@@ -54,7 +54,13 @@
     {{-- ============================================================
          FORM
     ============================================================ --}}
-    <form wire:submit.prevent="store">
+    <form wire:submit.prevent="store" x-data="{ submitting: false }" x-init="
+        new MutationObserver(() => {
+            if (!submitting) return;
+            const el = document.querySelector('.text-red-500');
+            if (el) { submitting = false; el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        }).observe($el, { childList: true, subtree: true });
+    " x-on:submit="submitting = true">
 
         {{-- ========================================================
              CARD PRINCIPAL
@@ -115,7 +121,6 @@
 
                         <select
                             wire:model="client_id"
-                            required
                             class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20 @error('client_id') border-red-500 @enderror"
                         >
                             <option value="">Selecione o cliente</option>
@@ -184,7 +189,6 @@
 
                         <select
                             wire:model="case_type"
-                            required
                             class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                         >
                             <option value="">Selecione</option>

@@ -13,7 +13,13 @@
         </div>
     </div>
 
-    <form wire:submit.prevent="store">
+    <form wire:submit.prevent="store" x-data="{ submitting: false }" x-init="
+        new MutationObserver(() => {
+            if (!submitting) return;
+            const el = document.querySelector('.text-red-500');
+            if (el) { submitting = false; el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        }).observe($el, { childList: true, subtree: true });
+    " x-on:submit="submitting = true">
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Main Card -->
             <div class="lg:col-span-2">
@@ -28,9 +34,9 @@
                         </div>
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div class="sm:col-span-2">
-                                <x-input name="title" label="Título" required placeholder="Ex: Contestação - Prazo para manifestação" wire:model="title" />
+                                <x-input name="title" label="Título" placeholder="Ex: Contestação - Prazo para manifestação" wire:model="title" />
                             </div>
-                            <x-input name="due_date" label="Data de Vencimento" type="date" required wire:model="due_date" />
+                            <x-input name="due_date" label="Data de Vencimento" type="date" wire:model="due_date" />
                             <x-input name="due_time" label="Horário" type="time" wire:model="due_time" />
                             <x-input name="reminder_at" label="Lembrar em" type="datetime-local" wire:model="reminder_at" />
                         </div>
@@ -70,19 +76,28 @@
                             <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
                                 <i class="fa-solid fa-folder text-sm"></i>
                             </div>
-                            <div>
+<div x-data="{ submitting: false }" x-init="
+    new MutationObserver(() => {
+        if (!submitting) return;
+        const el = document.querySelector('.text-red-500');
+        if (el) { submitting = false; el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    }).observe($el, { childList: true, subtree: true });
+" x-on:submit="submitting = true">
                                 <h3 class="text-sm font-semibold text-gray-900">Processo</h3>
                                 <p class="text-xs text-gray-500">Obrigatório</p>
                             </div>
                         </div>
-                        <select wire:model="process_id" required class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition @error('process_id') border-red-500 @enderror">
+                        <select wire:model="process_id" class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition @error('process_id') border-red-500 @enderror">
                             <option value="">Selecione o processo</option>
                             @foreach($processes as $id => $number)
                                 <option value="{{ $id }}">{{ $number }}</option>
                             @endforeach
                         </select>
                         @error('process_id')
-                            <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
+                            <p class="mt-1 flex items-center gap-1 text-xs text-red-500">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ $message }}
+                            </p>
                         @enderror
                     </div>
                 </div>

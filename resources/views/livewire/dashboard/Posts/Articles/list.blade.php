@@ -114,6 +114,9 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('blog.artigo', $post->slug) }}" target="_blank" class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-blue-600 transition" title="Ver no site">
+                                            <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
+                                        </a>
                                         <a href="{{ route('dashboard.posts.articles.edit', $post->id) }}" class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-amber-600 transition">
                                             <i class="fa-solid fa-pen-to-square text-sm"></i>
                                         </a>

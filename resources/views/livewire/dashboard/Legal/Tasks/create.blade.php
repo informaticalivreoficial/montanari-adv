@@ -13,7 +13,13 @@
         </div>
     </div>
 
-    <form wire:submit.prevent="store">
+    <form wire:submit.prevent="store" x-data="{ submitting: false }" x-init="
+        new MutationObserver(() => {
+            if (!submitting) return;
+            const el = document.querySelector('.text-red-500');
+            if (el) { submitting = false; el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        }).observe($el, { childList: true, subtree: true });
+    " x-on:submit="submitting = true">
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Main Card -->
             <div class="lg:col-span-2">
@@ -28,7 +34,7 @@
                         </div>
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div class="sm:col-span-2">
-                                <x-input name="title" label="Título" required placeholder="Ex: Preparar petição inicial" wire:model="title" />
+                                <x-input name="title" label="Título" placeholder="Ex: Preparar petição inicial" wire:model="title" />
                             </div>
                             <x-input name="due_date" label="Data de Vencimento" type="date" wire:model="due_date" />
                             <x-input name="due_time" label="Horário" type="time" wire:model="due_time" />

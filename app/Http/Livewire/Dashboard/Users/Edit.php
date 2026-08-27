@@ -12,7 +12,7 @@ use Intervention\Image\Facades\Image;
 
 class Edit extends Component
 {
-    use HasAlerts, WithFileUploads;
+    use HasAlerts, HasValidations, WithFileUploads;
 
     public $userId;
     public $user = null;
@@ -85,7 +85,6 @@ class Edit extends Component
 
         $this->name = $this->user->name ?? '';
         $this->email = $this->user->email ?? '';
-        // Dados pessoais
         $this->gender = $this->user->gender ?? '';
         $this->cpf = $this->user->cpf ?? '';
         $this->rg = $this->user->rg ?? '';
@@ -93,9 +92,7 @@ class Edit extends Component
         $this->birthday = $this->user->birthday ?? '';
         $this->naturalness = $this->user->naturalness ?? '';
         $this->civil_status = $this->user->civil_status ?? '';
-        // Avatar
         $this->currentAvatar = $this->user->url_avatar ?? '';
-        // Endereço
         $this->zipcode = $this->user->zipcode ?? '';
         $this->street = $this->user->street ?? '';
         $this->number = $this->user->number ?? '';
@@ -103,30 +100,155 @@ class Edit extends Component
         $this->neighborhood = $this->user->neighborhood ?? '';
         $this->state = $this->user->state ?? '';
         $this->city = $this->user->city ?? '';
-        // Contato
         $this->phone = $this->user->phone ?? '';
         $this->cell_phone = $this->user->cell_phone ?? '';
         $this->whatsapp = $this->user->whatsapp ?? '';
         $this->telegram = $this->user->telegram ?? '';
         $this->additional_email = $this->user->additional_email ?? '';
-        // Redes sociais
         $this->facebook = $this->user->facebook ?? '';
         $this->twitter = $this->user->twitter ?? '';
         $this->instagram = $this->user->instagram ?? '';
         $this->linkedin = $this->user->linkedin ?? '';
-        // Profissional
         $this->position = $this->user->position ?? '';
         $this->department = $this->user->department ?? '';
         $this->biography = $this->user->biography ?? '';
-        // Acesso
         $this->role = $this->user->roles->first()?->name ?? '';
-        // Outros
         $this->information = $this->user->information ?? '';
     }
 
-    /**
-     * Auto-complete de endereço via CEP
-     */
+    // ─── Validação em Tempo Real ────────────────────────────────
+
+    public function updatedName($value)
+    {
+        $this->validateOnly('name', [
+            'name' => 'required|string|min:3|max:255',
+        ], static::validationMessages(), static::validationAttributes());
+    }
+
+    public function updatedEmail($value)
+    {
+        $this->validateOnly('email', [
+            'email' => 'required|email|max:255|unique:users,email,' . $this->userId,
+        ], static::validationMessages(), static::validationAttributes());
+    }
+
+    public function updatedPassword($value)
+    {
+        if ($value) {
+            $this->validateOnly('password', [
+                'password' => 'nullable|string|min:8',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedPasswordConfirmation($value)
+    {
+        if ($this->password) {
+            $this->validateOnly('password_confirmation', [
+                'password_confirmation' => 'required_with:password|same:password',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedAvatar()
+    {
+        if ($this->avatar) {
+            $this->validateOnly('avatar', [
+                'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedAdditionalEmail($value)
+    {
+        if ($value) {
+            $this->validateOnly('additional_email', [
+                'additional_email' => 'nullable|email|max:255',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedCpf($value)
+    {
+        if ($value) {
+            $this->validateOnly('cpf', [
+                'cpf' => 'nullable|string|max:14',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedPhone($value)
+    {
+        if ($value) {
+            $this->validateOnly('phone', [
+                'phone' => 'nullable|string|max:15',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedCellPhone($value)
+    {
+        if ($value) {
+            $this->validateOnly('cell_phone', [
+                'cell_phone' => 'nullable|string|max:15',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedWhatsapp($value)
+    {
+        if ($value) {
+            $this->validateOnly('whatsapp', [
+                'whatsapp' => 'nullable|string|max:15',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedRole($value)
+    {
+        $this->validateOnly('role', [
+            'role' => 'required|exists:roles,name',
+        ], static::validationMessages(), static::validationAttributes());
+    }
+
+    public function updatedFacebook($value)
+    {
+        if ($value) {
+            $this->validateOnly('facebook', [
+                'facebook' => 'nullable|url|max:255',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedInstagram($value)
+    {
+        if ($value) {
+            $this->validateOnly('instagram', [
+                'instagram' => 'nullable|url|max:255',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedLinkedin($value)
+    {
+        if ($value) {
+            $this->validateOnly('linkedin', [
+                'linkedin' => 'nullable|url|max:255',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    public function updatedTwitter($value)
+    {
+        if ($value) {
+            $this->validateOnly('twitter', [
+                'twitter' => 'nullable|url|max:255',
+            ], static::validationMessages(), static::validationAttributes());
+        }
+    }
+
+    // ─── Auto-complete de endereço via CEP ──────────────────────
+
     public function updatedZipcode($value)
     {
         $cep = preg_replace('/\D/', '', $value);
@@ -153,32 +275,37 @@ class Edit extends Component
         }
     }
 
+    // ─── Validação Completa + Atualização ───────────────────────
+
     public function update()
     {
-        // Validação simplificada
         $rules = [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $this->userId,
-            'role' => 'required|exists:roles,name',
+            'name'     => 'required|string|min:3|max:255',
+            'email'    => 'required|email|max:255|unique:users,email,' . $this->userId,
+            'role'     => 'required|exists:roles,name',
+            'avatar'   => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'phone'    => 'nullable|string|max:15',
+            'cell_phone' => 'nullable|string|max:15',
+            'whatsapp' => 'nullable|string|max:15',
+            'additional_email' => 'nullable|email|max:255',
+            'cpf'      => 'nullable|string|max:14',
+            'facebook' => 'nullable|url|max:255',
+            'instagram' => 'nullable|url|max:255',
+            'linkedin' => 'nullable|url|max:255',
+            'twitter'  => 'nullable|url|max:255',
         ];
 
-        // Validação condicional da senha
+        // Senha opcional no edit
         if ($this->password) {
-            $rules['password'] = 'string|min:8';
+            $rules['password'] = 'required|string|min:8';
             $rules['password_confirmation'] = 'required_with:password|same:password';
         }
 
-        // Validação do avatar
-        if ($this->avatar) {
-            $rules['avatar'] = 'image|max:2048';
-        }
-
-        $this->validate($rules);
+        $this->validate($rules, static::validationMessages(), static::validationAttributes());
 
         $data = [
             'name' => $this->name,
             'email' => $this->email,
-            // Dados pessoais
             'gender' => $this->gender ?: null,
             'cpf' => $this->cpf ?: null,
             'rg' => $this->rg ?: null,
@@ -186,7 +313,6 @@ class Edit extends Component
             'birthday' => $this->birthday ?: null,
             'naturalness' => $this->naturalness ?: null,
             'civil_status' => $this->civil_status ?: null,
-            // Endereço
             'zipcode' => $this->zipcode ?: null,
             'street' => $this->street ?: null,
             'number' => $this->number ?: null,
@@ -194,22 +320,18 @@ class Edit extends Component
             'neighborhood' => $this->neighborhood ?: null,
             'state' => $this->state ?: null,
             'city' => $this->city ?: null,
-            // Contato
             'phone' => $this->phone ?: null,
             'cell_phone' => $this->cell_phone ?: null,
             'whatsapp' => $this->whatsapp ?: null,
             'telegram' => $this->telegram ?: null,
             'additional_email' => $this->additional_email ?: null,
-            // Redes sociais
             'facebook' => $this->facebook ?: null,
             'twitter' => $this->twitter ?: null,
             'instagram' => $this->instagram ?: null,
             'linkedin' => $this->linkedin ?: null,
-            // Profissional
             'position' => $this->position ?: null,
             'department' => $this->department ?: null,
             'biography' => $this->biography ?: null,
-            // Outros
             'information' => $this->information ?: null,
         ];
 
@@ -220,7 +342,6 @@ class Edit extends Component
 
         // Upload do avatar como WebP
         if ($this->avatar) {
-            // Remove avatar antigo
             if ($this->user->avatar && \Storage::disk('public')->exists($this->user->avatar)) {
                 \Storage::disk('public')->delete($this->user->avatar);
             }
@@ -244,14 +365,12 @@ class Edit extends Component
         $filename = uniqid() . '.webp';
         $path = storage_path("app/public/{$folder}");
 
-        // Cria o diretório se não existir
         if (!is_dir($path)) {
             mkdir($path, 0755, true);
         }
 
         $fullPath = "{$path}/{$filename}";
 
-        // Converte para WebP
         $image = Image::make($file->getRealPath());
         $image->encode('webp', 85);
         $image->save($fullPath);

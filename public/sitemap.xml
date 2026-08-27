@@ -1,33 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
     <url>
-        <loc>https://montanariadvocacia.com.br</loc>
-        <lastmod>2021-08-23T12:39:08-03:00</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>0.8</priority>
-    </url>
+        <loc>http://laravel.test</loc>
+        <lastmod>2026-08-26T21:55:26-03:00</lastmod>
+
+            </url>
     <url>
-        <loc>https://montanariadvocacia.com.br/atendimento</loc>
-        <lastmod>2021-08-22T00:00:00-03:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.1</priority>
-    </url>
+        <loc>http://laravel.test/areas-de-atuacao</loc>
+        <lastmod>2026-08-26T21:55:26-03:00</lastmod>
+
+            </url>
     <url>
-        <loc>https://montanariadvocacia.com.br/blog/artigos</loc>
-        <lastmod>2021-08-23T12:39:08-03:00</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>0.8</priority>
-    </url>
+        <loc>http://laravel.test/blog/artigos</loc>
+        <lastmod>2026-08-26T21:55:26-03:00</lastmod>
+
+            </url>
     <url>
-        <loc>https://montanariadvocacia.com.br/projetos</loc>
-        <lastmod>2021-08-23T12:39:08-03:00</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>0.8</priority>
-    </url>
+        <loc>http://laravel.test/politica-de-privacidade</loc>
+        <lastmod>2026-08-26T21:55:26-03:00</lastmod>
+
+            </url>
     <url>
-        <loc>https://montanariadvocacia.com.br/servicos</loc>
-        <lastmod>2021-08-23T12:39:08-03:00</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>0.8</priority>
-    </url>
+        <loc>http://laravel.test/blog/artigo/direitos-do-consumidor-em-compras-online</loc>
+        <lastmod>2026-08-23T00:13:19-03:00</lastmod>
+
+            </url>
+    <url>
+        <loc>http://laravel.test/blog/artigo/como-funciona-a-divorcio-consensual</loc>
+        <lastmod>2026-08-23T00:13:19-03:00</lastmod>
+
+            </url>
+    <url>
+        <loc>http://laravel.test/blog/artigo/rescisao-contratual-o-que-saber</loc>
+        <lastmod>2026-08-23T00:13:19-03:00</lastmod>
+
+            </url>
+    <url>
+        <loc>http://laravel.test/blog/artigo/importancia-do-testamento-para-planejamento-patrimonial</loc>
+        <lastmod>2026-08-23T00:13:19-03:00</lastmod>
+
+            </url>
+    <url>
+        <loc>http://laravel.test/blog/artigo/recentes-mudancas-na-legislacao-trabalhista</loc>
+        <lastmod>2026-08-23T00:13:19-03:00</lastmod>
+
+            </url>
 </urlset>

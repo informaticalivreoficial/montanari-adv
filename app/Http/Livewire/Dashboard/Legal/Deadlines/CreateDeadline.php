@@ -36,12 +36,9 @@ class CreateDeadline extends Component
 
     public function store()
     {
-        $this->validate([
-            'process_id' => 'required|exists:processes,id',
-            'title' => 'required|string|max:255',
-            'due_date' => 'required|date',
-            'priority' => 'required|string',
-        ]);
+        $rules = static::validationRules()['deadline'];
+
+        $this->validate($rules, static::validationMessages(), static::validationAttributes());
 
         $dueDateTime = $this->due_date . ' ' . $this->due_time;
 

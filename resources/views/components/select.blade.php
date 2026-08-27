@@ -2,20 +2,18 @@
     'name',
     'label' => null,
     'value' => '',
-    'mask' => null,
-    'maskType' => null,
-    'placeholder' => '',
+    'placeholder' => 'Selecione',
     'class' => '',
     'required' => false,
     'disabled' => false,
+    'options' => [],
 ])
 
 {{--
-  Componente: x-input-mask
+  Componente: x-select
   Uso:
-    <x-input-mask name="cpf" label="CPF" mask-type="cpf" wire:model="cpf" />
-    <x-input-mask name="phone" label="Telefone" mask-type="phone" wire:model="phone" />
-    <x-input-mask name="cep" label="CEP" mask-type="cep" wire:model.live="zipcode" />
+    <x-select name="role" label="Função" :options="$roles" wire:model="role" required />
+    <x-select name="gender" label="Gênero" :options="['M' => 'Masculino', 'F' => 'Feminino']" wire:model="gender" />
 --}}
 
 @error($name)
@@ -34,28 +32,26 @@
         </label>
     @endif
 
-    <input
-        type="text"
+    <select
         id="{{ $name }}"
         name="{{ $name }}"
-        value="{{ old($name, $value) }}"
-        placeholder="{{ $placeholder }}"
         {{ $disabled ? 'disabled' : '' }}
-        @if($maskType)
-            data-mask-type="{{ $maskType }}"
-            data-imask="1"
-        @elseif($mask)
-            data-imask="{{ $mask }}"
-        @endif
-        class="w-full rounded-lg border bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition
+        class="w-full rounded-lg border bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition
                focus:outline-none focus:ring-2
                disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500
-               {{ $hasError 
-                   ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+               {{ $hasError
+                   ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                    : 'border-gray-300 focus:border-amber-500 focus:ring-amber-500/20' }}
                {{ $class }}"
         {{ $attributes }}
-    />
+    >
+        <option value="">{{ $placeholder }}</option>
+        @foreach($options as $key => $option)
+            <option value="{{ $key }}" {{ old($name, $value) == $key ? 'selected' : '' }}>
+                {{ $option }}
+            </option>
+        @endforeach
+    </select>
 
     @error($name)
         <p class="flex items-center gap-1 text-xs text-red-500">

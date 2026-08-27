@@ -35,10 +35,9 @@ class CreateTask extends Component
 
     public function store()
     {
-        $this->validate([
-            'title' => 'required|string|max:255',
-            'priority' => 'required|string',
-        ]);
+        $rules = static::validationRules()['task'];
+
+        $this->validate($rules, static::validationMessages(), static::validationAttributes());
 
         $dueDateTime = null;
         if ($this->due_date) {

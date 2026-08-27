@@ -52,18 +52,6 @@
                     </a>
 
                     <div class="px-3 pt-4 pb-1" :class="!desktopExpanded ? 'lg:hidden' : ''">
-                        <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Conta</p>
-                    </div>
-
-                    <a href="{{ route('dashboard.profile') }}"
-                       title="Meu Perfil"
-                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.profile') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
-                       :class="!desktopExpanded ? 'lg:justify-center lg:px-0' : ''">
-                        <i class="fa-solid fa-user-circle shrink-0 w-5 text-center"></i>
-                        <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Meu Perfil</span>
-                    </a>
-
-                    <div class="px-3 pt-4 pb-1" :class="!desktopExpanded ? 'lg:hidden' : ''">
                         <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Gestão</p>
                     </div>
 

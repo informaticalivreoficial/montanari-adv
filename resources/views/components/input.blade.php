@@ -38,13 +38,12 @@
         name="{{ $name }}"
         value="{{ old($name, $value) }}"
         placeholder="{{ $placeholder }}"
-        {{ $required ? 'required' : '' }}
         {{ $disabled ? 'disabled' : '' }}
         class="w-full rounded-lg border bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition
                focus:outline-none focus:ring-2
                disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500
-               {{ $hasError 
-                   ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+               {{ $hasError
+                   ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                    : 'border-gray-300 focus:border-amber-500 focus:ring-amber-500/20' }}
                {{ $class }}"
         {{ $attributes }}

@@ -45,14 +45,14 @@
                             @endif
                         </div>
                         <div class="mt-4 sm:mt-0 flex gap-2">
-                            <button 
+                            <a href="{{ route('dashboard.users.edit', $user->id) }}"
                                 wire:click="openEditModal"
                                 class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 
                                        text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
                             >
                                 <i class="fa-solid fa-pen-to-square text-xs"></i>
                                 Editar
-                            </button>
+                            </a>
                             <button 
                                 wire:click="openPasswordModal"
                                 class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 

@@ -25,6 +25,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // Re-sincroniza processos vinculados ao Datajud (CNJ) diariamente às 03:00
+        // Gera sitemap diariamente às 05:00 (se habilitado no painel)
+        $schedule->command('sitemap:generate')->everyMinute()->withoutOverlapping();
         $schedule->command('datajud:sync')->everyMinute()->withoutOverlapping();
         $schedule->command('app:clear-logs')->everyMinute()->withoutOverlapping(); 
     }

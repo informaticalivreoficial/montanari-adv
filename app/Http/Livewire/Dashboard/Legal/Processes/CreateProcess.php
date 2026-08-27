@@ -195,45 +195,9 @@ class CreateProcess extends Component
 
     public function store()
     {
-        $this->validate([
-            'client_id' => 'required|exists:users,id',
-            'process_number' => 'required|string|max:255|unique:processes,process_number',
-            'case_type' => 'required|string',
-            'court_name' => 'nullable|string|max:255',
-            'status' => 'required|string',
+        $rules = static::validationRules()['process'];
 
-            // detalhes
-            'cnj_number' => 'nullable|string|max:30|unique:processes,cnj_number',
-            'internal_code' => 'nullable|string|max:100|unique:processes,internal_code',
-            'cause_value' => 'nullable|numeric',
-            'updated_cause_value' => 'nullable|numeric',
-            'conviction_value' => 'nullable|numeric',
-            'executed_value' => 'nullable|numeric',
-            'received_value' => 'nullable|numeric',
-            'pending_value' => 'nullable|numeric',
-            'distribution_date' => 'nullable|date',
-            'filing_date' => 'nullable|date',
-            'start_date' => 'nullable|date',
-            'summons_date' => 'nullable|date',
-            'sentence_date' => 'nullable|date',
-            'res_judicata_date' => 'nullable|date',
-            'closure_date' => 'nullable|date',
-            'archival_date' => 'nullable|date',
-            'unarchival_date' => 'nullable|date',
-            'last_movement_date' => 'nullable|date',
-            'next_hearing_at' => 'nullable|date',
-
-            // sincronização
-            'source' => 'nullable|string|in:manual,tribunal,api,importacao',
-            'source_provider' => 'nullable|string|max:100',
-            'source_id' => 'nullable|string|max:255',
-            'last_synced_at' => 'nullable|date',
-            'next_sync_at' => 'nullable|date',
-            'sync_attempts' => 'nullable|integer|min:0',
-            'auto_sync' => 'nullable|boolean',
-            'source_data' => 'nullable|json',
-            'metadata' => 'nullable|json',
-        ]);
+        $this->validate($rules, static::validationMessages(), static::validationAttributes());
 
         Process::create([
             'client_id' => $this->client_id,
