@@ -3,15 +3,26 @@
 namespace App\Http\Livewire\Dashboard\Posts\Pages;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\Post;
-use App\Models\CatPost;
+use App\Models\PostGb;
+use App\Services\ImageService;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Validation\ValidationException;
 
 class CreatePage extends Component
 {
-    use HasAlerts, HasValidations;
+    use HasAlerts, WithFileUploads;
 
+    // ── Regras de upload ──────────────────────────────────
+    protected static int    $maxUploadSize   = 5120;
+    protected static array  $uploadMimeTypes = [
+        'image/jpeg', 'image/png', 'image/gif',
+        'image/webp', 'image/bmp', 'image/tiff',
+    ];
+
+    // ── Propriedades do formulário ────────────────────────
     public $title = '';
     public $content = '';
     public $excerpt = '';
@@ -20,8 +31,21 @@ class CreatePage extends Component
     public $tags = '';
     public $status = 0;
     public $menu = 0;
+    public $thumbCaption = '';
 
+    // ── Imagens ───────────────────────────────────────────
+    public $images = [];
+
+    // ── Dados auxiliares ──────────────────────────────────
     public $categories = [];
+
+    // ── Serviço de imagem ─────────────────────────────────
+    protected ImageService $imageService;
+
+    public function boot(): void
+    {
+        $this->imageService = app(ImageService::class);
+    }
 
     public function mount(): void
     {
@@ -43,6 +67,11 @@ class CreatePage extends Component
             'tags'            => 'nullable|string|max:500',
             'status'          => 'in:0,1',
             'menu'            => 'in:0,1',
+            'thumbCaption'    => 'nullable|string|max:255',
+
+            // Imagens
+            'images'         => 'nullable|array|max:10',
+            'images.*'       => 'file|image|mimes:jpg,jpeg,png,gif,webp,bmp,tiff|max:5120',
         ];
     }
 
@@ -59,7 +88,32 @@ class CreatePage extends Component
             'tags.max'          => 'As tags não podem exceder 500 caracteres.',
             'status.in'         => 'Status inválido.',
             'menu.in'           => 'Valor de menu inválido.',
+            'thumbCaption.max'  => 'A legenda da capa não pode exceder 255 caracteres.',
+            'images.array'      => 'O campo de imagens é inválido.',
+            'images.max'        => 'Máximo de 10 imagens por página.',
+            'images.*.file'     => 'Cada imagem deve ser um arquivo válido.',
+            'images.*.image'    => 'O arquivo deve ser uma imagem.',
+            'images.*.mimes'    => 'Tipo não permitido. Use JPEG, PNG, GIF ou WebP.',
+            'images.*.max'      => 'Imagem muito grande. Tamanho máximo: 5MB.',
         ];
+    }
+
+    // ──────────────────────────────────────────────────────
+    //  Validação customizada de imagens (com Intervention)
+    // ──────────────────────────────────────────────────────
+
+    protected function validateImageFiles(array $files): void
+    {
+        if (empty($files)) return;
+
+        $result = $this->imageService->validate($files, 'images');
+
+        if (!empty($result['errors'])) {
+            $firstError = reset($result['errors']);
+            throw ValidationException::withMessages([
+                'images' => $firstError,
+            ]);
+        }
     }
 
     // ──────────────────────────────────────────────────────
@@ -69,8 +123,9 @@ class CreatePage extends Component
     public function store(): \Illuminate\Http\RedirectResponse
     {
         $this->validate();
+        $this->validateImageFiles($this->images);
 
-        Post::create([
+        $post = Post::create([
             'autor'           => auth()->id(),
             'type'            => 'page',
             'title'           => $this->title,
@@ -81,10 +136,41 @@ class CreatePage extends Component
             'tags'            => $this->tags ?: null,
             'status'          => $this->status ? 1 : 0,
             'menu'            => $this->menu ? 1 : 0,
+            'thumb_caption'   => $this->thumbCaption ?: null,
         ]);
+
+        $this->uploadImagesAsWebp($post);
 
         return redirect()->route('dashboard.posts.pages')
             ->with('toast_success', 'Página criada com sucesso!');
+    }
+
+    // ──────────────────────────────────────────────────────
+    //  Upload de imagens como WebP
+    // ──────────────────────────────────────────────────────
+
+    protected function uploadImagesAsWebp(Post $post): void
+    {
+        if (empty($this->images)) return;
+
+        foreach ($this->images as $index => $image) {
+            $isCover = ($index === 0);
+
+            $result = $this->imageService->convertToWebp(
+                file: $image,
+                directory: "posts/{$post->id}",
+                filename: uniqid("post_{$post->id}_", true),
+                isCover: $isCover,
+            );
+
+            PostGb::create([
+                'post'          => $post->id,
+                'path'          => $result['path'],
+                'cover'         => $isCover ? 1 : 0,
+                'order'         => $index,
+                'thumb_caption' => $isCover ? ($this->thumbCaption ?: null) : null,
+            ]);
+        }
     }
 
     // ──────────────────────────────────────────────────────
@@ -96,6 +182,16 @@ class CreatePage extends Component
         $this->validateOnly('title', [
             'title' => 'required|string|min:3|max:255',
         ]);
+    }
+
+    public function updatedImages(): void
+    {
+        if (!empty($this->images)) {
+            $this->validateOnly('images', [
+                'images'   => 'nullable|array|max:10',
+                'images.*' => 'file|image|mimes:jpg,jpeg,png,gif,webp,bmp,tiff|max:5120',
+            ]);
+        }
     }
 
     public function render()

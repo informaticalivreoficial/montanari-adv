@@ -25,7 +25,7 @@ class Configuracoes extends Model
         'subdomain',
         'template',
 
-        //Imagens
+        //Images
         'logo',
         'logo_admin',
         'logo_footer',

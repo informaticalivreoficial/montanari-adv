@@ -242,10 +242,7 @@
                     </div>
                     <h3 class="font-heading text-xl font-bold text-navy-800 mb-3">{{ $area['title'] }}</h3>
                     <p class="text-gray-500 text-sm leading-relaxed mb-6">{{ $area['desc'] }}</p>
-                    <a href="{{ route('web.servicos') }}" class="inline-flex items-center gap-2 text-navy-700 font-semibold text-sm hover:text-gold-600 transition-colors group/link">
-                        Saiba Mais
-                        <i class="fas fa-arrow-right text-xs group-hover/link:translate-x-1 transition-transform"></i>
-                    </a>
+                    
                 </div>
             @endforeach
 
@@ -258,21 +255,11 @@
                         </div>
                         <h3 class="font-heading text-xl font-bold text-navy-800 mb-3">{{ $servico->titulo }}</h3>
                         <p class="text-gray-500 text-sm leading-relaxed mb-6">{!! $servico->getContentWebSiteAttribute() !!}</p>
-                        <a href="{{ route('web.servico', ['slug' => $servico->slug]) }}" class="inline-flex items-center gap-2 text-navy-700 font-semibold text-sm hover:text-gold-600 transition-colors group/link">
-                            Leia Mais
-                            <i class="fas fa-arrow-right text-xs group-hover/link:translate-x-1 transition-transform"></i>
-                        </a>
+                        
                     </div>
                 @endforeach
             @endif
-        </div>
-
-        <div class="text-center mt-12 reveal">
-            <a href="{{ route('web.servicos') }}" class="btn-navy">
-                Ver Todas as Áreas
-                <i class="fas fa-arrow-right text-sm"></i>
-            </a>
-        </div>
+        </div>       
     </div>
 </section>
 
@@ -309,20 +296,20 @@
                 <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
                     <div class="grid grid-cols-2 gap-6">
                         <div class="text-center">
-                            <div class="stat-number" x-data x-intersect.once="$el.textContent = '500+'">0</div>
+                            <div class="stat-number" x-data="{ val: '{{ number_format($totalProcessos, 0, ',', '.') }}+' }" x-init="$el.textContent = val">0</div>
+                            <div class="text-white/50 text-sm mt-2">Total de Processos</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="stat-number" x-data="{ val: '{{ number_format($processosAtivos, 0, ',', '.') }}+' }" x-init="$el.textContent = val">0</div>
+                            <div class="text-white/50 text-sm mt-2">Processos em Andamento</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="stat-number" x-data="{ val: '{{ number_format($processosEncerrados, 0, ',', '.') }}+' }" x-init="$el.textContent = val">0</div>
+                            <div class="text-white/50 text-sm mt-2">Processos Encerrados</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="stat-number" x-data="{ val: '{{ number_format($totalClientes, 0, ',', '.') }}+' }" x-init="$el.textContent = val">0</div>
                             <div class="text-white/50 text-sm mt-2">Clientes Atendidos</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="stat-number" x-data x-intersect.once="$el.textContent = '1000+'">0</div>
-                            <div class="text-white/50 text-sm mt-2">Processos Analisados</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="stat-number" x-data x-intersect.once="$el.textContent = '25+'">0</div>
-                            <div class="text-white/50 text-sm mt-2">Anos de Experiência</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="stat-number" x-data x-intersect.once="$el.textContent = '95%'">0</div>
-                            <div class="text-white/50 text-sm mt-2">Taxa de Sucesso</div>
                         </div>
                     </div>
                 </div>
@@ -346,19 +333,22 @@
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($artigos as $index => $artigo)
-                <article class="reveal blog-card bg-white rounded-2xl overflow-hidden border border-gray-100 group"
+                <article class="reveal blog-card bg-white rounded-2xl overflow-hidden border border-gray-100 group shadow-sm hover:shadow-lg transition-shadow duration-300"
                          style="animation-delay: {{ $index * 0.1 }}s">
+                    {{-- Image --}}
                     <div class="relative h-56 overflow-hidden">
-                        <img src="{{ url($artigo->cover()) }}" alt="{{ $artigo->title }}"
-                             class="blog-card-image w-full h-full object-cover">
+                        <img src="{{ $artigo->cover() }}" alt="{{ $artigo->title }}"
+                             class="blog-card-image w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                         {{-- Category badge --}}
-                        <div class="absolute top-4 left-4">
-                            <span class="px-3 py-1.5 bg-navy-800/90 backdrop-blur-sm text-white text-xs font-medium rounded-full">
-                                {{ $artigo->categoriaObject->title }}
-                            </span>
-                        </div>
+                        @if(!empty($artigo->categoriaObject))
+                            <div class="absolute top-4 left-4">
+                                <span class="px-3 py-1.5 bg-navy-800/90 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                                    {{ $artigo->categoriaObject->title }}
+                                </span>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="p-6">
@@ -366,9 +356,11 @@
                         <div class="flex items-center gap-2 text-gray-400 text-xs mb-3">
                             <i class="far fa-calendar"></i>
                             <span>{{ optional($artigo->publish_at)->format('d/m/Y') }}</span>
-                            <span class="text-gray-200">•</span>
-                            <i class="far fa-clock"></i>
-                            <span>{{ $artigo->reading_time ?? '5 min' }}</span>
+                            @if(!empty($artigo->reading_time))
+                                <span class="text-gray-200">•</span>
+                                <i class="far fa-clock"></i>
+                                <span>{{ $artigo->reading_time }}</span>
+                            @endif
                         </div>
 
                         <a href="{{ route('web.blog.artigo', ['slug' => $artigo->slug]) }}">
@@ -378,7 +370,7 @@
                         </a>
 
                         <p class="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-3">
-                            {!! $artigo->getContentWebAttribute() !!}
+                            {{ strip_tags($artigo->content) }}
                         </p>
 
                         <a href="{{ route('web.blog.artigo', ['slug' => $artigo->slug]) }}"
@@ -401,30 +393,6 @@
 </section>
 @endif
 
-
-{{-- ============================== --}}
-{{-- NEWSLETTER                   --}}
-{{-- ============================== --}}
-<section class="py-16 bg-gray-50 border-t border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="reveal max-w-2xl mx-auto text-center">
-            <div class="w-14 h-14 bg-gold-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-envelope-open-text text-gold-600 text-xl"></i>
-            </div>
-            <h3 class="font-heading text-2xl font-bold text-navy-800 mb-3">Receba Novidades</h3>
-            <p class="text-gray-500 text-sm mb-6">Inscreva-se em nossa newsletter e fique atualizado sobre as principais novidades do mundo jurídico.</p>
-
-            <form action="{{ route('web.sendNewsletter') }}" method="POST" class="flex gap-2 max-w-md mx-auto" id="newsletter-form">
-                @csrf
-                <input type="email" name="email" placeholder="Seu melhor e-mail" required
-                       class="flex-1 px-4 py-3 border border-gray-200 rounded-lg text-sm bg-white focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20 transition-all">
-                <button type="submit" class="px-6 py-3 bg-navy-700 text-white rounded-lg font-semibold text-sm hover:bg-navy-800 transition-colors whitespace-nowrap">
-                    Inscrever
-                </button>
-            </form>
-        </div>
-    </div>
-</section>
 
 @endsection
 

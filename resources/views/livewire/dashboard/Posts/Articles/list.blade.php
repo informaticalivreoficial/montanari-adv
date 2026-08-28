@@ -1,4 +1,4 @@
-<div>
+<div x-data="{ open: false, imgUrl: '' }">
     <!-- Header -->
     <div class="mb-6 flex items-center justify-between">
         <div>
@@ -42,8 +42,8 @@
                 <label class="block text-sm font-medium text-gray-700">Status</label>
                 <select wire:model.live="filterStatus" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
                     <option value="">Todos</option>
-                    <option value="1">Publicado</option>
-                    <option value="0">Rascunho</option>
+                    <option value="1">Ativo</option>
+                    <option value="0">Inativo</option>
                 </select>
             </div>
         </div>
@@ -80,8 +80,12 @@
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="h-10 w-10 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden">
+                                        <div class="h-10 w-10 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden relative group cursor-pointer"
+                                             @click="imgUrl = '{{ $post->nocover() }}'; open = true">
                                             <img src="{{ $post->cover() }}" alt="" class="h-full w-full object-cover">
+                                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                                <i class="fa-solid fa-expand text-white text-xs"></i>
+                                            </div>
                                         </div>
                                         <div>
                                             <p class="text-sm font-semibold text-gray-900 max-w-xs truncate">{{ $post->title }}</p>
@@ -91,7 +95,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                                        {{ $post->category?->title ?? '-' }}
+                                        {{ $post->categoryObject?->title ?? '-' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-700">
@@ -103,7 +107,7 @@
                                             ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
                                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
                                         <span class="h-1.5 w-1.5 rounded-full {{ $post->status ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
-                                        {{ $post->status ? 'Publicado' : 'Rascunho' }}
+                                        {{ $post->status ? 'Ativo' : 'Inativo' }}
                                     </button>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500">
@@ -134,5 +138,27 @@
                 {{ $posts->links() }}
             </div>
         @endif
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div x-show="open" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+         @click.self="open = false"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        <div class="relative max-w-xl w-full" @click.stop
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100">
+            <button @click="open = false"
+                    class="absolute -top-3 -right-3 z-10 h-8 w-8 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-500 hover:text-gray-700 transition">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+            <img :src="imgUrl" class="w-full rounded-xl shadow-2xl object-cover max-h-[50vh]">
+        </div>
     </div>
 </div>

@@ -18,8 +18,7 @@
 
             <div class="relative z-10">
                 <div class="flex items-center gap-3">
-                    <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-500 text-xl font-bold text-slate-900">M</div>
-                    <span class="text-xl font-semibold tracking-tight text-white">Montanari <span class="text-amber-500">Adv</span></span>
+                    <img src="{{ $configuracoes->getlogofooter() }}" alt="Logo {{ $configuracoes->app_name }}" class="h-10 w-auto">
                 </div>
             </div>
 
@@ -28,7 +27,7 @@
                 <p class="mt-4 text-slate-400">Acesse o painel administrativo para gerenciar usuários, configurações e permissões do escritório.</p>
             </div>
 
-            <div class="relative z-10 text-sm text-slate-500">© {{ date('Y') }} Montanari Adv. Todos os direitos reservados.</div>
+            <div class="relative z-10 text-sm text-slate-500">© {{ date('Y') }} {{ $configuracoes->app_name }}. Todos os direitos reservados.</div>
         </div>
 
         <!-- Painel do formulário -->
@@ -36,7 +35,7 @@
             <div class="w-full max-w-md">
                 <div class="mb-8 flex items-center justify-center gap-2 lg:hidden">
                     <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500 font-bold text-slate-900">M</div>
-                    <span class="text-lg font-semibold text-slate-900">Montanari <span class="text-amber-600">Adv</span></span>
+                    <span class="text-lg font-semibold text-slate-900">{{ $configuracoes->app_name }}</span>
                 </div>
 
                 {{ $slot }}

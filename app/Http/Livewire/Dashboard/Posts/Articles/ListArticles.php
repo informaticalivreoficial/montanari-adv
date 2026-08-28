@@ -46,14 +46,14 @@ class ListArticles extends Component
         $post = Post::findOrFail($id);
         $post->update(['status' => $post->status ? 0 : 1]);
 
-        $this->toastSuccess($post->status ? 'Artigo publicado!' : 'Artigo despublicado!');
+        $this->toastSuccess($post->status ? 'Artigo ativado!' : 'Artigo inativado!');
     }
 
     public function render()
     {
         $categories = CatPost::active()->pluck('title', 'id')->toArray();
 
-        $posts = Post::with('category', 'user')
+        $posts = Post::with('categoryObject', 'user')
             ->where('type', 'artigo')
             ->when($this->search, fn($q) => $q->where(function ($query) {
                 $query->where('title', 'like', "%{$this->search}%")

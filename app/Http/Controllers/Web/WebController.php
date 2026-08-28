@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Configuracoes;
+use App\Models\Process;
 use App\Mail\Web\Atendimento;
 use App\Models\User;
 use App\Models\Newsletter;
@@ -29,13 +30,27 @@ class WebController extends Controller
 
         $slides = Slide::orderBy('created_at', 'DESC')->where('status', '1')->limit(4)->get();
         
-        $artigos = Post::orderBy('created_at', 'DESC')->where('status', '1')->where('type', 'artigo')->limit(3)->get();
+        $artigos = Post::with(['categoriaObject', 'images'])
+            ->orderBy('created_at', 'DESC')
+            ->where('status', '1')
+            ->where('type', 'artigo')
+            ->limit(3)
+            ->get();
+
+        // Dados reais de processos para o CTA
+        $totalProcessos = Process::count();
+        $processosAtivos = Process::where('status', 'active')->count();
+        $processosEncerrados = Process::whereIn('status', ['closed', 'archived'])->count();
+        $totalClientes = User::whereHas('roles', fn($q) => $q->where('name', 'client'))->count();
         
         return view('web.home', [
             'slides' => $slides,
             'head' => $head,
-            'Configuracoes' => $Configuracoes,
-            'artigos' => $artigos
+            'artigos' => $artigos,
+            'totalProcessos' => $totalProcessos,
+            'processosAtivos' => $processosAtivos,
+            'processosEncerrados' => $processosEncerrados,
+            'totalClientes' => $totalClientes,
         ]);
     }
     
@@ -52,7 +67,6 @@ class WebController extends Controller
 
         return view('web.servicos', [
             'servicos' => $servicos,
-            'Configuracoes' => $Configuracoes,
             'head' => $head
         ]);
     }
@@ -75,8 +89,7 @@ class WebController extends Controller
         return view('web.servico', [
             'servico' => $servico,
             'head' => $head,
-            'postsTags' => $postsTags,
-            'Configuracoes' => $Configuracoes
+            'postsTags' => $postsTags
         ]);
     }
     
@@ -91,8 +104,7 @@ class WebController extends Controller
         ); 
 
         return view('web.politica-de-privacidade', [
-            'head' => $head,
-            'Configuracoes' => $Configuracoes
+            'head' => $head
         ]);
     }
 
@@ -102,7 +114,7 @@ class WebController extends Controller
     public function pagina($slug)
     {
         $Configuracoes = Configuracoes::where('id', '1')->first();
-        $pagina = Post::where('slug', $slug)
+        $pagina = Post::with('images')->where('slug', $slug)
             ->where('type', 'page')
             ->where('status', 1)
             ->firstOrFail();
@@ -118,8 +130,7 @@ class WebController extends Controller
 
         return view('web.pagina', [
             'pagina' => $pagina,
-            'head' => $head,
-            'Configuracoes' => $Configuracoes,
+            'head' => $head
         ]);
     }
 
@@ -165,8 +176,7 @@ class WebController extends Controller
             //'projetos' => $projetos,
             'servicos' => $servicos,
             'ctotal' => $ctotal,
-            'head' => $head,
-            'Configuracoes' => $Configuracoes
+            'head' => $head
         ]);        
     } 
     
@@ -180,8 +190,7 @@ class WebController extends Controller
         );
 
         return view('web.atendimento', [
-            'head' => $head,
-            'Configuracoes' => $Configuracoes
+            'head' => $head
         ]);
     }   
     
@@ -232,7 +241,6 @@ class WebController extends Controller
         );
         return view('web.blog.artigos', [
             'head' => $head,
-            'Configuracoes' => $Configuracoes,
             'posts' => $posts,
         ]);
     }
@@ -240,13 +248,13 @@ class WebController extends Controller
     public function artigo(Request $request)
     {
         $Configuracoes = Configuracoes::where('id', '1')->first();
-        $post = Post::where('slug', $request->slug)->where('type', '=', 'artigo')->postson()->first();
+        $post = Post::with('images')->where('slug', $request->slug)->where('type', '=', 'artigo')->postson()->first();
         $categorias = CatPost::orderBy('title', 'ASC')
             ->where('type', 'artigo')
             ->get();
-        $postsMais = Post::orderBy('views', 'DESC')->limit(3)->where('id', '!=', $post->id)->postson()->get();
+        $postsMais = Post::orderBy('views', 'DESC')->limit(3)->where('id', '!=', $post->id)->where('type', 'artigo')->postson()->get();
 
-        $postsTags = Post::where('type', '=', 'artigo')->orWhere('id', '!=', $post->id)->postson()->limit(3)->get();
+        $postsTags = Post::where('type', 'artigo')->where('id', '!=', $post->id)->postson()->limit(3)->get();
         
         $post->views = $post->views + 1;
         $post->save();
@@ -261,8 +269,7 @@ class WebController extends Controller
             'head' => $head,
             'post' => $post,    
             'postsMais' => $postsMais,
-            'categorias' => $categorias,
-            'Configuracoes' => $Configuracoes,        
+            'categorias' => $categorias,       
             'postsTags' => $postsTags,
         ]);
     }   
@@ -282,8 +289,7 @@ class WebController extends Controller
         return view('web.blog.categoria', [
             'head' => $head,
             'posts' => $posts,
-            'categoria' => $categoria,
-            'Configuracoes' => $Configuracoes
+            'categoria' => $categoria
         ]);
     }
 
