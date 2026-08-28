@@ -4,7 +4,8 @@ namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ImageService
 {
@@ -104,14 +105,12 @@ class ImageService
             throw new \RuntimeException('Arquivo temporário não encontrado para conversão WebP.');
         }
 
-        $img = Image::make($realPath);
+        $manager = new ImageManager(new Driver());
+        $img = $manager->read($realPath);
 
         // Redimensiona se exceder máximos (mantendo proporção)
         if ($img->width() > $this->maxWidth || $img->height() > $this->maxHeight) {
-            $img->resize($this->maxWidth, $this->maxHeight, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
+            $img->scaleDown(width: $this->maxWidth)->scaleDown(height: $this->maxHeight);
         }
 
         // Para capas, cria thumbnail 720x480
@@ -119,8 +118,8 @@ class ImageService
             $this->createCoverThumbnail($img, $directory, $filename);
         }
 
-        // Converte para WebP — Intervention Image v2 usa encode()
-        $webpContent = $img->encode('webp', $this->webpQuality);
+        // Converte para WebP — Intervention Image v3
+        $webpContent = (string) $img->toWebp($this->webpQuality);
 
         // Garante que o diretório existe
         $fullDir = storage_path("app/public/{$directory}");
@@ -148,11 +147,9 @@ class ImageService
     protected function createCoverThumbnail($img, string $directory, string $filename): void
     {
         $thumb = clone $img;
-        $thumb->fit(720, 480, function ($constraint) {
-            $constraint->upsize();
-        });
+        $thumb->cover(720, 480);
 
-        $webpContent = $thumb->encode('webp', $this->webpQuality);
+        $webpContent = (string) $thumb->toWebp($this->webpQuality);
         $thumbPath = "{$directory}/{$filename}_thumb.webp";
 
         Storage::disk('public')->put($thumbPath, $webpContent);

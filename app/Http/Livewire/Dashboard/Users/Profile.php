@@ -7,7 +7,6 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
 
 class Profile extends Component
 {
@@ -160,9 +159,9 @@ class Profile extends Component
 
         $fullPath = "{$path}/{$filename}";
 
-        $image = Image::make($file->getRealPath());
-        $image->encode('webp', 85);
-        $image->save($fullPath);
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        $image = $manager->read($file->getRealPath());
+        $image->toWebp(85)->save($fullPath);
 
         return "{$folder}/{$filename}";
     }
