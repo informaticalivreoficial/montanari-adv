@@ -38,6 +38,7 @@ use App\Http\Livewire\Dashboard\Notifications\ListNotifications;
 use App\Http\Livewire\Client\ClientLogin;
 use App\Http\Livewire\Client\ClientForgotPassword;
 use App\Http\Livewire\Client\ClientResetPassword;
+use App\Http\Controllers\Client\MagicLinkController;
 use App\Http\Livewire\Client\Dashboard as ClientDashboard;
 use App\Http\Livewire\Client\ProcessList;
 use App\Http\Livewire\Client\ProcessDetail;
@@ -167,6 +168,7 @@ Route::middleware('guest')->group(function () {
     Route::livewire('/cliente', ClientLogin::class)->name('client.login');
     Route::livewire('/cliente/esqueci-senha', ClientForgotPassword::class)->name('client.password.request');
     Route::livewire('/cliente/resetar-senha/{token}', ClientResetPassword::class)->name('client.password.reset');
+    Route::get('/cliente/acessar', [MagicLinkController::class, 'verify'])->name('client.magic-link.verify');
 });
 
 Route::middleware('client')->prefix('cliente')->name('client.')->group(function () {

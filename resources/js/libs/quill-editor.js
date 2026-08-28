@@ -25,7 +25,7 @@ const TOOLBARS = {
         [{ color: [] }, { background: [] }],
         [{ list: 'ordered' }, { list: 'bullet' }],
         [{ align: [] }],
-        ['link', 'blockquote'],
+        ['link', 'image', 'blockquote'],
         ['clean'],
     ],
     full: [
@@ -37,7 +37,7 @@ const TOOLBARS = {
         [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
         [{ direction: 'rtl' }],
         [{ align: [] }],
-        ['link', 'blockquote', 'code-block'],
+        ['link', 'image', 'video', 'blockquote', 'code-block'],
         ['clean'],
     ],
     minimal: [
@@ -108,41 +108,127 @@ window.initQuill = function (container, wire, property, options = {}) {
     // Fix: remove aria-hidden from picker dropdowns to prevent a11y errors
     fixQuillPickers(container.closest('.quill-editor-wrapper') || container);
 
+    // Toolbar flutuante pra imagens
+    initImageToolbar(container);
+
     return quill;
 };
 
 /**
+ * Toolbar flutuante: aparece ao clicar em imagem dentro do editor.
+ * Permite alinhar, redimensionar e remover.
+ */
+function initImageToolbar(quillRoot) {
+    let activeImg = null;
+    let floatingBar = null;
+
+    function hideBar() {
+        if (floatingBar) {
+            floatingBar.remove();
+            floatingBar = null;
+        }
+        activeImg = null;
+    }
+
+    function showBar(img) {
+        hideBar();
+        activeImg = img;
+
+        floatingBar = document.createElement('div');
+        floatingBar.className = 'ql-image-toolbar-floating';
+
+        const buttons = [
+            { icon: '⬅', tip: 'Esquerda', fn: () => { img.style.display = 'block'; img.style.margin = '0 auto 0 0'; } },
+            { icon: '⬛', tip: 'Centro', fn: () => { img.style.display = 'block'; img.style.margin = '0 auto'; } },
+            { icon: '➡', tip: 'Direita', fn: () => { img.style.display = 'block'; img.style.margin = '0 0 0 auto'; } },
+            { icon: '↔', tip: 'Largura total', fn: () => { img.style.width = '100%'; img.style.height = ''; refresh(); } },
+            { icon: '⊡', tip: 'Original', fn: () => { img.style.width = ''; img.style.height = ''; refresh(); } },
+            { icon: '−', tip: 'Reduzir', fn: () => { resizeImg(-10); } },
+            { icon: '+', tip: 'Aumentar', fn: () => { resizeImg(10); } },
+            { icon: '✕', tip: 'Remover', fn: () => { img.remove(); hideBar(); } },
+        ];
+
+        buttons.forEach(b => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = b.icon;
+            btn.title = b.tip;
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                b.fn();
+            });
+            floatingBar.appendChild(btn);
+        });
+
+        quillRoot.style.position = 'relative';
+        quillRoot.appendChild(floatingBar);
+
+        positionBar();
+    }
+
+    function positionBar() {
+        if (!floatingBar || !activeImg) return;
+        const rootRect = quillRoot.getBoundingClientRect();
+        const imgRect = activeImg.getBoundingClientRect();
+        floatingBar.style.top = `${imgRect.top - rootRect.top + quillRoot.scrollTop - 38}px`;
+        floatingBar.style.left = `${imgRect.left - rootRect.left + imgRect.width / 2}px`;
+        floatingBar.style.transform = 'translateX(-50%)';
+    }
+
+    function refresh() {
+        setTimeout(() => {
+            if (activeImg && floatingBar) positionBar();
+        }, 50);
+    }
+
+    function resizeImg(pct) {
+        if (!activeImg) return;
+        const parent = quillRoot.offsetWidth;
+        const cur = activeImg.offsetWidth || parent;
+        const next = Math.max(50, Math.min(parent, cur + parent * pct / 100));
+        activeImg.style.width = `${next}px`;
+        activeImg.style.height = '';
+        refresh();
+    }
+
+    // Event listeners
+    quillRoot.addEventListener('click', (e) => {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            showBar(e.target);
+        } else if (floatingBar && !floatingBar.contains(e.target)) {
+            hideBar();
+        }
+    });
+
+    quillRoot.addEventListener('scroll', () => {
+        if (floatingBar && activeImg) positionBar();
+    });
+}
+
+/**
  * Fix Quill picker aria-hidden accessibility bug.
- * Quill sets aria-hidden on .ql-picker-options but focus moves inside them.
  */
 function fixQuillPickers(wrapper) {
     if (!wrapper || wrapper._quillAriaFixed) return;
     wrapper._quillAriaFixed = true;
 
-    // Listen for clicks on picker labels to open dropdowns
     wrapper.addEventListener('click', (e) => {
         const label = e.target.closest('.ql-picker-label');
         if (!label) return;
-
-        // After Quill opens the dropdown, remove aria-hidden
         requestAnimationFrame(() => {
             const options = label.parentElement?.querySelector('.ql-picker-options');
-            if (options) {
-                options.removeAttribute('aria-hidden');
-            }
+            if (options) options.removeAttribute('aria-hidden');
         });
     });
 
-    // Also handle keyboard navigation
     wrapper.addEventListener('mousedown', (e) => {
         const label = e.target.closest('.ql-picker-label');
         if (!label) return;
-
         requestAnimationFrame(() => {
             const options = label.parentElement?.querySelector('.ql-picker-options');
-            if (options) {
-                options.removeAttribute('aria-hidden');
-            }
+            if (options) options.removeAttribute('aria-hidden');
         });
     });
 }

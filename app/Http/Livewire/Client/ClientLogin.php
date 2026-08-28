@@ -5,64 +5,77 @@ namespace App\Http\Livewire\Client;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Models\User;
+use App\Models\MagicLink;
+use App\Mail\ClientMagicLink;
 
 class ClientLogin extends Component
 {
     public $email = '';
-    public $password = '';
-    public $remember = false;
+    public $linkSent = false;
 
     protected $rules = [
-        'email'    => 'required|email',
-        'password' => 'required',
+        'email' => 'required|email',
     ];
 
     protected $messages = [
-        'email.required'    => 'Informe o seu e-mail.',
-        'email.email'       => 'Informe um endereço de e-mail válido.',
-        'password.required' => 'Informe a sua senha.',
+        'email.required' => 'Informe o seu e-mail.',
+        'email.email'    => 'Informe um endereço de e-mail válido.',
     ];
 
-    public function authenticate()
+    /**
+     * Envia magic link por e-mail.
+     */
+    public function sendLink()
     {
         $this->validate();
 
         $email = Str::lower(trim($this->email));
         $ip    = request()->ip();
-        $key   = 'client-login:' . $ip;
+        $key   = 'client-magic-link:' . $ip;
 
-        if (RateLimiter::tooManyAttempts($key, 5)) {
+        // Rate limit: 3 tentativas por IP a cada 120s
+        if (RateLimiter::tooManyAttempts($key, 3)) {
             $seconds = RateLimiter::availableIn($key);
             $this->addError('general', "Muitas tentativas. Tente novamente em {$seconds} segundos.");
             return;
         }
 
-        if (!Auth::attempt(['email' => $email, 'password' => $this->password], $this->remember)) {
+        // Buscar usuário client com este email
+        $user = User::where('email', $email)->first();
+
+        // Por segurança, sempre mostra sucesso (não revela se email existe)
+        $this->linkSent = true;
+
+        if (!$user || !$user->hasRole('client') || $user->status != 1) {
             RateLimiter::hit($key, 120);
-            $this->addError('general', 'E-mail ou senha não conferem.');
             return;
         }
 
-        RateLimiter::clear($key);
+        // Gerar token e enviar email
+        $magicLink = MagicLink::generateFor($user);
+        $url = route('client.magic-link.verify', [
+            'token' => $magicLink->token,
+            'email' => $magicLink->email,
+        ]);
 
-        $user = Auth::user();
+        Mail::to($user->email)->send(new ClientMagicLink(
+            userName: $user->name,
+            magicLinkUrl: $url,
+        ));
 
-        if ($user->status != 1) {
-            Auth::logout();
-            $this->addError('general', 'Sua conta está desativada. Entre em contato com o escritório.');
-            return;
-        }
+        RateLimiter::hit($key, 120);
+    }
 
-        if (!$user->hasRole('client')) {
-            Auth::logout();
-            $this->addError('general', 'Acesso não autorizado. Esta é a área exclusiva dos clientes.');
-            return;
-        }
-
-        session()->regenerate();
-
-        return redirect()->intended(route('client.dashboard'));
+    /**
+     * Volta para o formulário de email.
+     */
+    public function backToForm()
+    {
+        $this->reset(['email', 'linkSent']);
+        $this->resetValidation();
     }
 
     public function render()

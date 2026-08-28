@@ -14,8 +14,8 @@ class ClientDocuments extends Component
     use WithFileUploads;
 
     public $selectedProcess = '';
-    public $documents = [];
-    public $processes = [];
+    public $documents;
+    public $processes;
 
     // Upload form
     public $documentTitle = '';
@@ -26,21 +26,21 @@ class ClientDocuments extends Component
     public $showUploadForm = false;
 
     protected $rules = [
-        'selectedProcess' => 'required|exists:processes,id',
-        'documentTitle' => 'required|string|min:3|max:255',
-        'documentDescription' => 'nullable|string|max:500',
-        'documentFile' => 'required|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png',
-        'documentCategory' => 'required|in:contract,petition,ruling,evidence,correspondence,other',
+        'selectedProcess'    => 'required|exists:processes,id',
+        'documentTitle'      => 'required|string|min:3|max:255',
+        'documentDescription'=> 'nullable|string|max:500',
+        'documentFile'       => 'required|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png',
+        'documentCategory'   => 'required|in:contract,petition,ruling,evidence,correspondence,other',
     ];
 
     protected $messages = [
-        'selectedProcess.required' => 'Selecione um processo.',
-        'selectedProcess.exists' => 'Processo não encontrado.',
-        'documentTitle.required' => 'Informe o título do documento.',
-        'documentTitle.min' => 'O título deve ter pelo menos 3 caracteres.',
-        'documentFile.required' => 'Selecione um arquivo.',
-        'documentFile.max' => 'O arquivo deve ter no máximo 10MB.',
-        'documentFile.mimes' => 'Formatos aceitos: PDF, DOC, DOCX, JPG, PNG.',
+        'selectedProcess.required'  => 'Selecione um processo.',
+        'selectedProcess.exists'    => 'Processo não encontrado.',
+        'documentTitle.required'    => 'Informe o título do documento.',
+        'documentTitle.min'         => 'O título deve ter pelo menos 3 caracteres.',
+        'documentFile.required'     => 'Selecione um arquivo.',
+        'documentFile.max'          => 'O arquivo deve ter no máximo 10MB.',
+        'documentFile.mimes'        => 'Formatos aceitos: PDF, DOC, DOCX, JPG, PNG.',
     ];
 
     public function mount()
@@ -48,35 +48,30 @@ class ClientDocuments extends Component
         $userId = Auth::id();
 
         $this->processes = Process::where('client_id', $userId)
-            ->where('status', 'active')
+            ->whereIn('status', ['active', 'suspended'])
+            ->orderBy('process_number')
             ->get();
 
         $this->loadDocuments();
     }
 
-    protected function loadDocuments()
+    protected function loadDocuments(): void
     {
-        $userId = Auth::id();
-        $processIds = Process::where('client_id', $userId)->pluck('id')->toArray();
+        $processIds = $this->processes->pluck('id')->toArray();
 
         $this->documents = Document::whereIn('process_id', $processIds)
-            ->orderBy('created_at', 'desc')
             ->with('process')
-            ->get()
-            ->toArray();
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
-    public function toggleUploadForm()
+    public function toggleUploadForm(): void
     {
         $this->showUploadForm = !$this->showUploadForm;
+        $this->resetValidation();
     }
 
-    public function updatedDocumentFile()
-    {
-        $this->validateOnly('documentFile');
-    }
-
-    public function uploadDocument()
+    public function uploadDocument(): void
     {
         $this->validate();
 
@@ -88,45 +83,48 @@ class ClientDocuments extends Component
             $path = $file->storeAs('documents/client', $filename, 'public');
 
             Document::create([
-                'process_id' => $this->selectedProcess,
-                'uploaded_by' => Auth::id(),
-                'title' => $this->documentTitle,
-                'description' => $this->documentDescription,
-                'file_path' => $path,
+                'process_id'    => $this->selectedProcess,
+                'uploaded_by'   => Auth::id(),
+                'title'         => $this->documentTitle,
+                'description'   => $this->documentDescription,
+                'file_path'     => $path,
                 'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getMimeType(),
-                'file_size' => $file->getSize(),
-                'category' => $this->documentCategory,
+                'mime_type'     => $file->getMimeType(),
+                'file_size'     => $file->getSize(),
+                'category'      => $this->documentCategory,
             ]);
 
             $this->reset(['documentTitle', 'documentDescription', 'documentFile', 'documentCategory', 'selectedProcess']);
             $this->showUploadForm = false;
             $this->loadDocuments();
 
-            session()->flash('success', 'Documento enviado com sucesso!');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Erro ao enviar documento. Tente novamente.');
+            $this->dispatch('show-toast', type: 'success', message: 'Documento enviado com sucesso!');
+        } catch (\Throwable $e) {
+            $this->dispatch('show-toast', type: 'error', message: 'Erro ao enviar documento. Tente novamente.');
         } finally {
             $this->uploading = false;
         }
     }
 
-    public function deleteDocument($documentId)
+    public function deleteDocument(int $documentId): void
     {
-        $userId = Auth::id();
-
         $document = Document::where('id', $documentId)
-            ->where('uploaded_by', $userId)
+            ->where('uploaded_by', Auth::id())
             ->first();
 
         if ($document) {
-            if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
-                Storage::disk('public')->delete($document->file_path);
-            }
             $document->delete();
             $this->loadDocuments();
-            session()->flash('success', 'Documento excluído.');
+            $this->dispatch('show-toast', type: 'success', message: 'Documento excluído.');
         }
+    }
+
+    public function getFileUrl(Document $document): string
+    {
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            return Storage::disk('public')->url($document->file_path);
+        }
+        return '#';
     }
 
     public function render()

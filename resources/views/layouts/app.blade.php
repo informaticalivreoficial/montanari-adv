@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Montanari Adv - Sistema de Advocacia</title>
+        <title>{{ $configuracoes->app_name }}</title>
 
         <!-- Estilos compilados (Vite + Tailwind v4) -->
         @vite(['resources/js/app.js'])

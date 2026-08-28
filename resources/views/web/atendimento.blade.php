@@ -83,7 +83,7 @@
                             <div>
                                 <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">WhatsApp</p>
                                 <a href="{{ getNumZap($configuracoes->whatsapp, 'Atendimento ' . $configuracoes->app_name) }}"
-                                   target="_blank" class="text-green-600 font-semibold hover:text-green-700 transition-colors" x-text="whats"></a>
+                                   target="_blank" data-whatsapp class="text-green-600 font-semibold hover:text-green-700 transition-colors" x-text="whats"></a>
                             </div>
                         </div>
                     @endif

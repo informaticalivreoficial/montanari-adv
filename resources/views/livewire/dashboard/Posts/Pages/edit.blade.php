@@ -16,10 +16,9 @@
     <form wire:submit.prevent="update">
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Main Card -->
-            <div class="lg:col-span-2">
+            <div class="lg:col-span-2 space-y-6">
+                {{-- Section: Content --}}
                 <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
-
-                    {{-- Section: Content --}}
                     <div class="px-6 py-5">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
@@ -32,10 +31,10 @@
                             <x-quill name="content" label="Conteúdo" toolbar="full" height="300" placeholder="Escreva o conteúdo da página aqui..." wire:model="content" />
                         </div>
                     </div>
+                </div>
 
-                    <div class="border-t border-gray-100"></div>
-
-                    {{-- Section: SEO --}}
+                {{-- Section: SEO --}}
+                <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
                     <div class="px-6 py-5">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
@@ -48,6 +47,18 @@
                             <x-input name="metaDescription" label="Meta Descrição" placeholder="Descrição para mecanismos de busca" wire:model="metaDescription" />
                             <x-tags name="tags" label="Tags" value="{{ $tags }}" placeholder="Digite e pressione Enter..." wire:model="tags" />
                         </div>
+                    </div>
+                </div>
+
+                {{-- Section: Images --}}
+                <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+                    <div class="px-6 py-5">
+                        <x-image-gallery
+                            wireModel="newImages"
+                            label="Imagens da Página"
+                            :existingImages="$existingImages"
+                            :showUpload="true"
+                        />
                     </div>
                 </div>
             </div>

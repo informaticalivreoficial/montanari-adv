@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
 use Spatie\Permission\Models\Role;
-use Intervention\Image\Facades\Image;
 
 class Edit extends Component
 {
@@ -371,9 +370,9 @@ class Edit extends Component
 
         $fullPath = "{$path}/{$filename}";
 
-        $image = Image::make($file->getRealPath());
-        $image->encode('webp', 85);
-        $image->save($fullPath);
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        $image = $manager->read($file->getRealPath());
+        $image->toWebp(85)->save($fullPath);
 
         return "{$folder}/{$filename}";
     }

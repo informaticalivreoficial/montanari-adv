@@ -83,7 +83,6 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  color: var(--color-navy-800);
   font-weight: 700;
   line-height: 1.2;
 }
@@ -233,12 +232,32 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
 }
 
+.blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1);
+}
+
 .blog-card:hover .blog-card-image {
   transform: scale(1.05);
 }
 
 .blog-card-image {
   transition: transform 0.6s ease;
+}
+
+/* Blog loading spinner */
+@keyframes blog-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.blog-loading svg {
+  animation: blog-spin 1s linear infinite;
+}
+
+/* Blog empty state */
+.blog-empty {
+  animation: fade-in 0.5s ease-out forwards;
 }
 
 /* Stats counter */

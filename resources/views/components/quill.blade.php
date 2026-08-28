@@ -112,5 +112,36 @@
         }
         .quill-editor-wrapper.toolbar-none .ql-toolbar { display: none; }
         .quill-editor-wrapper.toolbar-none .ql-container { border-radius: 0.5rem; }
+
+        /* Image floating toolbar */
+        .ql-image-toolbar-floating {
+            position: absolute;
+            display: flex;
+            gap: 2px;
+            padding: 4px;
+            background: #1e293b;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            z-index: 100;
+            transform: translateX(-50%);
+        }
+        .ql-image-toolbar-floating button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: #e2e8f0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.15s;
+            line-height: 1;
+        }
+        .ql-image-toolbar-floating button:hover {
+            background: #334155;
+        }
     </style>
 @endonce

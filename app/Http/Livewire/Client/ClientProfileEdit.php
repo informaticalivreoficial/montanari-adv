@@ -209,9 +209,9 @@ class ClientProfileEdit extends Component
 
         $fullPath = "{$path}/{$filename}";
 
-        $image = \Intervention\Image\Facades\Image::make($file->getRealPath());
-        $image->encode('webp', 85);
-        $image->save($fullPath);
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        $image = $manager->read($file->getRealPath());
+        $image->toWebp(85)->save($fullPath);
 
         return "{$folder}/{$filename}";
     }

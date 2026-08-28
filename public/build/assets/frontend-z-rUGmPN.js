@@ -1,1 +1,0 @@
-document.addEventListener(`DOMContentLoaded`,function(){if(typeof Alpine>`u`){var e=document.createElement(`script`);e.src=`https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js`,e.defer=!0,document.head.appendChild(e)}});
