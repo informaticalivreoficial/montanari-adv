@@ -17,6 +17,7 @@ class Document extends Model
         'title',
         'description',
         'file_path',
+        'disk',
         'original_name',
         'mime_type',
         'file_size',
@@ -86,7 +87,7 @@ class Document extends Model
 
     public function getUrlAttribute(): string
     {
-        return Storage::disk('public')->url($this->file_path);
+        return route('documents.view', $this);
     }
 
     /**
@@ -95,8 +96,9 @@ class Document extends Model
     protected static function booted()
     {
         static::deleting(function ($document) {
-            if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
-                Storage::disk('public')->delete($document->file_path);
+            $disk = $document->disk ?? 'public';
+            if ($document->file_path && Storage::disk($disk)->exists($document->file_path)) {
+                Storage::disk($disk)->delete($document->file_path);
             }
         });
     }

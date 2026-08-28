@@ -150,9 +150,11 @@ class ProcessDetail extends Component
         $this->uploading = true;
 
         try {
+            $disk = config('filesystems.disks.r2') ? 'r2' : 'public';
+
             $file = $this->documentFile;
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('documents/client', $filename, 'public');
+            $path = $file->storeAs('documents/client', $filename, $disk);
 
             Document::create([
                 'process_id' => $this->processId,
@@ -160,6 +162,7 @@ class ProcessDetail extends Component
                 'title' => $this->documentTitle,
                 'description' => $this->documentDescription,
                 'file_path' => $path,
+                'disk' => $disk,
                 'original_name' => $file->getClientOriginalName(),
                 'mime_type' => $file->getMimeType(),
                 'file_size' => $file->getSize(),

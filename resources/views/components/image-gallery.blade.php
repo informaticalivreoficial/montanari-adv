@@ -112,14 +112,14 @@
 
                         {{-- Image with Lightbox --}}
                         <a
-                            href="{{ $img['url'] ?? Storage::url($img['path']) }}"
+                            href="{{ $img['url'] ?? \App\Services\Asset::url($img['path']) }}"
                             class="block aspect-square overflow-hidden"
                             data-fslightbox="gallery-{{ $wireModel }}"
                             data-caption="{{ $img['thumb_caption'] ?? '' }}"
                             onclick="event.preventDefault();"
                         >
                             <img
-                                src="{{ $img['url'] ?? Storage::url($img['path']) }}"
+                                src="{{ $img['url'] ?? \App\Services\Asset::url($img['path']) }}"
                                 alt="{{ $img['thumb_caption'] ?? '' }}"
                                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 loading="lazy"
@@ -342,7 +342,7 @@
                                     @if(is_object($file) && method_exists($file, 'temporaryUrl'))
                                         <img src="{{ $file->temporaryUrl() }}" alt="" class="h-full w-full object-cover">
                                     @elseif(is_string($file))
-                                        <img src="{{ Storage::url($file) }}" alt="" class="h-full w-full object-cover">
+                                        <img src="{{ \App\Services\Asset::url($file) }}" alt="" class="h-full w-full object-cover">
                                     @endif
                                 </div>
                                 <div class="absolute inset-0 bg-green-500/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">

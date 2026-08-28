@@ -57,7 +57,7 @@
                     <a href="{{ route('client.profile') }}" class="flex items-center gap-3 group">
                         @if(auth()->user()->avatar)
                             <img
-                                src="{{ Storage::url(auth()->user()->avatar) }}"
+                                src="{{ \App\Services\Asset::url(auth()->user()->avatar) }}"
                                 alt="{{ auth()->user()->name }}"
                                 class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-200 group-hover:ring-blue-300 transition"
                             >
@@ -145,22 +145,10 @@
                         <h2 class="text-lg sm:text-xl font-semibold text-gray-800">{{ $title ?? 'Dashboard' }}</h2>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="text-sm text-gray-500 hidden sm:inline">{{ now()->format('d/m/Y') }}</span>
-                        <a href="{{ route('client.profile') }}">
-                            @if(auth()->user()->avatar)
-                                <img
-                                    src="{{ Storage::url(auth()->user()->avatar) }}"
-                                    alt="{{ auth()->user()->name }}"
-                                    class="w-8 h-8 rounded-full object-cover ring-2 ring-gray-200 hover:ring-blue-300 transition"
-                                >
-                            @else
-                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center hover:bg-blue-200 transition">
-                                    <span class="text-blue-600 font-semibold text-xs">
-                                        {{ strtoupper(substr(auth()->user()->name ?? 'C', 0, 1)) }}
-                                    </span>
-                                </div>
-                            @endif
-                        </a>
+                        
+                        {{-- Sininho de notificações --}}
+                        <livewire:dashboard.notifications.notifications-dropdown />
+                        
                     </div>
                 </header>
 

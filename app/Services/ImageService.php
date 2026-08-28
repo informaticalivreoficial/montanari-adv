@@ -121,17 +121,22 @@ class ImageService
         // Converte para WebP — Intervention Image v3
         $webpContent = (string) $img->toWebp($this->webpQuality);
 
-        // Garante que o diretório existe
-        $fullDir = storage_path("app/public/{$directory}");
-        if (!is_dir($fullDir)) {
-            mkdir($fullDir, 0755, true);
+        // Disco de destino (R2 se configurado, senão local)
+        $disk = $this->storageDisk();
+
+        // Garante que o diretório existe (apenas para disco local)
+        if ($disk === 'public') {
+            $fullDir = storage_path("app/public/{$directory}");
+            if (!is_dir($fullDir)) {
+                mkdir($fullDir, 0755, true);
+            }
         }
 
         // Gera nome do arquivo
         $path = "{$directory}/{$filename}.webp";
 
-        // Salva no storage public
-        Storage::disk('public')->put($path, $webpContent);
+        // Salva no storage (R2 ou local)
+        Storage::disk($disk)->put($path, $webpContent);
 
         return [
             'path'   => $path,
@@ -152,7 +157,7 @@ class ImageService
         $webpContent = (string) $thumb->toWebp($this->webpQuality);
         $thumbPath = "{$directory}/{$filename}_thumb.webp";
 
-        Storage::disk('public')->put($thumbPath, $webpContent);
+        Storage::disk($this->storageDisk())->put($thumbPath, $webpContent);
     }
 
     /**
@@ -161,18 +166,27 @@ class ImageService
     public function delete(string $path): bool
     {
         $deleted = false;
+        $disk = $this->storageDisk();
 
-        if (Storage::disk('public')->exists($path)) {
-            $deleted = Storage::disk('public')->delete($path);
+        if (Storage::disk($disk)->exists($path)) {
+            $deleted = Storage::disk($disk)->delete($path);
         }
 
         // Remove thumbnail se existir
         $thumbPath = str_replace('.webp', '_thumb.webp', $path);
-        if (Storage::disk('public')->exists($thumbPath)) {
-            Storage::disk('public')->delete($thumbPath);
+        if (Storage::disk($disk)->exists($thumbPath)) {
+            Storage::disk($disk)->delete($thumbPath);
         }
 
         return $deleted;
+    }
+
+    /**
+     * Disco usado para gravar imagens (R2 se configurado, senão local).
+     */
+    protected function storageDisk(): string
+    {
+        return config('filesystems.disks.r2') ? 'r2' : 'public';
     }
 
     /**

@@ -16,6 +16,7 @@ use App\Models\Post;
 use App\Models\PostsGb;
 use App\Models\CatPost;
 use App\Models\Slide;
+use App\Services\Asset;
 
 class WebController extends Controller
 {
@@ -25,7 +26,7 @@ class WebController extends Controller
         $head = $this->seo->render($Configuracoes->app_name ?? 'Montanari Advocacia',
             $Configuracoes->information ?? 'Montanari Advocacia - Escritório de Advocacia',
             route('web.home'),
-            Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
+            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
         ); 
 
         $slides = Slide::orderBy('created_at', 'DESC')->where('status', '1')->limit(4)->get();
@@ -62,7 +63,7 @@ class WebController extends Controller
         $head = $this->seo->render('Serviços ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             $Configuracoes->information ?? 'Montanari Advocacia - Escritório de Advocacia',
             route('web.servicos'),
-            Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
+            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
         ); 
 
         return view('web.servicos', [
@@ -78,7 +79,7 @@ class WebController extends Controller
         $head = $this->seo->render($servico->titulo . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             strip_tags($servico->getContentWebSiteAttribute()) ?? 'Montanari Advocacia - Escritório de Advocacia',
             route('web.servico', ['slug' => $servico->slug]),
-            url($servico->cover() ?? Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg'))
+            url($servico->cover() ?? Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg')
         ); 
 
         $postsTags = Post::where('type', '=', 'page')->orWhere('id', '!=', $servico->id)->postson()->limit(3)->get();
@@ -100,7 +101,7 @@ class WebController extends Controller
         $head = $this->seo->render('Política de Privacidade - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             'Política de privacidade ' . $Configuracoes->app_name ?? 'Montanari Advocacia - Escritório de Advocacia',
             route('web.politica-de-privacidade'),
-            Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
+            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
         ); 
 
         return view('web.politica-de-privacidade', [
@@ -167,7 +168,7 @@ class WebController extends Controller
         $head = $this->seo->render('Pesquisa no site - '.$Configuracoes->app_name ?? 'Montanari Advocacia',
             'Resultados da pesquisa por '.$search,
             route('web.pesquisa'),
-            Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
+            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
         );
 
         return view('web.pesquisa', [
@@ -186,7 +187,7 @@ class WebController extends Controller
         $head = $this->seo->render('Atendimento',
             'Nossa equipe está pronta para melhor atender as demandas de nossos clientes!',
             route('web.atendimento'),
-            Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
+            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
         );
 
         return view('web.atendimento', [
@@ -237,7 +238,7 @@ class WebController extends Controller
         $head = $this->seo->render('Blog - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             'Confira nossos artigos sobre arquitetura, design e dicas para sua obra!!',
             route('web.blog.artigos'),
-            Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
+            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
         );
         return view('web.blog.artigos', [
             'head' => $head,
@@ -262,7 +263,7 @@ class WebController extends Controller
         $head = $this->seo->render($post->title . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             strip_tags($post->getContentWebAttribute()),
             route('web.blog.artigo', ['slug' => $post->slug]),
-            url($post->cover() ?? Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg'))
+            url($post->cover() ?? Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg')
         );
 
         return view('web.blog.artigo', [
@@ -283,7 +284,7 @@ class WebController extends Controller
         $head = $this->seo->render('Blog - ' . $categoria->title . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
             $categoria->title,
             route('web.blog.categoria', ['slug' => $request->slug]),
-            Storage::url($Configuracoes->metaimg ?? 'https://informaticalivre.com/media/metaimg.jpg')
+            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
         );
 
         return view('web.blog.categoria', [

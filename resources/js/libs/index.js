@@ -29,6 +29,11 @@ window.showAlert = (title, options = {}) => MontanariAlert.success(title, option
 window.showError = (title, options = {}) => MontanariAlert.error(title, options);
 window.confirmAction = (options) => MontanariAlert.confirm(options);
 
+// Registra os listeners de alerta/toast IMEDIATAMENTE (no carregamento do módulo).
+// O `swal:fire` etc. são CustomEvents nativos do Livewire 4 disparados no window,
+// então NÃO dependemos do timing de `livewire:initialized` (que já pode ter ocorrido).
+initSweetAlert();
+
 // Inicializar quando DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
     initFlatpickr();
@@ -38,8 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('livewire:initialized', () => {
         const livewire = window.Livewire;
 
-        // Registra eventos Livewire para Alert e Toast (ambos SweetAlert2)
-        initSweetAlert(livewire);
+        // Registra eventos Livewire para Toast (SweetAlert2)
         initToast(livewire);
 
         // Reinicializa libs após cada atualização do DOM do Livewire

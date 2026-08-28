@@ -98,11 +98,18 @@
                         <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Agenda</span>
                     </a>
                     <a href="{{ route('dashboard.legal.documents') }}"
-                       title="Documentos"
-                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.legal.documents') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
-                       :class="!desktopExpanded ? 'lg:justify-center lg:px-0' : ''">
+                        title="Documentos"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.legal.documents') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
+                        :class="!desktopExpanded ? 'lg:justify-center lg:px-0' : ''">
                         <i class="fa-solid fa-file-lines shrink-0 w-5 text-center"></i>
                         <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Documentos</span>
+                    </a>
+                    <a href="{{ route('dashboard.messages') }}"
+                        title="Mensagens"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.messages') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
+                        :class="!desktopExpanded ? 'lg:justify-center lg:px-0' : ''">
+                        <i class="fa-solid fa-comments shrink-0 w-5 text-center"></i>
+                        <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Mensagens</span>
                     </a>
 
                     <div class="px-3 pt-4 pb-1" :class="!desktopExpanded ? 'lg:hidden' : ''">

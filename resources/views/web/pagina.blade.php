@@ -36,7 +36,7 @@
 
         {{-- Galeria de Imagens --}}
         @if($pagina->images->count() > 0)
-            <div class="mt-16" x-data="{ lightbox: false, currentSrc: '', currentIdx: 0, images: {{ $pagina->images->sortBy('order')->map(fn($img) => ['src' => Storage::url($img->path), 'caption' => $img->thumb_caption ?? ''])->values()->toJson() }} }">
+            <div class="mt-16" x-data="{ lightbox: false, currentSrc: '', currentIdx: 0, images: {{ $pagina->images->sortBy('order')->map(fn($img) => ['src' => \App\Services\Asset::url($img->path), 'caption' => $img->thumb_caption ?? ''])->values()->toJson() }} }">
                 <div class="flex items-center gap-3 mb-8">
                     <div class="gold-line"></div>
                     <h2 class="font-heading text-2xl font-bold text-navy-800">Galeria</h2>
@@ -49,7 +49,7 @@
                             class="group relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 cursor-pointer"
                         >
                             <img
-                                src="{{ Storage::url($img->path) }}"
+                                src="{{ \App\Services\Asset::url($img->path) }}"
                                 alt="{{ $img->thumb_caption ?? $pagina->title }}"
                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 loading="lazy"

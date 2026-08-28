@@ -14,7 +14,7 @@
                 <div class="relative px-6 pb-6">
                     <div class="-mt-16 mb-4">
                         @if($user->avatar)
-                            <img src="{{ Storage::url($user->avatar) }}" alt="{{ $user->name }}" class="h-28 w-28 rounded-2xl border-4 border-white object-cover shadow-lg">
+                            <img src="{{ \App\Services\Asset::url($user->avatar) }}" alt="{{ $user->name }}" class="h-28 w-28 rounded-2xl border-4 border-white object-cover shadow-lg">
                         @else
                             <div class="flex h-28 w-28 items-center justify-center rounded-2xl border-4 border-white bg-[#23406C] shadow-lg">
                                 <span class="text-4xl font-bold text-white">{{ strtoupper(substr($user->name ?? 'C', 0, 1)) }}</span>

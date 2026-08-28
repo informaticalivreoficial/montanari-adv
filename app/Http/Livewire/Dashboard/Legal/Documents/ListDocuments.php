@@ -43,15 +43,6 @@ class ListDocuments extends Component
         $this->resetPage();
     }
 
-    public function downloadDocument($id)
-    {
-        $document = Document::findOrFail($id);
-        return response()->download(
-            storage_path("app/public/{$document->file_path}"),
-            $document->original_name
-        );
-    }
-
     public function delete($id)
     {
         $document = Document::findOrFail($id);
@@ -67,17 +58,13 @@ class ListDocuments extends Component
             'uploadCategory' => 'required|string',
         ]);
 
+        $disk = config('filesystems.disks.r2') ? 'r2' : 'public';
+
         $file = $this->uploadFile;
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         $path = 'documents/' . date('Y') . '/' . date('m');
 
-        // Create directory if doesn't exist
-        $fullPath = storage_path("app/public/{$path}");
-        if (!is_dir($fullPath)) {
-            mkdir($fullPath, 0755, true);
-        }
-
-        $file->storeAs($path, $filename, 'public');
+        $file->storeAs($path, $filename, $disk);
 
         Document::create([
             'process_id' => $this->uploadProcessId ?: null,
@@ -85,6 +72,7 @@ class ListDocuments extends Component
             'title' => $this->uploadTitle,
             'description' => $this->uploadDescription ?: null,
             'file_path' => "{$path}/{$filename}",
+            'disk' => $disk,
             'original_name' => $file->getClientOriginalName(),
             'mime_type' => $file->getMimeType(),
             'file_size' => $file->getSize(),
