@@ -52,31 +52,63 @@
                         class="flex items-start gap-3 px-4 py-3 border-b border-gray-50 transition hover:bg-gray-50
                                {{ $isRead ? '' : 'bg-amber-50/30' }}"
                     >
-                        {{-- Icon --}}
-                        <div class="shrink-0 mt-0.5">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full
-                                        {{ match($data['type'] ?? 'info') {
-                                            'success' => 'bg-green-100 text-green-600',
-                                            'warning' => 'bg-amber-100 text-amber-600',
-                                            'error'   => 'bg-red-100 text-red-600',
-                                            default   => 'bg-blue-100 text-blue-600',
-                                        } }}">
-                                <i class="{{ $data['icon'] ?? 'fa-solid fa-bell' }} text-xs"></i>
-                            </div>
-                        </div>
+                        @if(!empty($data['url']))
+                            <a href="{{ $data['url'] }}" class="flex items-start gap-3 min-w-0 flex-1">
+                                {{-- Icon --}}
+                                <div class="shrink-0 mt-0.5">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-full
+                                                {{ match($data['type'] ?? 'info') {
+                                                    'success' => 'bg-green-100 text-green-600',
+                                                    'warning' => 'bg-amber-100 text-amber-600',
+                                                    'error'   => 'bg-red-100 text-red-600',
+                                                    default   => 'bg-blue-100 text-blue-600',
+                                                } }}">
+                                        <i class="{{ $data['icon'] ?? 'fa-solid fa-bell' }} text-xs"></i>
+                                    </div>
+                                </div>
 
-                        {{-- Content --}}
-                        <div class="min-w-0 flex-1">
-                            <p class="text-sm font-medium text-gray-800 {{ $isRead ? 'font-normal text-gray-600' : '' }}">
-                                {{ $data['title'] ?? 'Notificação' }}
-                            </p>
-                            <p class="text-xs text-gray-500 mt-0.5 line-clamp-2">
-                                {{ $data['message'] ?? '' }}
-                            </p>
-                            <p class="text-[11px] text-gray-400 mt-1">
-                                {{ $notification->created_at->diffForHumans() }}
-                            </p>
-                        </div>
+                                {{-- Content --}}
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium text-gray-800 {{ $isRead ? 'font-normal text-gray-600' : '' }}">
+                                        {{ $data['title'] ?? 'Notificação' }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                                        {{ $data['message'] ?? '' }}
+                                    </p>
+                                    <p class="text-[11px] text-gray-400 mt-1">
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </p>
+                                </div>
+                            </a>
+                        @else
+                            <div class="flex items-start gap-3 min-w-0 flex-1">
+                                {{-- Icon --}}
+                                <div class="shrink-0 mt-0.5">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-full
+                                                {{ match($data['type'] ?? 'info') {
+                                                    'success' => 'bg-green-100 text-green-600',
+                                                    'warning' => 'bg-amber-100 text-amber-600',
+                                                    'error'   => 'bg-red-100 text-red-600',
+                                                    default   => 'bg-blue-100 text-blue-600',
+                                                } }}">
+                                        <i class="{{ $data['icon'] ?? 'fa-solid fa-bell' }} text-xs"></i>
+                                    </div>
+                                </div>
+
+                                {{-- Content --}}
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium text-gray-800 {{ $isRead ? 'font-normal text-gray-600' : '' }}">
+                                        {{ $data['title'] ?? 'Notificação' }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                                        {{ $data['message'] ?? '' }}
+                                    </p>
+                                    <p class="text-[11px] text-gray-400 mt-1">
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </p>
+                                </div>
+                            </div>
+                        @endif
 
                         {{-- Actions --}}
                         <div class="shrink-0 flex items-center gap-1">
@@ -109,7 +141,7 @@
             </div>
 
             {{-- Footer --}}
-            @if($notifications->count() > 0)
+            @if($notifications->count() > 0 && !auth()->user()->isClient())
                 <div class="border-t border-gray-100 px-4 py-2.5 text-center">
                     <a
                         href="{{ route('dashboard.notifications') }}"

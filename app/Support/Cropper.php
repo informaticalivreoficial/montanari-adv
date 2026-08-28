@@ -10,7 +10,6 @@ class Cropper
     public static function thumb(string $uri, int $width, ?int $height = null): string
     {
         $cachePath  = public_path('storage/cache');
-        $sourcePath = config('filesystems.disks.public.root') . '/' . $uri;
         $filename   = md5($uri . $width . $height) . '.webp';
         $cachedFile = $cachePath . '/' . $filename;
 
@@ -23,7 +22,19 @@ class Cropper
             mkdir($cachePath, 0755, true);
         }
 
-        if (!file_exists($sourcePath)) {
+        // ✅ resolve a imagem-fonte: local primeiro, senão baixa do R2
+        $sourcePath = null;
+        $tmpFile    = null;
+
+        if (\Storage::disk('public')->exists($uri)) {
+            $sourcePath = \Storage::disk('public')->path($uri);
+        } elseif (\Storage::disk('r2')->exists($uri)) {
+            $tmpFile    = tempnam(sys_get_temp_dir(), 'crop') . '.webp';
+            file_put_contents($tmpFile, \Storage::disk('r2')->get($uri));
+            $sourcePath = $tmpFile;
+        }
+
+        if (!$sourcePath || !file_exists($sourcePath)) {
             return '';
         }
 
@@ -38,6 +49,10 @@ class Cropper
         }
 
         $image->toWebp(80)->save($cachedFile);
+
+        if ($tmpFile && file_exists($tmpFile)) {
+            @unlink($tmpFile);
+        }
 
         return 'cache/' . $filename;
     }

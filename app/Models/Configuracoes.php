@@ -63,63 +63,51 @@ class Configuracoes extends Model
 
     /**
      * Accerssors and Mutators
-    */    
+     */
+    protected function mediaUrl(?string $field): string
+    {
+        $placeholder = url(asset('theme/images/image.jpg'));
+
+        if (empty($field)) {
+            return $placeholder;
+        }
+
+        return \App\Services\Asset::url($field);
+    }
+
     public function getmetaimg()
     {
-        if(empty($this->metaimg) || !Storage::disk()->exists($this->metaimg)) {
-            return url(asset('theme/images/image.jpg'));
-        } 
-        return Storage::url($this->metaimg);
+        return $this->mediaUrl($this->metaimg);
     }
-    
+
     public function getlogo()
     {
-        if (empty($this->logo) || !Storage::disk()->exists($this->logo)) {
-            return asset('theme/images/image.jpg');
-        }
-
-        return Storage::url($this->logo);
+        return $this->mediaUrl($this->logo);
     }
-    
+
     public function getlogoadmin()
     {
-        if (empty($this->logo_admin) || !Storage::disk('public')->exists($this->logo_admin)) {
-            return asset('theme/images/image.jpg');
-        }
-
-        return Storage::url($this->logo_admin);
+        return $this->mediaUrl($this->logo_admin);
     }
-    
+
     public function getfaveicon()
     {
-        if(empty($this->favicon) || !Storage::disk()->exists($this->favicon)) {
-            return url(asset('theme/images/image.jpg'));
-        } 
-        return Storage::url($this->favicon);
+        return $this->mediaUrl($this->favicon);
     }
-    
+
     public function getwatermark()
     {
-        if(empty($this->watermark) || !Storage::disk()->exists($this->watermark)) {
-            return url(asset('theme/images/image.jpg'));
-        } 
-        return Storage::url($this->watermark);
+        return $this->mediaUrl($this->watermark);
     }
-    
+
     public function getheadersite()
     {
-        if(empty($this->imgheader) || !Storage::disk()->exists($this->imgheader)) {
-            return url(asset('theme/images/image.jpg'));
-        } 
-        return Storage::url($this->imgheader);
+        return $this->mediaUrl($this->imgheader);
     }
 
     public function getlogofooter()
     {
-        if(empty($this->logo_footer) || !Storage::disk()->exists($this->logo_footer)) {
-            return url(asset('theme/images/image.jpg'));
-        } 
-        return Storage::url($this->logo_footer);
+        return $this->mediaUrl($this->logo_footer);
     }
 
     public function setZipcodeAttribute($value)

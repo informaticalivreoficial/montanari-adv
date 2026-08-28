@@ -53,7 +53,7 @@
 
                 {{-- Gallery --}}
                 @if($post->images->count())
-                    <div class="mt-12" x-data="{ lightbox: false, currentSrc: '', currentIdx: 0, images: {{ $post->images->sortBy('order')->map(fn($img) => ['src' => Storage::url($img->path), 'caption' => $img->thumb_caption ?? ''])->values()->toJson() }} }">
+                    <div class="mt-12" x-data="{ lightbox: false, currentSrc: '', currentIdx: 0, images: {{ $post->images->sortBy('order')->map(fn($img) => ['src' => \App\Services\Asset::url($img->path), 'caption' => $img->thumb_caption ?? ''])->values()->toJson() }} }">
                         <h3 class="font-heading text-xl font-bold text-navy-800 mb-6">Galeria</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             @foreach($post->images->sortBy('order') as $idx => $image)
@@ -61,7 +61,7 @@
                                     @click="currentIdx = {{ $idx }}; currentSrc = images[{{ $idx }}].src; lightbox = true"
                                     class="group relative rounded-xl overflow-hidden aspect-square bg-gray-100 cursor-pointer"
                                 >
-                                    <img src="{{ Storage::url($image->path) }}" alt="{{ $post->title }}"
+                                    <img src="{{ \App\Services\Asset::url($image->path) }}" alt="{{ $post->title }}"
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-navy-900/0 group-hover:bg-navy-900/30 transition-colors duration-300 flex items-center justify-center">
                                         <i class="fas fa-expand text-white text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></i>

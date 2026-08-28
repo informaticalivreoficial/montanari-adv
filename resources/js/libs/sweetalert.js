@@ -108,32 +108,41 @@ const MontanariAlert = {
  * Registra eventos Livewire para SweetAlert2.
  * Escuta tanto Livewire.on() quanto window.addEventListener.
  */
-export function initSweetAlert(livewire) {
-    // Via Livewire.on (Livewire v3 compat)
-    livewire.on('swal:fire', (options) => {
+export function initSweetAlert() {
+    // Livewire 4 dispara eventos como CustomEvent nativo no window, com
+    // `detail` geralmente envolvido em array (ex.: [payload]). Desenrolamos
+    // para garantir que o Swal receba o objeto/string correto.
+    // Escutamos direto no window para não depender do timing de livewire:initialized.
+    const unwrap = (data) => (Array.isArray(data) ? data[0] : data);
+
+    window.addEventListener('swal:fire', (e) => {
+        const options = unwrap(e.detail);
         if (typeof options === 'string') {
             MontanariAlert.success(options);
         } else {
-            Swal.fire(options);
+            Swal.fire(options || {});
         }
     });
 
-    livewire.on('swal:success', (message) => {
-        MontanariAlert.success(message || 'Operação realizada com sucesso!');
+    window.addEventListener('swal:success', (e) => {
+        MontanariAlert.success(unwrap(e.detail) || 'Operação realizada com sucesso!');
     });
 
-    livewire.on('swal:error', (message) => {
-        MontanariAlert.error(message || 'Ocorreu um erro.');
+    window.addEventListener('swal:error', (e) => {
+        MontanariAlert.error(unwrap(e.detail) || 'Ocorreu um erro.');
     });
 
-    livewire.on('swal:confirm', (options) => {
-        const opts = typeof options === 'string'
-            ? { title: options }
-            : options;
+    window.addEventListener('swal:confirm', (e) => {
+        const opts = typeof e.detail === 'string'
+            ? { title: e.detail }
+            : unwrap(e.detail);
 
         MontanariAlert.confirm(opts).then((result) => {
             if (result.isConfirmed && opts.method) {
-                livewire.call(opts.method, ...(opts.params || []));
+                const livewire = window.Livewire;
+                if (livewire && livewire.first) {
+                    livewire.first().call(opts.method, ...(opts.params || []));
+                }
             }
         });
     });

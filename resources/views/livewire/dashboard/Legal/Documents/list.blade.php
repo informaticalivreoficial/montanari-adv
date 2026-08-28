@@ -96,7 +96,7 @@
 
                 <div class="mt-4 flex items-center gap-2 border-t border-gray-100 pt-3">
                     <a
-                        href="{{ $document->url }}"
+                        href="{{ route('documents.view', $document) }}"
                         target="_blank"
                         class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 transition"
                     >
@@ -104,8 +104,7 @@
                         Ver
                     </a>
                     <a
-                        href="{{ $document->url }}"
-                        download
+                        href="{{ route('documents.download', $document) }}"
                         class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 transition"
                     >
                         <i class="fa-solid fa-download"></i>
@@ -165,11 +164,11 @@
                             <p class="text-xs text-gray-500">PDF, Word, Imagem. Máximo 20MB.</p>
                         </div>
 
-                        <x-input name="uploadTitle" label="Título" required placeholder="Nome do documento" wire:model="uploadTitle" />
+                        <x-input name="uploadTitle" label="Título" required placeholder="Nome do documento" wire:model.defer="uploadTitle" />
 
                         <div class="space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Categoria</label>
-                            <select wire:model="uploadCategory" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+                            <select wire:model.defer="uploadCategory" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
                                 <option value="contract">Contrato</option>
                                 <option value="petition">Petição</option>
                                 <option value="ruling">Decisão/Julgamento</option>
@@ -181,7 +180,7 @@
 
                         <div class="space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Processo</label>
-                            <select wire:model="uploadProcessId" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+                            <select wire:model.defer="uploadProcessId" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
                                 <option value="">Nenhum</option>
                                 @foreach($processesList as $id => $number)
                                     <option value="{{ $id }}">{{ $number }}</option>
@@ -189,7 +188,7 @@
                             </select>
                         </div>
 
-                        <x-textarea name="uploadDescription" label="Descrição" rows="2" placeholder="Descreva o documento..." wire:model="uploadDescription" />
+                        <x-textarea name="uploadDescription" label="Descrição" rows="2" placeholder="Descreva o documento..." wire:model.defer="uploadDescription" />
 
                         <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
                             <button type="button" wire:click="closeModal" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">

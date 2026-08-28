@@ -27,7 +27,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">
                             Processo <span class="text-red-500">*</span>
                         </label>
-                        <select wire:model="selectedProcess"
+                        <select wire:model.defer="selectedProcess"
                                 class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                             <option value="">Selecione o processo</option>
                             @foreach($processes as $process)
@@ -46,7 +46,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">
                             Categoria <span class="text-red-500">*</span>
                         </label>
-                        <select wire:model="documentCategory"
+                        <select wire:model.defer="documentCategory"
                                 class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                             <option value="other">Outro</option>
                             <option value="contract">Contrato</option>
@@ -65,7 +65,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">
                             Título <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" wire:model="documentTitle" placeholder="Ex: RG, CPF, Contrato..."
+                        <input type="text" wire:model.defer="documentTitle" placeholder="Ex: RG, CPF, Contrato..."
                                class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                         @error('documentTitle')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -88,7 +88,7 @@
                     {{-- Description --}}
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Descrição (opcional)</label>
-                        <textarea wire:model="documentDescription" rows="2" placeholder="Observações sobre o documento..."
+                        <textarea wire:model.defer="documentDescription" rows="2" placeholder="Observações sobre o documento..."
                                   class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"></textarea>
                         @error('documentDescription')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -138,7 +138,6 @@
             @if($documents->count())
                 <div class="divide-y divide-gray-50">
                     @foreach($documents as $doc)
-                        @php $fileUrl = $this->getFileUrl($doc); @endphp
                         <div class="px-6 py-4 hover:bg-gray-50 transition">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4 min-w-0 flex-1">
@@ -175,12 +174,12 @@
                                 </div>
 
                                 <div class="flex items-center gap-1 flex-shrink-0 ml-4">
-                                    @if($fileUrl !== '#')
-                                        <a href="{{ $fileUrl }}" target="_blank"
+                                    @if($doc->file_path)
+                                        <a href="{{ route('documents.view', $doc) }}" target="_blank"
                                            class="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition" title="Visualizar">
                                             <i class="fa-solid fa-eye"></i>
                                         </a>
-                                        <a href="{{ $fileUrl }}" download="{{ $doc->original_name ?? $doc->title }}"
+                                        <a href="{{ route('documents.download', $doc) }}"
                                            class="p-2 rounded-lg hover:bg-green-50 text-green-600 transition" title="Baixar">
                                             <i class="fa-solid fa-download"></i>
                                         </a>

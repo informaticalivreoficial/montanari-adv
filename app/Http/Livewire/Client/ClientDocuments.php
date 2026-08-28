@@ -5,7 +5,6 @@ namespace App\Http\Livewire\Client;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Process;
 use App\Models\Document;
 
@@ -78,9 +77,11 @@ class ClientDocuments extends Component
         $this->uploading = true;
 
         try {
+            $disk = config('filesystems.disks.r2') ? 'r2' : 'public';
+
             $file = $this->documentFile;
             $filename = time() . '_' . Auth::id() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('documents/client', $filename, 'public');
+            $path = $file->storeAs('documents/client', $filename, $disk);
 
             Document::create([
                 'process_id'    => $this->selectedProcess,
@@ -88,6 +89,7 @@ class ClientDocuments extends Component
                 'title'         => $this->documentTitle,
                 'description'   => $this->documentDescription,
                 'file_path'     => $path,
+                'disk'          => $disk,
                 'original_name' => $file->getClientOriginalName(),
                 'mime_type'     => $file->getMimeType(),
                 'file_size'     => $file->getSize(),
@@ -117,14 +119,6 @@ class ClientDocuments extends Component
             $this->loadDocuments();
             $this->dispatch('show-toast', type: 'success', message: 'Documento excluído.');
         }
-    }
-
-    public function getFileUrl(Document $document): string
-    {
-        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
-            return Storage::disk('public')->url($document->file_path);
-        }
-        return '#';
     }
 
     public function render()

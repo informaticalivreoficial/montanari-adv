@@ -26,11 +26,11 @@ class PostGb extends Model
 
     public function getUrlCroppedAttribute()
     {
-        return Storage::url($this->path);
+        return \App\Services\Asset::url($this->path);
     }
 
     public function getUrlImageAttribute()
     {
-        return Storage::url($this->path);
+        return \App\Services\Asset::url($this->path);
     }
 }

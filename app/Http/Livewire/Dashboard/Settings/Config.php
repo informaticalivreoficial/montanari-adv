@@ -208,9 +208,9 @@ class Config extends Component
 
         foreach ($imageFields as $field) {
             if ($this->{$field} && is_object($this->{$field})) {
-                // Remove imagem antiga
-                if (!empty($config->{$field}) && Storage::disk('public')->exists($config->{$field})) {
-                    Storage::disk('public')->delete($config->{$field});
+                // Remove imagem antiga (local ou R2)
+                if (!empty($config->{$field})) {
+                    \App\Services\Asset::delete($config->{$field});
                 }
 
                 try {
@@ -253,7 +253,7 @@ class Config extends Component
         if (!$config || empty($config->{$field})) {
             return asset('theme/images/image.jpg');
         }
-        return Storage::url($config->{$field});
+        return \App\Services\Asset::url($config->{$field});
     }
 
     public function render()

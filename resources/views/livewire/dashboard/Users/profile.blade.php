@@ -20,7 +20,7 @@
                         <div class="relative inline-block">
                             @if($user->avatar)
                                 <img 
-                                    src="{{ Storage::url($user->avatar) }}" 
+                                    src="{{ \App\Services\Asset::url($user->avatar) }}" 
                                     alt="{{ $user->name }}"
                                     class="h-28 w-28 rounded-2xl border-4 border-white object-cover shadow-lg"
                                 >
@@ -279,7 +279,7 @@
                         <div class="relative">
                             @if($user->avatar)
                                 <img 
-                                    src="{{ Storage::url($user->avatar) }}" 
+                                    src="{{ \App\Services\Asset::url($user->avatar) }}" 
                                     alt="{{ $user->name }}"
                                     class="h-20 w-20 rounded-xl object-cover"
                                 >

@@ -408,7 +408,7 @@ class PostApiController extends Controller
             'images' => $post->images->map(fn($img) => [
                 'id' => $img->id,
                 'path' => $img->path,
-                'url' => Storage::url($img->path),
+                'url' => \App\Services\Asset::url($img->path),
                 'cover' => (bool) $img->cover,
             ]),
             'created_at' => $post->created_at?->toIso8601String(),

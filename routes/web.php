@@ -35,10 +35,12 @@ use App\Http\Livewire\Dashboard\Posts\Categories\CreateCategory;
 use App\Http\Livewire\Dashboard\Posts\Categories\EditCategory;
 use App\Http\Livewire\Dashboard\Notifications\NotificationsDropdown;
 use App\Http\Livewire\Dashboard\Notifications\ListNotifications;
+use App\Http\Livewire\Dashboard\Messages;
 use App\Http\Livewire\Client\ClientLogin;
 use App\Http\Livewire\Client\ClientForgotPassword;
 use App\Http\Livewire\Client\ClientResetPassword;
 use App\Http\Controllers\Client\MagicLinkController;
+use App\Http\Controllers\DocumentFileController;
 use App\Http\Livewire\Client\Dashboard as ClientDashboard;
 use App\Http\Livewire\Client\ProcessList;
 use App\Http\Livewire\Client\ProcessDetail;
@@ -138,6 +140,9 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     // Notificações
     Route::livewire('/dashboard/notificacoes', ListNotifications::class)->name('dashboard.notifications');
 
+    // Mensagens (hub cliente ↔ escritório)
+    Route::livewire('/dashboard/mensagens', Messages::class)->name('dashboard.messages');
+
     /*
     |--------------------------------------------------------------------------
     | Módulo Posts
@@ -188,4 +193,14 @@ Route::middleware('client')->prefix('cliente')->name('client.')->group(function 
     Route::livewire('/perfil', ClientProfile::class)->name('profile');
     Route::livewire('/perfil/editar', ClientProfileEdit::class)->name('profile.edit');
     Route::livewire('/perfil/senha', ClientPasswordChange::class)->name('profile.password');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Arquivos de documentos (admin e cliente) — R2 / local
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    Route::get('/documentos/{document}/view', [DocumentFileController::class, 'view'])->name('documents.view');
+    Route::get('/documentos/{document}/download', [DocumentFileController::class, 'download'])->name('documents.download');
 });

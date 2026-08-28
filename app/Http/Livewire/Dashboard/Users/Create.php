@@ -311,19 +311,16 @@ class Create extends Component
     protected function convertToWebp($file, string $folder): string
     {
         $filename = uniqid() . '.webp';
-        $path = storage_path("app/public/{$folder}");
-
-        if (!is_dir($path)) {
-            mkdir($path, 0755, true);
-        }
-
-        $fullPath = "{$path}/{$filename}";
+        $path = "{$folder}/{$filename}";
 
         $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
         $image = $manager->read($file->getRealPath());
-        $image->toWebp(85)->save($fullPath);
+        $content = (string) $image->toWebp(85);
 
-        return "{$folder}/{$filename}";
+        $disk = config('filesystems.disks.r2') ? 'r2' : 'public';
+        \Storage::disk($disk)->put($path, $content);
+
+        return $path;
     }
 
     public function render()

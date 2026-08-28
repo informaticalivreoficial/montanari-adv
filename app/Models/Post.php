@@ -56,6 +56,7 @@ class Post extends Model
 
         static::deleting(function ($post) {
             Storage::disk('public')->deleteDirectory("posts/{$post->id}");
+            Storage::disk('r2')->deleteDirectory("posts/{$post->id}");
             $post->images()->delete();
         });
     }
@@ -149,7 +150,13 @@ class Post extends Model
             return asset('theme/images/image.jpg');
         }
 
-        return Storage::url(Cropper::thumb($cover['path'], 720, 480));
+        $crop = Cropper::thumb($cover['path'], 720, 480);
+
+        if ($crop) {
+            return Storage::disk('public')->url($crop);
+        }
+
+        return \App\Services\Asset::url($cover['path']);
     }
 
     public function nocover()
@@ -157,11 +164,11 @@ class Post extends Model
         $cover = $this->images()->where('cover', 1)->first(['path'])
             ?? $this->images()->latest('id')->first(['path']);
 
-        if (empty($cover['path']) || !Storage::disk('public')->exists($cover['path'])) {
+        if (empty($cover['path'])) {
             return asset('theme/images/image.jpg');
         }
 
-        return Storage::url($cover['path']);
+        return \App\Services\Asset::url($cover['path']);
     }
 
     public function setStatusAttribute($value)

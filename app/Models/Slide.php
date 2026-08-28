@@ -51,16 +51,16 @@ class Slide extends Model
      */
     public function getImageAttribute()
     {
-        if (empty($this->attributes['image']) || !Storage::disk()->exists($this->attributes['image'])) {
+        if (empty($this->attributes['image'])) {
             return url(asset('backend/assets/images/image.jpg'));
         }
-        return Storage::url($this->attributes['image']);
+        return \App\Services\Asset::url($this->attributes['image']);
     }
 
     public function getUrlImageAttribute()
     {
         if (!empty($this->attributes['image'])) {
-            return Storage::url($this->attributes['image']);
+            return \App\Services\Asset::url($this->attributes['image']);
         }
         return '';
     }

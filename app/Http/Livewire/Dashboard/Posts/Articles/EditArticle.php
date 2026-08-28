@@ -89,7 +89,7 @@ class EditArticle extends Component
         $this->existingImages = $images->map(fn($img) => [
             'id'            => $img->id,
             'path'          => $img->path,
-            'url'           => Storage::url($img->path),
+            'url'           => \App\Services\Asset::url($img->path),
             'cover'         => (bool) $img->cover,
             'thumb_caption' => $img->thumb_caption ?? '',
         ])->toArray();

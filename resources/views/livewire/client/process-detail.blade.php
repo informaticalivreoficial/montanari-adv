@@ -181,7 +181,7 @@
                 @if(count($documents) > 0)
                     <div class="space-y-2">
                         @foreach($documents as $doc)
-                            <a href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($doc['file_path']) }}" target="_blank"
+                            <a href="{{ route('documents.view', $doc['id']) }}" target="_blank"
                                class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition text-sm">
                                 <i class="fa-solid {{ match($doc['category']) { 'contract' => 'fa-file-contract', 'petition' => 'fa-file-pen', default => 'fa-file' } }} text-gray-400"></i>
                                 <div class="flex-1 min-w-0">

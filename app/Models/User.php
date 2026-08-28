@@ -49,9 +49,7 @@ class User extends Authenticatable
     protected static function booted()
     {
         static::deleting(function ($user) {
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
-            }
+            \App\Services\Asset::delete($user->avatar);
         });
     }
 
@@ -130,7 +128,7 @@ class User extends Authenticatable
     public function getUrlAvatarAttribute()
     {
         if (!empty($this->avatar)) {
-            return Storage::url($this->avatar);
+            return \App\Services\Asset::url($this->avatar);
         }
         return '';
     }
