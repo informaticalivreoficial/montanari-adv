@@ -11,11 +11,11 @@
             <div class="flex items-center gap-4 mb-6">
                 <div class="gold-line"></div>
             </div>
-            <h1 class="font-heading text-4xl md:text-5xl font-bold text-white mb-4">Política de Privacidade</h1>
+            <h1 class="font-heading text-4xl md:text-5xl font-bold text-white mb-4">Termos e Condições</h1>
             <nav class="flex items-center gap-2 text-white/50 text-sm">
                 <a href="{{ route('web.home') }}" class="hover:text-gold-400 transition-colors">Início</a>
                 <i class="fas fa-chevron-right text-[10px] text-gold-500/40"></i>
-                <span class="text-white/80">Política de Privacidade</span>
+                <span class="text-white/80">Termos e Condições</span>
             </nav>
         </div>
     </div>
@@ -26,7 +26,7 @@
         <div class="prose prose-lg prose-slate max-w-none
             prose-headings:font-heading prose-headings:text-navy-800
             prose-a:text-navy-700 prose-a:no-underline hover:prose-a:text-gold-600">
-            {!! $configuracoes->terms_condicions !!}
+            {!! $terms_conditions !!}
         </div>
     </div>
 </section>

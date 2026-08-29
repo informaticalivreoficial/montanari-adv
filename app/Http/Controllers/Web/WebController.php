@@ -229,12 +229,9 @@ class WebController extends Controller
             $this->config->getmetaimg() ?? url(asset('theme/images/image.jpg'))
         );
 
-        if(empty($this->config->terms_condicions)){
-            return redirect()->route('web.home');
-        }
-
         return view("web.terms-conditions",[
             'head' => $head,
+            'terms_conditions' => $this->config->terms_conditions
         ]);
     }
     
