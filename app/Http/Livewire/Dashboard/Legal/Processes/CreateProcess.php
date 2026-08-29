@@ -143,7 +143,8 @@ class CreateProcess extends Component
     public function mount()
     {
         $this->clients = User::role('client')->pluck('name', 'id')->toArray();
-        $this->team = User::team()->pluck('name', 'id')->toArray();
+        // Responsável: apenas admin e manager (sem clientes nem super-admin)
+        $this->team = User::role(['admin', 'manager'])->pluck('name', 'id')->toArray();
         $this->tribunais = config('datajud.tribunais', []);
     }
 

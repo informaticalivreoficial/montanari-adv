@@ -32,7 +32,8 @@ class CreateTask extends Component
     public function mount()
     {
         $this->processes = Process::active()->pluck('process_number', 'id')->toArray();
-        $this->team = User::team()->pluck('name', 'id')->toArray();
+        // Responsável: apenas admin e manager (sem clientes nem super-admin)
+        $this->team = User::role(['admin', 'manager'])->pluck('name', 'id')->toArray();
     }
 
     public function store()
