@@ -68,6 +68,16 @@
                             <i class="fas fa-chevron-right text-[8px] text-gold-500/30"></i> Áreas de Atuação
                         </a>
                     </li>
+
+                    {{-- Páginas dinâmicas do menu (mesmo do header) --}}
+                    @foreach($menuPages as $page)
+                        <li>
+                            <a href="{{ url('/pagina/') }}/{{ $page->slug }}" class="text-white/40 hover:text-gold-400 transition-colors text-xs flex items-center gap-2">
+                                <i class="fas fa-chevron-right text-[8px] text-gold-500/30"></i> {{ $page->title }}
+                            </a>
+                        </li>
+                    @endforeach
+
                     <li>
                         <a href="{{ route('web.blog.artigos') }}" class="text-white/40 hover:text-gold-400 transition-colors text-xs flex items-center gap-2">
                             <i class="fas fa-chevron-right text-[8px] text-gold-500/30"></i> Blog
