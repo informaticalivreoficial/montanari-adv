@@ -185,9 +185,19 @@
                                         </a>
                                     @endif
                                     @if($doc->uploaded_by === Auth::id())
-                                        <button wire:click="deleteDocument({{ $doc->id }})"
-                                                wire:confirm="Tem certeza que deseja excluir este documento?"
-                                                class="p-2 rounded-lg hover:bg-red-50 text-red-500 transition" title="Excluir">
+                                        <button
+                                            x-on:click="
+                                                MontanariAlert.confirm({
+                                                    title: 'Excluir documento?',
+                                                    text: 'Tem certeza que deseja excluir este documento? Esta ação não pode ser desfeita.',
+                                                    confirmButtonText: 'Sim, excluir',
+                                                    cancelButtonText: 'Cancelar'
+                                                }).then(r => {
+                                                    if (r.isConfirmed) $wire.deleteDocument({{ $doc->id }})
+                                                })
+                                            "
+                                            class="p-2 rounded-lg hover:bg-red-50 text-red-500 transition" title="Excluir"
+                                        >
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     @endif
