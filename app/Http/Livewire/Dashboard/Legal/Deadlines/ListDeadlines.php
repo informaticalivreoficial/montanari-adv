@@ -50,7 +50,7 @@ class ListDeadlines extends Component
             ->when($this->filterStatus, fn($q) => $q->where('status', $this->filterStatus))
             ->when($this->filterPriority, fn($q) => $q->where('priority', $this->filterPriority))
             ->orderBy('due_date', 'asc')
-            ->paginate(10);
+            ->paginate(25);
 
         return view('livewire.dashboard.Legal.Deadlines.list', compact('deadlines'))
             ->layout('layouts.admin', ['title' => 'Prazos']);

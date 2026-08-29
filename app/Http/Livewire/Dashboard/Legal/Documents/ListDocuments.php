@@ -134,7 +134,7 @@ class ListDocuments extends Component
             ->when($this->filterProcess, fn($q) => $q->whereHas('process', fn($pq) => $pq->where('process_number', 'like', "%{$this->filterProcess}%")))
             ->when($this->filterClient, fn($q) => $q->whereHas('process', fn($pq) => $pq->where('client_id', $this->filterClient)))
             ->latest()
-            ->paginate(10);
+            ->paginate(27);
 
         $processesList = $this->processes;
         $clientsList = $this->clients;
