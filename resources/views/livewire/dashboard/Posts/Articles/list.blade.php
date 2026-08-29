@@ -124,7 +124,19 @@
                                         <a href="{{ route('dashboard.posts.articles.edit', $post->id) }}" class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-amber-600 transition">
                                             <i class="fa-solid fa-pen-to-square text-sm"></i>
                                         </a>
-                                        <button wire:click="delete({{ $post->id }})" onclick="return confirm('Tem certeza que deseja excluir este artigo?')" class="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 transition">
+                                        <button
+                                            x-on:click="
+                                                MontanariAlert.confirm({
+                                                    title: 'Excluir artigo?',
+                                                    text: 'Tem certeza que deseja excluir este artigo? Esta ação não pode ser desfeita.',
+                                                    confirmButtonText: 'Sim, excluir',
+                                                    cancelButtonText: 'Cancelar'
+                                                }).then(r => {
+                                                    if (r.isConfirmed) $wire.delete({{ $post->id }})
+                                                })
+                                            "
+                                            class="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 transition"
+                                        >
                                             <i class="fa-solid fa-trash text-sm"></i>
                                         </button>
                                     </div>
