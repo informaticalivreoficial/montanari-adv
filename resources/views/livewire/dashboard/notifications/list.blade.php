@@ -107,8 +107,16 @@
                         </button>
                     @endif
                     <button
-                        wire:click="delete('{{ $notification->id }}')"
-                        onclick="return confirm('Tem certeza que deseja excluir esta notificação?')"
+                        x-on:click="
+                            MontanariAlert.confirm({
+                                title: 'Excluir notificação?',
+                                text: 'Tem certeza que deseja excluir esta notificação? Esta ação não pode ser desfeita.',
+                                confirmButtonText: 'Sim, excluir',
+                                cancelButtonText: 'Cancelar'
+                            }).then(r => {
+                                if (r.isConfirmed) $wire.delete('{{ $notification->id }}')
+                            })
+                        "
                         class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                         title="Excluir"
                     >
