@@ -24,7 +24,7 @@ class Asset
      * - Se existir localmente: usa a URL pública local.
      * - Senão: gera URL pré-assinada do R2 (válida por $expires minutos, inline).
      */
-    public static function url(?string $path, int $expires = 60): string
+    public static function url(?string $path, int $expires = 1440): string
     {
         if (!$path) {
             return '';
