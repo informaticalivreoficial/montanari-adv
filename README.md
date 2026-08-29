@@ -4,9 +4,9 @@
     </a>
 </p>
 
-# Montanari Adv
+# Montanari Advocacia
 
-Sistema de gerenciamento para escritórios de advocacia, com painel administrativo completo, área do cliente e site institucional. Desenvolvido com tecnologias modernas (Laravel 11 + Livewire 4), voltado para produtividade jurídica: processos, prazos, tarefas, agenda, documentos e comunicação cliente ↔ escritório.
+Sistema de gerenciamento para escritório de advocacia, com painel administrativo completo, área do cliente e site institucional. Desenvolvido com tecnologias modernas (Laravel 11 + Livewire 4), voltado para produtividade jurídica: processos, prazos, tarefas, agenda, documentos e comunicação cliente ↔ escritório.
 
 ## Stack / Tecnologias
 
