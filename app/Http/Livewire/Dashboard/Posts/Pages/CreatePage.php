@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Post;
 use App\Models\PostGb;
+use App\Models\CatPost;
 use App\Services\ImageService;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
