@@ -42,30 +42,81 @@ class Users extends Component
 
     public function mount()
     {
+        // Managers só operam na visão de clientes
+        if (auth()->user()->hasRole('manager')) {
+            $this->viewMode = 'clients';
+        }
+
         $this->loadUsers();
         $this->loadStats();
     }
 
     public function loadStats()
     {
-        $this->stats = [
-            'total' => User::count(),
-            'clients' => User::role('client')->count(),
-            'team' => User::role(['super-admin', 'admin', 'manager'])->count(),
-            'active' => User::where('status', 1)->count(),
-            'inactive' => User::where('status', 0)->count(),
-        ];
+        $authUser = auth()->user();
+
+        // Managers não enxergam a equipe interna
+        if ($authUser->hasRole('manager')) {
+            $clientCount = User::role('client')->count();
+            $clientActive = User::role('client')->where('status', 1)->count();
+
+            $this->stats = [
+                'total' => $clientCount + 1, // clientes + o próprio manager
+                'clients' => $clientCount,
+                'team' => 0,
+                'active' => $clientActive + ($authUser->status ? 1 : 0),
+                'inactive' => ($clientCount - $clientActive) + ($authUser->status ? 0 : 1),
+            ];
+
+            return;
+        }
+
+        if ($authUser->hasRole('admin')) {
+            // Admin não enxerga super-admin em nenhuma contagem
+            $this->stats = [
+                'total' => User::whereDoesntHave('roles', fn($q) => $q->where('name', 'super-admin'))->count(),
+                'clients' => User::role('client')->count(),
+                'team' => User::role(['admin', 'manager'])->count(),
+                'active' => User::where('status', 1)
+                    ->whereDoesntHave('roles', fn($q) => $q->where('name', 'super-admin'))->count(),
+                'inactive' => User::where('status', 0)
+                    ->whereDoesntHave('roles', fn($q) => $q->where('name', 'super-admin'))->count(),
+            ];
+        } else {
+            $this->stats = [
+                'total' => User::count(),
+                'clients' => User::role('client')->count(),
+                'team' => User::role(['super-admin', 'admin', 'manager'])->count(),
+                'active' => User::where('status', 1)->count(),
+                'inactive' => User::where('status', 0)->count(),
+            ];
+        }
     }
 
     public function loadUsers()
     {
+        $authUser = auth()->user();
         $query = User::with('roles');
 
-        // Aplicar filtro de visualização
-        if ($this->viewMode === 'clients') {
-            $query->role('client');
-        } elseif ($this->viewMode === 'team') {
-            $query->role(['super-admin', 'admin', 'manager']);
+        // Managers apenas visualizam a si mesmos e os clientes
+        if ($authUser->hasRole('manager')) {
+            $query->where(function ($q) use ($authUser) {
+                $q->role('client')->orWhere('id', $authUser->id);
+            });
+        } else {
+            // Aplicar filtro de visualização
+            if ($this->viewMode === 'clients') {
+                $query->role('client');
+            } elseif ($this->viewMode === 'team') {
+                $query->role(['super-admin', 'admin', 'manager']);
+            }
+
+            // Admin não visualiza super-admin
+            if ($authUser->hasRole('admin')) {
+                $query->whereDoesntHave('roles', function ($q) {
+                    $q->where('name', 'super-admin');
+                });
+            }
         }
 
         // Aplicar busca
@@ -101,6 +152,7 @@ class Users extends Component
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'url_avatar' => $user->url_avatar,
                 'position' => $user->position ?? '',
                 'department' => $user->department ?? '',
                 'status' => $user->status ?? 0,

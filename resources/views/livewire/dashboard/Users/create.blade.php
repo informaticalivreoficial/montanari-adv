@@ -484,6 +484,14 @@
                         wire:model="department"
                     />
 
+                    @if(auth()->user()->hasRole('manager'))
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Função</label>
+                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+                                {{ ucfirst(str_replace('-', ' ', $this->role)) }}
+                            </div>
+                        </div>
+                    @else
                     <x-select
                         name="role"
                         label="Função"
@@ -492,6 +500,7 @@
                         :options="collect($roles)->mapWithKeys(fn($r) => [$r['name'] => ucfirst(str_replace('-', ' ', $r['name']))])->toArray()"
                         wire:model="role"
                     />
+                    @endif
 
                 </div>
 

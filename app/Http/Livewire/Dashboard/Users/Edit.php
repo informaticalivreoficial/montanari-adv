@@ -7,6 +7,7 @@ use Livewire\WithFileUploads;
 use App\Models\User;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 
 class Edit extends Component
@@ -74,8 +75,18 @@ class Edit extends Component
     public function mount($id)
     {
         $this->userId = $id;
-        $this->roles = Role::all()->toArray();
+
+        $roleQuery = Role::query();
+        if (auth()->user()->hasRole('admin')) {
+            $roleQuery->where('name', '!=', 'super-admin');
+        } elseif (auth()->user()->hasRole('manager')) {
+            $roleQuery->where('name', 'client');
+        }
+        $this->roles = $roleQuery->get()->toArray();
+
         $this->loadUser();
+
+        Gate::authorize('update', $this->user);
     }
 
     public function loadUser()
@@ -278,6 +289,18 @@ class Edit extends Component
 
     public function update()
     {
+        Gate::authorize('update', $this->user);
+
+        $auth = auth()->user();
+        if ($auth->hasRole('manager')) {
+            // Manager apenas mantém clientes como clientes
+            if ($this->user->hasRole('client')) {
+                $this->role = 'client';
+            }
+        } elseif ($auth->hasRole('admin') && $this->role === 'super-admin') {
+            abort(403, 'Administradores não podem promover usuários a super-administrador.');
+        }
+
         $rules = [
             'name'     => 'required|string|min:3|max:255',
             'email'    => 'required|email|max:255|unique:users,email,' . $this->userId,

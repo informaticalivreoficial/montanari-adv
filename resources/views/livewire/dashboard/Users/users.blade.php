@@ -43,42 +43,46 @@
     <!-- Filters and Search -->
     <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <!-- View Mode Toggles -->
-            <div class="flex flex-wrap gap-2">
-                <button
-                    wire:click="switchMode('all')"
-                    class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
-                           {{ $viewMode === 'all' 
-                               ? 'bg-amber-600 text-white shadow-sm' 
-                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
-                >
-                    <i class="fa-solid fa-users text-xs"></i>
-                    Todos
-                    <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['total'] }}</span>
-                </button>
-                <button
-                    wire:click="switchMode('clients')"
-                    class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
-                           {{ $viewMode === 'clients' 
-                               ? 'bg-amber-600 text-white shadow-sm' 
-                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
-                >
-                    <i class="fa-solid fa-user-check text-xs"></i>
-                    Clientes
-                    <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['clients'] }}</span>
-                </button>
-                <button
-                    wire:click="switchMode('team')"
-                    class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
-                           {{ $viewMode === 'team' 
-                               ? 'bg-amber-600 text-white shadow-sm' 
-                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
-                >
-                    <i class="fa-solid fa-user-tie text-xs"></i>
-                    Time
-                    <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['team'] }}</span>
-                </button>
-            </div>
+                <!-- View Mode Toggles -->
+                <div class="flex flex-wrap gap-2">
+                    @if(!auth()->user()->hasRole('manager'))
+                    <button
+                        wire:click="switchMode('all')"
+                        class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
+                               {{ $viewMode === 'all' 
+                                   ? 'bg-amber-600 text-white shadow-sm' 
+                                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+                    >
+                        <i class="fa-solid fa-users text-xs"></i>
+                        Todos
+                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['total'] }}</span>
+                    </button>
+                    @endif
+                    <button
+                        wire:click="switchMode('clients')"
+                        class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
+                               {{ $viewMode === 'clients' 
+                                   ? 'bg-amber-600 text-white shadow-sm' 
+                                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+                    >
+                        <i class="fa-solid fa-user-check text-xs"></i>
+                        Clientes
+                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['clients'] }}</span>
+                    </button>
+                    @if(!auth()->user()->hasRole('manager'))
+                    <button
+                        wire:click="switchMode('team')"
+                        class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
+                               {{ $viewMode === 'team' 
+                                   ? 'bg-amber-600 text-white shadow-sm' 
+                                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+                    >
+                        <i class="fa-solid fa-user-tie text-xs"></i>
+                        Time
+                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['team'] }}</span>
+                    </button>
+                    @endif
+                </div>
 
             <!-- Search -->
             <div class="relative flex-1 max-w-md">
@@ -179,10 +183,15 @@
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="whitespace-nowrap px-4 py-3">
                                     <div class="flex items-center gap-3">
-                                        <div class="flex h-10 w-10 items-center justify-center rounded-full 
-                                                    {{ $user['status'] ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-400' }}">
-                                            <i class="fa-solid fa-user {{ !$user['status'] ? 'opacity-50' : '' }}"></i>
-                                        </div>
+                                        @if(!empty($user['url_avatar']))
+                                            <img src="{{ $user['url_avatar'] }}" alt="{{ $user['name'] }}"
+                                                 class="h-10 w-10 rounded-full object-cover ring-2 ring-gray-200">
+                                        @else
+                                            <div class="flex h-10 w-10 items-center justify-center rounded-full
+                                                        {{ $user['status'] ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-400' }}">
+                                                <i class="fa-solid fa-user {{ !$user['status'] ? 'opacity-50' : '' }}"></i>
+                                            </div>
+                                        @endif
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">{{ $user['name'] }}</p>
                                             <p class="text-xs text-gray-500">{{ $user['email'] }}</p>
@@ -244,6 +253,7 @@
                                         >
                                             <i class="fa-solid fa-{{ $user['status'] ? 'ban' : 'check' }} text-sm"></i>
                                         </button>
+                                        @if(!auth()->user()->hasRole('manager'))
                                         <button 
                                             wire:click="confirmDelete({{ $user['id'] }})"
                                             class="inline-flex items-center justify-center rounded-md p-2 text-red-600 
@@ -252,6 +262,7 @@
                                         >
                                             <i class="fa-solid fa-trash text-sm"></i>
                                         </button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

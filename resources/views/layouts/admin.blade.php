@@ -142,6 +142,7 @@
                         <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Sistema</p>
                     </div>
 
+                    @if(!auth()->user()->hasRole('manager'))
                     <a href="{{ route('dashboard.config') }}"
                        title="Configurações"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.config') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
@@ -149,6 +150,7 @@
                         <i class="fa-solid fa-gear shrink-0 w-5 text-center"></i>
                         <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Configurações</span>
                     </a>
+                    @endif
 
                     <a href="{{ route('dashboard.analytics') }}"
                        title="Analytics"

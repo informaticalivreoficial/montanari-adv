@@ -7,6 +7,7 @@ use Livewire\WithFileUploads;
 use App\Models\User;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 
 class Create extends Component
@@ -69,7 +70,18 @@ class Create extends Component
 
     public function mount()
     {
-        $this->roles = Role::all()->toArray();
+        $roleQuery = Role::query();
+        if (auth()->user()->hasRole('admin')) {
+            $roleQuery->where('name', '!=', 'super-admin');
+        } elseif (auth()->user()->hasRole('manager')) {
+            $roleQuery->where('name', 'client');
+        }
+        $this->roles = $roleQuery->get()->toArray();
+
+        // Manager sempre cria clientes
+        if (auth()->user()->hasRole('manager')) {
+            $this->role = 'client';
+        }
     }
 
     // ─── Validação em Tempo Real ────────────────────────────────
@@ -235,6 +247,16 @@ class Create extends Component
 
     public function store()
     {
+        Gate::authorize('create', User::class);
+
+        $auth = auth()->user();
+        if ($auth->hasRole('manager')) {
+            // Manager apenas cria clientes
+            $this->role = 'client';
+        } elseif ($auth->hasRole('admin') && $this->role === 'super-admin') {
+            abort(403, 'Administradores não podem criar super-administradores.');
+        }
+
         $rules = [
             'name'     => 'required|string|min:3|max:255',
             'email'    => 'required|email|max:255|unique:users,email',
