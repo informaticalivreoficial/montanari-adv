@@ -266,7 +266,7 @@
 
 {{-- ============================== --}}
 {{-- CTA SECTION                  --}}
-{{-- ============================== --}}
+{{-- ============================== 
 <section class="relative py-20 bg-navy-800 overflow-hidden">
     <div class="absolute inset-0 pattern-dots opacity-10"></div>
     <div class="absolute top-0 right-0 w-96 h-96 bg-gold-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
@@ -317,7 +317,7 @@
         </div>
     </div>
 </section>
-
+--}}
 
 {{-- ============================== --}}
 {{-- BLOG SECTION                 --}}
