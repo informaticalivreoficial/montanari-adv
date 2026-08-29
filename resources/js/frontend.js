@@ -19,6 +19,21 @@ document.addEventListener('DOMContentLoaded', function () {
     observer.observe(document.body, { childList: true, subtree: true });
 });
 
+// ─── Trata 419 (CSRF/sessão expirada) globalmente: redireciona ao login em vez do alert nativo
+document.addEventListener('livewire:init', function () {
+    if (typeof Livewire !== 'undefined') {
+        Livewire.hook('request', ({ fail }) => {
+            fail(({ status, preventDefault }) => {
+                if (status === 419) {
+                    preventDefault();
+                    var isClient = window.location.pathname.indexOf('/cliente') === 0;
+                    window.location.href = isClient ? '/cliente/login' : '/login';
+                }
+            });
+        });
+    }
+});
+
 function fixWhatsAppLinks() {
     var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
