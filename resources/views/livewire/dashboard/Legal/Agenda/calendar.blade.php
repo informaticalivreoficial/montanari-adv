@@ -35,8 +35,7 @@
                     const eventsEl = document.getElementById('calendar-events');
                     if (container && eventsEl) {
                         const events = JSON.parse(eventsEl.textContent || '[]');
-                        destroyFullCalendar(container);
-                        initFullCalendar(container, { events });
+                        updateFullCalendarEvents(container, events);
                     }
                 });
             "

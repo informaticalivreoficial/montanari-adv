@@ -79,12 +79,16 @@ window.destroyFullCalendar = function (containerEl) {
 };
 
 /**
- * Atualiza os eventos do calendário
+ * Atualiza os eventos do calendário (sem destruir o layout)
  */
 window.updateFullCalendarEvents = function (containerEl, events) {
     if (containerEl && containerEl._fullCalendarInstance) {
         const calendar = containerEl._fullCalendarInstance;
-        calendar.removeAllEvents();
+        // Remove todos os eventos existentes
+        calendar.getEvents().forEach(e => e.remove());
+        // Adiciona a nova fonte
         calendar.addEventSource(events);
+        // Força re-render do layout
+        calendar.updateSize();
     }
 };
