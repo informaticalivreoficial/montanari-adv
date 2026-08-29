@@ -11,7 +11,6 @@ use App\Http\Livewire\Dashboard\Users\Users;
 use App\Http\Livewire\Dashboard\Users\Create as UserCreate;
 use App\Http\Livewire\Dashboard\Users\Edit as UserEdit;
 use App\Http\Livewire\Dashboard\Settings\Config;
-use App\Http\Livewire\Dashboard\Permissions;
 use App\Http\Livewire\Dashboard\Users\Profile;
 use App\Http\Livewire\Auth\Register;
 use App\Http\Livewire\Dashboard\Legal\Processes\ListProcesses;
@@ -108,7 +107,6 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     Route::livewire('/dashboard/usuarios/criar', UserCreate::class)->name('dashboard.users.create');
     Route::livewire('/dashboard/usuarios/{id}/editar', UserEdit::class)->name('dashboard.users.edit');
     Route::livewire('/dashboard/config', Config::class)->name('dashboard.config');
-    Route::livewire('/dashboard/permissions', Permissions::class)->name('dashboard.permissions');
 
     /*
     |--------------------------------------------------------------------------

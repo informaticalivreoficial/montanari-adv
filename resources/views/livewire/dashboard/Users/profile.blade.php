@@ -197,31 +197,7 @@
                 </div>
             </div>
 
-            <!-- Permissões -->
-            <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
-                <div class="border-b border-gray-100 px-6 py-4">
-                    <h3 class="text-base font-semibold text-gray-900">
-                        <i class="fa-solid fa-shield-halved mr-2 text-amber-600"></i>
-                        Permissões
-                    </h3>
-                </div>
-                <div class="p-6">
-                    @php
-                        $permissions = $user->permissions->pluck('name')->toArray();
-                    @endphp
-                    @if(!empty($permissions))
-                        <div class="flex flex-wrap gap-2">
-                            @foreach ($permissions as $permission)
-                                <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
-                                    {{ $permission }}
-                                </span>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-sm text-gray-500">Nenhuma permissão adicional.</p>
-                    @endif
-                </div>
-            </div>
+
 
             <!-- Ações Rápidas -->
             <div class="rounded-xl border border-gray-200 bg-white shadow-sm">

@@ -37,20 +37,7 @@
             </x-card>
         </a>
 
-        <!-- Permissões -->
-        <a href="{{ route('dashboard.permissions') }}" class="group">
-            <x-card class="transition-all group-hover:shadow-md group-hover:-translate-y-0.5">
-                <div class="flex items-center gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 text-green-600">
-                        <i class="fa-solid fa-shield-halved text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-500">Permissões</p>
-                        <p class="text-lg font-semibold text-gray-900">Acessos</p>
-                    </div>
-                </div>
-            </x-card>
-        </a>
+
 
        
     </div>
