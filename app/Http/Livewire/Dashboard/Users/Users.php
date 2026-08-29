@@ -185,7 +185,17 @@ class Users extends Component
     public function executeDelete()
     {
         if ($this->confirmDeleteId) {
-            User::findOrFail($this->confirmDeleteId)->delete();
+            $user = User::findOrFail($this->confirmDeleteId);
+
+            // Proteção: aplica a UserPolicy (impede excluir o último super-admin / a si mesmo sem outro super-admin)
+            if (!\Illuminate\Support\Facades\Gate::allows('delete', $user)) {
+                $this->confirmDeleteId = null;
+                $this->dispatch('close-modal', name: 'delete-confirm-modal');
+                $this->toastError('Operação não permitida: não é possível excluir este usuário (ele é o único super-admin ativo ou a regra de exclusão não autoriza).');
+                return;
+            }
+
+            $user->delete();
             $this->confirmDeleteId = null;
             $this->loadUsers();
             $this->loadStats();

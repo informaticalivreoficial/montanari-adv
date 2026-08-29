@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +13,7 @@ use App\Notifications\ResetPasswordNotification;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
 
     protected $fillable = [
         'name', 'email', 'password', 'remember_token',
@@ -48,7 +49,9 @@ class User extends Authenticatable
 
     protected static function booted()
     {
-        static::deleting(function ($user) {
+        // Só remove o avatar do storage no delete DEFINITIVO (forceDelete),
+        // para não apagar o arquivo num soft delete (que pode ser restaurado).
+        static::forceDeleting(function ($user) {
             \App\Services\Asset::delete($user->avatar);
         });
     }
