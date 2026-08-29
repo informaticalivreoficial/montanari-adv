@@ -31,6 +31,9 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return route('dashboard');
         });
+
+        // Impede cache de páginas autenticadas (evita 419 "Página expirada" ao voltar após logout)
+        $middleware->append(\App\Http\Middleware\NoCacheAuthenticated::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
