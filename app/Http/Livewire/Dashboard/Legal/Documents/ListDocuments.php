@@ -131,7 +131,7 @@ class ListDocuments extends Component
         $documents = Document::with('process', 'uploader')
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->filterCategory, fn($q) => $q->where('category', $this->filterCategory))
-            ->when($this->filterProcess, fn($q) => $q->where('process_id', $this->filterProcess))
+            ->when($this->filterProcess, fn($q) => $q->whereHas('process', fn($pq) => $pq->where('process_number', 'like', "%{$this->filterProcess}%")))
             ->when($this->filterClient, fn($q) => $q->whereHas('process', fn($pq) => $pq->where('client_id', $this->filterClient)))
             ->latest()
             ->paginate(10);

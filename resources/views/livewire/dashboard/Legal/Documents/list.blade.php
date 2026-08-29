@@ -43,12 +43,15 @@
             </div>
             <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700">Processo</label>
-                <select wire:model.live="filterProcess" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
-                    <option value="">Todos</option>
-                    @foreach($processesList as $id => $number)
-                        <option value="{{ $id }}">{{ $number }}</option>
-                    @endforeach
-                </select>
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input
+                        type="text"
+                        wire:model.live.debounce.300ms="filterProcess"
+                        placeholder="Nº do processo..."
+                        class="w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                    >
+                </div>
             </div>
             <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700">Cliente</label>
