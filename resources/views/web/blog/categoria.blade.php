@@ -39,7 +39,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($posts as $index => $artigo)
-                <article class="reveal blog-card bg-white rounded-2xl overflow-hidden border border-gray-100 group"
+                <article class="reveal blog-card bg-white rounded-2xl overflow-hidden border border-gray-100 group flex flex-col"
                          style="animation-delay: {{ $index * 0.1 }}s">
                     <div class="relative h-56 overflow-hidden">
                         <img src="{{ $artigo->nocover() }}" alt="{{ $artigo->title }}"
@@ -53,7 +53,7 @@
                         </div>
                     </div>
 
-                    <div class="p-6">
+                    <div class="p-6 flex flex-col flex-1">
                         <div class="flex items-center gap-2 text-gray-400 text-xs mb-3">
                             <i class="far fa-calendar"></i>
                             <span>{{ optional($artigo->publish_at)->format('d/m/Y') }}</span>
@@ -70,7 +70,7 @@
                         </p>
 
                         <a href="{{ route('web.blog.artigo', ['slug' => $artigo->slug]) }}"
-                           class="inline-flex items-center gap-2 text-navy-700 font-semibold text-sm hover:text-gold-600 transition-colors group/link">
+                           class="inline-flex items-center gap-2 text-navy-700 font-semibold text-sm hover:text-gold-600 transition-colors group/link mt-auto">
                             Leia Mais
                             <i class="fas fa-arrow-right text-xs group-hover/link:translate-x-1 transition-transform"></i>
                         </a>

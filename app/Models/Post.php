@@ -128,12 +128,15 @@ class Post extends Model
     */
     public function getContentWebAttribute()
     {
-        return Str::words($this->content, '20', ' ...');
+        return Str::words(strip_tags($this->content), 20, ' ...');
     }
 
     public function getContentWebSiteAttribute()
     {
-        return Str::words($this->content, '40', ' ...');
+        // Remove as tags HTML antes de cortar — caso contrário o resumo traz
+        // <p> aninhados e o line-clamp do card de blog deixa de funcionar,
+        // fazendo os cards crescerem indefinidamente.
+        return Str::words(strip_tags($this->content), 40, ' ...');
     }
 
     /*

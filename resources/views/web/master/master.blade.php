@@ -91,9 +91,15 @@
 
     {{-- Scroll Reveal --}}
     <script>
+        let revealObserver;
+
+        function observeReveals() {
+            if (!revealObserver) return;
+            document.querySelectorAll('.reveal:not(.active)').forEach(el => revealObserver.observe(el));
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            const reveals = document.querySelectorAll('.reveal');
-            const observer = new IntersectionObserver((entries) => {
+            revealObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('active');
@@ -101,7 +107,11 @@
                 });
             }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-            reveals.forEach(el => observer.observe(el));
+            observeReveals();
+
+            // Conteúdo inserido via Livewire (ex.: "Carregar Mais") também recebe o reveal
+            const mo = new MutationObserver(() => observeReveals());
+            mo.observe(document.body, { childList: true, subtree: true });
         });
     </script>
 

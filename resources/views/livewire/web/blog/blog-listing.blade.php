@@ -59,7 +59,7 @@
                 {{-- Posts Grid --}}
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach($posts->skip(1) as $index => $artigo)
-                        <article class="reveal blog-card bg-white rounded-2xl overflow-hidden border border-gray-100 group"
+                        <article class="reveal blog-card bg-white rounded-2xl overflow-hidden border border-gray-100 group flex flex-col"
                                  style="animation-delay: {{ ($index % 3) * 0.08 }}s">
                             <div class="relative h-52 overflow-hidden">
                                 <a href="{{ route('web.blog.artigo', ['slug' => $artigo->slug]) }}">
@@ -85,7 +85,7 @@
                                 @endif
                             </div>
 
-                            <div class="p-6">
+                            <div class="p-6 flex flex-col flex-1">
                                 <div class="flex items-center gap-3 text-gray-400 text-xs mb-3">
                                     <span class="flex items-center gap-1.5">
                                         <i class="far fa-calendar text-gold-500"></i>
@@ -109,7 +109,7 @@
                                     {!! $artigo->getContentWebSiteAttribute() !!}
                                 </p>
 
-                                <div class="flex items-center justify-between pt-4 border-t border-gray-50">
+                                <div class="flex items-center justify-between pt-4 border-t border-gray-50 mt-auto">
                                     <a href="{{ route('web.blog.artigo', ['slug' => $artigo->slug]) }}"
                                        class="inline-flex items-center gap-2 text-navy-700 font-semibold text-sm hover:text-gold-600 transition-colors group/link">
                                         Leia Mais
