@@ -34,6 +34,13 @@ class Agenda extends Component
     public $showViewModal = false;
     public $viewingEvent = null;
 
+    // Event actions popup
+    public $showEventActions = false;
+    public $actionsEventId = null;
+    public $actionsEventTitle = '';
+    public $actionsPopupX = 0;
+    public $actionsPopupY = 0;
+
     public $processes = [];
     public $team = [];
     public $events = [];
@@ -41,6 +48,7 @@ class Agenda extends Component
     protected $listeners = [
         'openDateModal' => 'openDateModal',
         'openEventModal' => 'openEventModal',
+        'openEventActions' => 'openEventActions',
         'updateEventDate' => 'updateEventDate',
         'refreshCalendar' => 'loadEvents',
     ];
@@ -152,6 +160,42 @@ class Agenda extends Component
         $this->dispatch('loadEvents', $this->events);
     }
 
+    public function openEventActions($data)
+    {
+        $this->actionsEventId = $data['id'] ?? null;
+        $this->actionsEventTitle = $data['title'] ?? '';
+        $this->actionsPopupX = $data['x'] ?? 0;
+        $this->actionsPopupY = $data['y'] ?? 0;
+        $this->showEventActions = true;
+    }
+
+    public function closeEventActions()
+    {
+        $this->showEventActions = false;
+        $this->actionsEventId = null;
+    }
+
+    public function editFromActions()
+    {
+        $id = $this->actionsEventId;
+        $this->showEventActions = false;
+        if ($id) {
+            $this->openEventModal($id);
+        }
+    }
+
+    public function deleteFromActions()
+    {
+        $id = $this->actionsEventId;
+        $this->showEventActions = false;
+        if (!$id) return;
+
+        Event::findOrFail($id)->delete();
+        $this->loadEvents();
+        $this->dispatch('refreshCalendar');
+        $this->toastSuccess('Evento excluído com sucesso!');
+    }
+
     public function deleteEvent()
     {
         if (!$this->editingId) return;
@@ -160,7 +204,7 @@ class Agenda extends Component
         $this->showModal = false;
         $this->resetForm();
         $this->loadEvents();
-        $this->dispatch('loadEvents', $this->events);
+        $this->dispatch('refreshCalendar');
         $this->toastSuccess('Evento excluído com sucesso!');
     }
 

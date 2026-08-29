@@ -41,7 +41,16 @@ window.initFullCalendar = function (containerEl, options = {}) {
             window.dispatchEvent(new CustomEvent('openDateModal', { detail: [info.dateStr] }));
         },
         eventClick: function (info) {
-            window.dispatchEvent(new CustomEvent('openEventModal', { detail: [info.event.id] }));
+            info.jsEvent.preventDefault();
+            // Dispara evento para abrir popup de ações (Editar/Excluir)
+            window.dispatchEvent(new CustomEvent('openEventActions', {
+                detail: [{
+                    id: info.event.id,
+                    title: info.event.title,
+                    x: info.jsEvent.clientX,
+                    y: info.jsEvent.clientY,
+                }],
+            }));
         },
         eventDrop: function (info) {
             window.dispatchEvent(new CustomEvent('updateEventDate', {

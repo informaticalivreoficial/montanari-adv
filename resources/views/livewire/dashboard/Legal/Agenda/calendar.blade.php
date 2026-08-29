@@ -30,10 +30,13 @@
                     }
                 });
 
-                Livewire.on('loadEvents', (events) => {
+                Livewire.on('refreshCalendar', () => {
                     const container = document.getElementById('fullcalendar');
-                    if (container && container._fullCalendarInstance) {
-                        updateFullCalendarEvents(container, events);
+                    const eventsEl = document.getElementById('calendar-events');
+                    if (container && eventsEl) {
+                        const events = JSON.parse(eventsEl.textContent || '[]');
+                        destroyFullCalendar(container);
+                        initFullCalendar(container, { events });
                     }
                 });
             "
@@ -62,6 +65,44 @@
             <span class="h-3 w-3 rounded-full" style="background-color: #6b7280;"></span> Outro
         </div>
     </div>
+
+    <!-- Event Actions Popup -->
+    @if($showEventActions)
+        <div
+            x-data
+            x-on:click.away="$wire.closeEventActions()"
+            x-on:keydown.escape.window="$wire.closeEventActions()"
+            class="fixed z-50"
+            style="top: {{ $actionsPopupY }}px; left: {{ min($actionsPopupX, window.innerWidth - 200) }}px;"
+        >
+            <div class="rounded-xl border border-gray-200 bg-white shadow-xl py-1 min-w-[180px]">
+                <div class="px-4 py-2 border-b border-gray-100">
+                    <p class="text-xs font-semibold text-gray-900 truncate">{{ $actionsEventTitle }}</p>
+                </div>
+                <button
+                    x-on:click="$wire.editFromActions()"
+                    class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+                >
+                    <i class="fa-solid fa-pen-to-square text-xs text-amber-500"></i> Editar
+                </button>
+                <button
+                    x-on:click="
+                        MontanariAlert.confirm({
+                            title: 'Excluir evento?',
+                            text: 'Tem certeza que deseja excluir este evento?',
+                            confirmButtonText: 'Sim, excluir',
+                            cancelButtonText: 'Cancelar'
+                        }).then(r => {
+                            if (r.isConfirmed) $wire.deleteFromActions()
+                        })
+                    "
+                    class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition"
+                >
+                    <i class="fa-solid fa-trash text-xs"></i> Excluir
+                </button>
+            </div>
+        </div>
+    @endif
 
     <!-- Create/Edit Modal -->
     @if($showModal)
