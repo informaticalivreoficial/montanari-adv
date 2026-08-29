@@ -31,7 +31,7 @@
                     {{ $slide->titulo }}
                 @else
                     Excelência em<br>
-                    <span class="text-gold-400">Direito</span> e Advocacia
+                    <span class="text-gold-400">Advocacia</span> 
                 @endif
             </h1>
 
@@ -82,7 +82,7 @@
 
             <h1 class="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6">
                 Excelência em<br>
-                <span class="text-gold-400">Direito</span> e Advocacia
+                <span class="text-gold-400">Advocacia</span> 
             </h1>
 
             <p class="text-xl text-white/70 leading-relaxed mb-10 max-w-2xl">
@@ -150,7 +150,7 @@
                     <p>
                         Nosso escritório possui sede no município de Itapeva, e atua também nas cidades
                         de Itararé, Itaberá, Buri, Capão Bonito, Apiaí e Ribeirão Branco, bem como possui
-                        correspondente na cidade de Ubatuba-SP.
+                        correspondente na cidade de Ubatuba e São José dos Campos-SP.
                     </p>
                     <p>
                         Atuamos também em todas as cidades que possuem foros digitais
