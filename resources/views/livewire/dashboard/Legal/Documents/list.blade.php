@@ -111,7 +111,8 @@
                         Baixar
                     </a>
                     <button
-                        wire:click="confirmDelete({{ $document->id }})"
+                        wire:click="delete({{ $document->id }})"
+                        wire:confirm="Tem certeza que deseja excluir este documento?"
                         class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 transition"
                     >
                         <i class="fa-solid fa-trash text-xs"></i>
