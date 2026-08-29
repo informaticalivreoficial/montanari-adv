@@ -6,3 +6,23 @@ import './libs/index.js';
 // chame `Alpine.start()` aqui, senão criamos uma 2ª instância que conflita com o
 // `wire:model` e quebra a persistência dos formulários. Basta usar `x-data`/`x-*`
 // normalmente que o Alpine do Livewire cuida.
+
+// ─── Trata 419 (CSRF/sessão expirada) globalmente: redireciona ao login em vez do alert nativo
+// (Livewire exibe "This page has expired" ao receber 419; aqui interceptamos e vamos ao login)
+function registerLivewire419Handler() {
+    if (typeof Livewire === 'undefined') return;
+    Livewire.hook('request', ({ fail }) => {
+        fail(({ status, preventDefault }) => {
+            if (status === 419) {
+                preventDefault();
+                const isClient = window.location.pathname.startsWith('/cliente');
+                window.location.href = isClient ? '/cliente/login' : '/login';
+            }
+        });
+    });
+}
+if (typeof Livewire !== 'undefined') {
+    registerLivewire419Handler();
+} else {
+    document.addEventListener('livewire:init', registerLivewire419Handler);
+}

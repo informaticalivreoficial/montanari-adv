@@ -20,19 +20,23 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ─── Trata 419 (CSRF/sessão expirada) globalmente: redireciona ao login em vez do alert nativo
-document.addEventListener('livewire:init', function () {
-    if (typeof Livewire !== 'undefined') {
-        Livewire.hook('request', ({ fail }) => {
-            fail(({ status, preventDefault }) => {
-                if (status === 419) {
-                    preventDefault();
-                    var isClient = window.location.pathname.indexOf('/cliente') === 0;
-                    window.location.href = isClient ? '/cliente/login' : '/login';
-                }
-            });
+function registerLivewire419Handler() {
+    if (typeof Livewire === 'undefined') return;
+    Livewire.hook('request', ({ fail }) => {
+        fail(({ status, preventDefault }) => {
+            if (status === 419) {
+                preventDefault();
+                var isClient = window.location.pathname.indexOf('/cliente') === 0;
+                window.location.href = isClient ? '/cliente/login' : '/login';
+            }
         });
-    }
-});
+    });
+}
+if (typeof Livewire !== 'undefined') {
+    registerLivewire419Handler();
+} else {
+    document.addEventListener('livewire:init', registerLivewire419Handler);
+}
 
 function fixWhatsAppLinks() {
     var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
