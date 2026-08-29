@@ -15,12 +15,12 @@
     <div class="transition-all duration-300"
             :class="scrolled ? 'h-0 overflow-hidden opacity-0' : 'h-auto opacity-100'"
             x-show="!scrolled" x-transition>
-        <div class="bg-navy-900 text-white/80 text-sm">
+        <div class="bg-navy-900 text-white/80 text-sm overflow-x-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-8">
-                    <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-6 min-w-0">
                         @if(!empty($configuracoes->email))
-                            <a href="mailto:{{ $configuracoes->email }}" class="flex items-center gap-2 hover:text-gold-400 transition-colors">
+                            <a href="mailto:{{ $configuracoes->email }}" class="hidden sm:flex items-center gap-2 hover:text-gold-400 transition-colors">
                                 <i class="fas fa-envelope text-gold-500 text-xs"></i>
                                 <span>{{ $configuracoes->email }}</span>
                             </a>
@@ -135,8 +135,9 @@
             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-            @click.away="mobileMenuOpen = false">
-        <div class="fixed inset-0 bg-navy-900/95 backdrop-blur-md z-40 flex flex-col pt-24 pb-8 px-6">
+            @click.away="mobileMenuOpen = false"
+            x-effect="document.body.classList.toggle('overflow-hidden', mobileMenuOpen)">
+        <div class="fixed inset-0 overflow-y-auto overscroll-contain bg-navy-900/95 backdrop-blur-md z-40 flex flex-col pt-24 pb-8 px-6">
             <button @click="mobileMenuOpen = false" class="absolute top-6 right-6 text-white/80 hover:text-white text-2xl">
                 <i class="fas fa-times"></i>
             </button>
