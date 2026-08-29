@@ -14,6 +14,7 @@ class Permissions extends Component
 
     public $roles = [];
     public $permissions = [];
+    public $rolePermissions = []; // roleId => [permissionId, ...]
     public $roleName, $permissionName;
     public $editRoleMode = false;
     public $editPermissionMode = false;
@@ -24,8 +25,18 @@ class Permissions extends Component
 
     public function mount()
     {
+        $this->loadData();
+    }
+
+    protected function loadData(): void
+    {
         $this->roles = Role::all();
         $this->permissions = Permission::all();
+
+        $this->rolePermissions = [];
+        foreach ($this->roles as $role) {
+            $this->rolePermissions[$role->id] = $role->permissions->pluck('id')->toArray();
+        }
     }
 
     public function createRole()
@@ -37,7 +48,7 @@ class Permissions extends Component
         Role::create(['name' => $this->roleName]);
 
         $this->roleName = '';
-        $this->roles = Role::all();
+        $this->loadData();
         $this->toastSuccess('Função criada com sucesso!');
     }
 
@@ -61,7 +72,7 @@ class Permissions extends Component
 
         $this->editRoleMode = false;
         $this->roleName = '';
-        $this->roles = Role::all();
+        $this->loadData();
         $this->toastSuccess('Função atualizada com sucesso!');
     }
 
@@ -75,9 +86,23 @@ class Permissions extends Component
     public function deleteRole($id)
     {
         Role::findOrFail($id)->delete();
-
-        $this->roles = Role::all();
+        $this->loadData();
         $this->toastWarning('Função excluída!');
+    }
+
+    public function toggleRolePermission($roleId, $permissionId)
+    {
+        $role = Role::findOrFail($roleId);
+        $current = $this->rolePermissions[$roleId] ?? [];
+
+        if (in_array($permissionId, $current)) {
+            $role->revokePermissionTo($permissionId);
+        } else {
+            $role->givePermissionTo($permissionId);
+        }
+
+        $this->rolePermissions[$roleId] = $role->fresh()->permissions->pluck('id')->toArray();
+        $this->toastSuccess('Permissão atualizada!');
     }
 
     public function createPermission()
@@ -89,7 +114,7 @@ class Permissions extends Component
         Permission::create(['name' => $this->permissionName, 'guard_name' => 'web']);
 
         $this->permissionName = '';
-        $this->permissions = Permission::all();
+        $this->loadData();
         $this->toastSuccess('Permissão criada com sucesso!');
     }
 
@@ -113,7 +138,7 @@ class Permissions extends Component
 
         $this->editPermissionMode = false;
         $this->permissionName = '';
-        $this->permissions = Permission::all();
+        $this->loadData();
         $this->toastSuccess('Permissão atualizada com sucesso!');
     }
 
@@ -127,8 +152,7 @@ class Permissions extends Component
     public function deletePermission($id)
     {
         Permission::findOrFail($id)->delete();
-
-        $this->permissions = Permission::all();
+        $this->loadData();
         $this->toastWarning('Permissão excluída!');
     }
 
