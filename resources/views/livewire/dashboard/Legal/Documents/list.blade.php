@@ -112,7 +112,7 @@
                     </a>
                     <button
                         wire:click="delete({{ $document->id }})"
-                        wire:confirm="Tem certeza que deseja excluir este documento?"
+                        wire:confirm="return MontanariAlert.confirm({ title: 'Excluir documento?', text: 'Tem certeza que deseja excluir este documento? Esta ação não pode ser desfeita.', confirmButtonText: 'Sim, excluir', cancelButtonText: 'Cancelar' }).then(r => r.isConfirmed)"
                         class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 transition"
                     >
                         <i class="fa-solid fa-trash text-xs"></i>
