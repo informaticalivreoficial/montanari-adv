@@ -13,6 +13,8 @@ class ResetPassword extends Component
     public $token;
     public $password = '';
     public $password_confirmation = '';
+    public $resetDone = false;
+    public $successMessage = '';
 
     public function mount($token)
     {
@@ -66,8 +68,9 @@ class ResetPassword extends Component
             return;
         }
 
-        session()->flash('status', 'Senha redefinida com sucesso! Faça o login.');
-        return redirect()->route('login');
+        $this->reset(['password', 'password_confirmation']);
+        $this->resetDone = true;
+        $this->successMessage = 'Senha redefinida com sucesso! Agora faça o login com a sua nova senha.';
     }
 
     public function render()

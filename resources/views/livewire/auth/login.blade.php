@@ -32,13 +32,18 @@
                     Esqueceu a senha?
                 </a>
             </div>
-            <div class="relative">
+            <div class="relative" x-data="{ show: false }">
                 <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                     <i class="fa-solid fa-lock"></i>
                 </span>
-                <input wire:model="password" id="password" type="password" autocomplete="current-password"
-                    class="block w-full rounded-lg border @error('password') border-red-400 @else border-slate-300 @enderror bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                <input wire:model="password" id="password" type="password" x-bind:type="show ? 'text' : 'password'" autocomplete="current-password"
+                    class="block w-full rounded-lg border @error('password') border-red-400 @else border-slate-300 @enderror bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                     placeholder="••••••••">
+                <button type="button" x-on:click="show = !show" tabindex="-1"
+                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 transition hover:text-slate-600"
+                    title="Mostrar/ocultar senha">
+                    <i class="fa-solid" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                </button>
             </div>
             @error('password')
                 <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>
