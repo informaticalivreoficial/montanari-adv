@@ -43,6 +43,18 @@ class ListDocuments extends Component
         $this->resetPage();
     }
 
+    public function confirmDelete($id)
+    {
+        $this->swalConfirm(
+            title: 'Excluir documento?',
+            text: 'Tem certeza que deseja excluir este documento? Esta ação não pode ser desfeita.',
+            method: 'delete',
+            params: [$id],
+            confirmBtn: 'Sim, excluir',
+            cancelBtn: 'Cancelar',
+        );
+    }
+
     public function delete($id)
     {
         $document = Document::findOrFail($id);
