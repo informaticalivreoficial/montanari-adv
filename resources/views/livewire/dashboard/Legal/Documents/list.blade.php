@@ -136,84 +136,96 @@
     </div>
 
     <!-- Upload Modal -->
-    <div
-        x-data
-        x-show="$wire.showUploadModal"
-        x-cloak
-        class="fixed inset-0 z-50 overflow-y-auto"
-        style="display: none;"
-    >
-        <div class="fixed inset-0 bg-gray-500/75 backdrop-blur-sm" wire:click="closeModal"></div>
+    @if($showUploadModal)
+        <div
+            x-data="{ selectedFile: null, uploading: false, fileName: '', errors: {} }"
+            x-on:keydown.escape.window="$wire.closeModal()"
+            class="fixed inset-0 z-50 overflow-y-auto"
+        >
+            <div class="fixed inset-0 bg-gray-500/75 backdrop-blur-sm" wire:click="closeModal"></div>
 
-        <div class="flex min-h-full items-center justify-center p-4">
-            <div class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
-                <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Enviar Documento</h3>
-                    <button wire:click="closeModal" class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 transition">
-                        <i class="fa-solid fa-times"></i>
-                    </button>
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
+                    <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Enviar Documento</h3>
+                        <button wire:click="closeModal" class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 transition">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="px-6 py-4 space-y-4">
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Arquivo <span class="text-red-500">*</span></label>
+                            <input
+                                type="file"
+                                wire:ignore
+                                x-ref="fileInput"
+                                @change="selectedFile = $refs.fileInput.files[0]; fileName = selectedFile ? selectedFile.name : ''"
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-amber-700 hover:file:bg-amber-100 transition cursor-pointer"
+                            >
+                            <div x-show="uploading" class="text-xs text-amber-600 mt-1">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Enviando arquivo...
+                            </div>
+                            <p x-show="fileName" x-text="fileName" class="text-xs text-green-600 mt-1"></p>
+                            @error('uploadFile')
+                                <p class="text-xs text-red-500">{{ $message }}</p>
+                            @enderror
+                            <p class="text-xs text-gray-500">PDF, Word, Imagem. Máximo 20MB.</p>
+                        </div>
+
+                        <x-input name="uploadTitle" label="Título" required placeholder="Nome do documento" wire:model.defer="uploadTitle" />
+
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Categoria</label>
+                            <select wire:model.defer="uploadCategory" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+                                <option value="contract">Contrato</option>
+                                <option value="petition">Petição</option>
+                                <option value="ruling">Decisão/Julgamento</option>
+                                <option value="evidence">Prova</option>
+                                <option value="correspondence">Correspondência</option>
+                                <option value="other">Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Processo</label>
+                            <select wire:model.defer="uploadProcessId" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+                                <option value="">Nenhum</option>
+                                @foreach($processesList as $id => $number)
+                                    <option value="{{ $id }}">{{ $number }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <x-textarea name="uploadDescription" label="Descrição" rows="2" placeholder="Descreva o documento..." wire:model.defer="uploadDescription" />
+
+                        <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
+                            <button type="button" wire:click="closeModal" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                                Cancelar
+                            </button>
+                            <button
+                                @click="
+                                    if (!selectedFile) { $refs.fileInput.click(); return; }
+                                    uploading = true;
+                                    $wire.upload('uploadFile', selectedFile, () => {
+                                        uploading = false;
+                                        $wire.call('upload');
+                                    }, () => {
+                                        uploading = false;
+                                        MontanariAlert.error('Erro ao enviar arquivo. Tente novamente.');
+                                    });
+                                "
+                                :disabled="uploading"
+                                class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 transition disabled:opacity-50"
+                            >
+                                <span x-show="!uploading"><i class="fa-solid fa-upload mr-1"></i> <span x-text="selectedFile ? 'Enviar' : 'Selecionar Arquivo'"></span></span>
+                                <span x-show="uploading"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Enviando...</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-
-                <form wire:submit.prevent="upload" class="px-6 py-4 space-y-4">
-                    <div class="space-y-1">
-                        <label class="block text-sm font-medium text-gray-700">Arquivo <span class="text-red-500">*</span></label>
-                        <input
-                            type="file"
-                            wire:model.defer="uploadFile"
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-amber-700 hover:file:bg-amber-100 transition cursor-pointer"
-                        >
-                        @error('uploadFile')
-                            <p class="text-xs text-red-500">{{ $message }}</p>
-                        @enderror
-                        <p class="text-xs text-gray-500">PDF, Word, Imagem. Máximo 20MB.</p>
-                    </div>
-
-                    <x-input name="uploadTitle" label="Título" required placeholder="Nome do documento" wire:model.defer="uploadTitle" />
-
-                    <div class="space-y-1">
-                        <label class="block text-sm font-medium text-gray-700">Categoria</label>
-                        <select wire:model.defer="uploadCategory" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
-                            <option value="contract">Contrato</option>
-                            <option value="petition">Petição</option>
-                            <option value="ruling">Decisão/Julgamento</option>
-                            <option value="evidence">Prova</option>
-                            <option value="correspondence">Correspondência</option>
-                            <option value="other">Outro</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="block text-sm font-medium text-gray-700">Processo</label>
-                        <select wire:model.defer="uploadProcessId" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
-                            <option value="">Nenhum</option>
-                            @foreach($processesList as $id => $number)
-                                <option value="{{ $id }}">{{ $number }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <x-textarea name="uploadDescription" label="Descrição" rows="2" placeholder="Descreva o documento..." wire:model.defer="uploadDescription" />
-
-                    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
-                        <button type="button" wire:click="closeModal" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 transition disabled:opacity-50"
-                            wire:loading.attr="disabled"
-                            wire:target="upload"
-                        >
-                            <span wire:loading.remove wire:target="upload">
-                                <i class="fa-solid fa-upload mr-1"></i> Enviar
-                            </span>
-                            <span wire:loading wire:target="upload">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Enviando...
-                            </span>
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
-    </div>
+    @endif
 </div>
