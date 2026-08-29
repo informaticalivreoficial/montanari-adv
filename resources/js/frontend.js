@@ -27,7 +27,7 @@ function registerLivewire419Handler() {
             if (status === 419) {
                 preventDefault();
                 var isClient = window.location.pathname.indexOf('/cliente') === 0;
-                window.location.href = isClient ? '/cliente/login' : '/login';
+                window.location.href = isClient ? '/cliente' : '/admin';
             }
         });
     });
