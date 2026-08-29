@@ -106,7 +106,7 @@ class ListProcesses extends Component
             ->when($this->filterStatus, fn($q) => $q->where('status', $this->filterStatus))
             ->when($this->filterType, fn($q) => $q->byType($this->filterType))
             ->latest()
-            ->paginate(10);
+            ->paginate(25);
 
         return view('livewire.dashboard.Legal.Processes.list', compact('processes'))
             ->layout('layouts.admin', ['title' => 'Processos']);
