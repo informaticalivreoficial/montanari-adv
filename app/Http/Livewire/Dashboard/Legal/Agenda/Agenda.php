@@ -3,9 +3,12 @@
 namespace App\Http\Livewire\Dashboard\Legal\Agenda;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Notification;
 use App\Models\Event;
 use App\Models\Process;
 use App\Models\User;
+use App\Notifications\System\EventCreated;
+use App\Services\TelegramService;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
 
@@ -150,7 +153,8 @@ class Agenda extends Component
             Event::findOrFail($this->editingId)->update($data);
             $this->toastSuccess('Evento atualizado com sucesso!');
         } else {
-            Event::create($data);
+            $event = Event::create($data);
+            $this->notifyNewEvent($event);
             $this->toastSuccess('Evento criado com sucesso!');
         }
 
@@ -206,6 +210,46 @@ class Agenda extends Component
         $this->loadEvents();
         $this->dispatch('refreshCalendar');
         $this->toastSuccess('Evento excluído com sucesso!');
+    }
+
+    protected function notifyNewEvent(Event $event): void
+    {
+        $eventTypeLabels = [
+            'hearing' => 'Audiência',
+            'meeting'  => 'Reunião',
+            'deadline' => 'Prazo',
+            'task'     => 'Tarefa',
+            'other'    => 'Outro',
+        ];
+
+        $label = $eventTypeLabels[$event->event_type] ?? 'Outro';
+        $date = $event->start_date->format('d/m/Y') . ($event->all_day ? '' : ' às ' . $event->start_date->format('H:i'));
+        $processNumber = $event->process?->process_number;
+
+        // 1. Notificações BD + E-mail para admins
+        $admins = User::role(['super-admin', 'admin', 'manager'])->get();
+        Notification::send($admins, new EventCreated(
+            title: $event->title,
+            startDate: $date,
+            eventTypeLabel: $label,
+            location: $event->location,
+            processNumber: $processNumber,
+            eventId: $event->id,
+        ));
+
+        // 2. Telegram
+        $telegram = new TelegramService();
+        $text  = "📅 <b>Novo evento na agenda</b>\n\n";
+        $text .= "<b>Título:</b> {$event->title}\n";
+        $text .= "<b>Tipo:</b> {$label}\n";
+        $text .= "<b>Data:</b> {$date}\n";
+        if ($event->location) {
+            $text .= "<b>Local:</b> {$event->location}\n";
+        }
+        if ($processNumber) {
+            $text .= "<b>Processo:</b> {$processNumber}\n";
+        }
+        $telegram->sendHtml($text);
     }
 
     public function closeModal()
