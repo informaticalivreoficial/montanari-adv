@@ -137,6 +137,14 @@
                                     if (r.isConfirmed) $wire.delete({{ $task->id }})
                                 })
                             "
+                        <a
+                            href="{{ route('dashboard.legal.tasks.edit', $task->id) }}"
+                            class="rounded-lg p-2 text-gray-400 hover:bg-amber-50 hover:text-amber-600 transition"
+                            title="Editar"
+                        >
+                            <i class="fa-solid fa-pen text-sm"></i>
+                        </a>
+                        <button
                             class="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 transition"
                             title="Excluir"
                         >

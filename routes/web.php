@@ -20,6 +20,7 @@ use App\Http\Livewire\Dashboard\Legal\Deadlines\ListDeadlines;
 use App\Http\Livewire\Dashboard\Legal\Deadlines\CreateDeadline;
 use App\Http\Livewire\Dashboard\Legal\Tasks\ListTasks;
 use App\Http\Livewire\Dashboard\Legal\Tasks\CreateTask;
+use App\Http\Livewire\Dashboard\Legal\Tasks\EditTask;
 use App\Http\Livewire\Dashboard\Legal\Agenda\Agenda;
 use App\Http\Livewire\Dashboard\Legal\Documents\ListDocuments;
 use App\Http\Livewire\Dashboard\SiteAnalytics;
@@ -126,6 +127,7 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
     // Tarefas
     Route::livewire('/dashboard/tarefas', ListTasks::class)->name('dashboard.legal.tasks');
     Route::livewire('/dashboard/tarefas/criar', CreateTask::class)->name('dashboard.legal.tasks.create');
+    Route::livewire('/dashboard/tarefas/{id}/editar', EditTask::class)->name('dashboard.legal.tasks.edit');
 
     // Agenda
     Route::livewire('/dashboard/agenda', Agenda::class)->name('dashboard.legal.agenda');
