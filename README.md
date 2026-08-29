@@ -1,6 +1,6 @@
 <p align="center">
-    <a href="https://informaticalivre.com" target="_blank">
-        <img src="https://informaticalivre.com/media/logo.png">
+    <a href="https://montanariadvocacia.com.br" target="_blank">
+        <img src="https://montanariadvocacia.com.br/theme/images/logo.png">
     </a>
 </p>
 
