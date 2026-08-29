@@ -62,11 +62,20 @@ class ListDocuments extends Component
         $this->toastSuccess('Documento excluído com sucesso!');
     }
 
+    // ── Regras de upload ──────────────────────────────────
+    protected static int   $maxUploadSize   = 20480;
+    protected static array $uploadMimeTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'image/jpeg', 'image/png',
+    ];
+
     public function upload()
     {
         $this->validate([
-            'uploadFile' => 'required|file|max:20480', // 20MB
-            'uploadTitle' => 'required|string|max:255',
+            'uploadFile'     => 'required|file|max:20480',
+            'uploadTitle'    => 'required|string|max:255',
             'uploadCategory' => 'required|string',
         ]);
 
@@ -79,17 +88,17 @@ class ListDocuments extends Component
         $file->storeAs($path, $filename, $disk);
 
         Document::create([
-            'process_id' => $this->uploadProcessId ?: null,
-            'uploaded_by' => auth()->id(),
-            'title' => $this->uploadTitle,
-            'description' => $this->uploadDescription ?: null,
-            'file_path' => "{$path}/{$filename}",
-            'disk' => $disk,
+            'process_id'    => $this->uploadProcessId ?: null,
+            'uploaded_by'   => auth()->id(),
+            'title'         => $this->uploadTitle,
+            'description'   => $this->uploadDescription ?: null,
+            'file_path'     => "{$path}/{$filename}",
+            'disk'          => $disk,
             'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType(),
-            'file_size' => $file->getSize(),
-            'category' => $this->uploadCategory,
-            'notes' => $this->uploadNotes ?: null,
+            'mime_type'     => $file->getMimeType(),
+            'file_size'     => $file->getSize(),
+            'category'      => $this->uploadCategory,
+            'notes'         => $this->uploadNotes ?: null,
         ]);
 
         $this->showUploadModal = false;

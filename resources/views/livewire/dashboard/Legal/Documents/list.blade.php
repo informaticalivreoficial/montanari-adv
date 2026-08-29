@@ -135,10 +135,21 @@
         {{ $documents->links() }}
     </div>
 
+    {{-- ═══════════════════════════════════════════════════════
+         Hidden file input — SEMPRE no DOM (nunca dentro de @if)
+         ═══════════════════════════════════════════════════════ --}}
+    <input
+        type="file"
+        wire:model="uploadFile"
+        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+        id="doc-upload"
+        class="hidden"
+    >
+
     <!-- Upload Modal -->
     @if($showUploadModal)
         <div
-            x-data="{ selectedFile: null, uploading: false, fileName: '', errors: {} }"
+            x-data
             x-on:keydown.escape.window="$wire.closeModal()"
             class="fixed inset-0 z-50 overflow-y-auto"
         >
@@ -153,25 +164,34 @@
                         </button>
                     </div>
 
-                    <div class="px-6 py-4 space-y-4">
+                    <form wire:submit.prevent="upload" class="px-6 py-4 space-y-4">
+                        {{-- Drop Zone (estilo x-image-gallery) --}}
                         <div class="space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Arquivo <span class="text-red-500">*</span></label>
-                            <input
-                                type="file"
-                                wire:ignore
-                                x-ref="fileInput"
-                                @change="selectedFile = $refs.fileInput.files[0]; fileName = selectedFile ? selectedFile.name : ''"
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-amber-700 hover:file:bg-amber-100 transition cursor-pointer"
+                            <label
+                                for="doc-upload"
+                                class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-6 py-6 text-center transition hover:border-amber-400 hover:bg-amber-50 cursor-pointer"
                             >
-                            <div x-show="uploading" class="text-xs text-amber-600 mt-1">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Enviando arquivo...
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-600 mb-2">
+                                    <i class="fa-solid fa-file-arrow-up text-lg"></i>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-700">
+                                    <span class="text-amber-600">Clique para selecionar</span>
+                                </p>
+                                <p class="mt-1 text-xs text-gray-500">PDF, Word, Imagem. Máximo 20MB.</p>
+                            </label>
+                            <div wire:loading wire:target="uploadFile" class="flex items-center gap-2 text-xs text-amber-600 mt-1">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Processando arquivo...
                             </div>
-                            <p x-show="fileName" x-text="fileName" class="text-xs text-green-600 mt-1"></p>
+                            @if($uploadFile)
+                                <div class="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2">
+                                    <i class="fa-solid fa-check-circle text-green-500"></i>
+                                    <span class="text-sm text-green-700">{{ is_object($uploadFile) ? $uploadFile->getClientOriginalName() : 'Arquivo carregado' }}</span>
+                                </div>
+                            @endif
                             @error('uploadFile')
                                 <p class="text-xs text-red-500">{{ $message }}</p>
                             @enderror
-                            <p class="text-xs text-gray-500">PDF, Word, Imagem. Máximo 20MB.</p>
                         </div>
 
                         <x-input name="uploadTitle" label="Título" required placeholder="Nome do documento" wire:model.defer="uploadTitle" />
@@ -205,25 +225,20 @@
                                 Cancelar
                             </button>
                             <button
-                                @click="
-                                    if (!selectedFile) { $refs.fileInput.click(); return; }
-                                    uploading = true;
-                                    $wire.upload('uploadFile', selectedFile, () => {
-                                        uploading = false;
-                                        $wire.call('upload');
-                                    }, () => {
-                                        uploading = false;
-                                        MontanariAlert.error('Erro ao enviar arquivo. Tente novamente.');
-                                    });
-                                "
-                                :disabled="uploading"
+                                type="submit"
                                 class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 transition disabled:opacity-50"
+                                wire:loading.attr="disabled"
+                                wire:target="upload"
                             >
-                                <span x-show="!uploading"><i class="fa-solid fa-upload mr-1"></i> <span x-text="selectedFile ? 'Enviar' : 'Selecionar Arquivo'"></span></span>
-                                <span x-show="uploading"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Enviando...</span>
+                                <span wire:loading.remove wire:target="upload">
+                                    <i class="fa-solid fa-upload mr-1"></i> Enviar
+                                </span>
+                                <span wire:loading wire:target="upload">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Enviando...
+                                </span>
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
