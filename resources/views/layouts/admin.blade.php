@@ -168,7 +168,7 @@
 
                 <!-- Sair -->
                 <div class="px-3 py-4 border-t border-gray-200">
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="/logout">
                         @csrf
                         <button type="submit"
                                 title="Sair"
@@ -247,7 +247,7 @@
                                     <i class="fa-solid fa-globe w-5 text-center text-gray-400"></i> Ver Site
                                 </a>
                                 <div class="border-t border-gray-100 my-1"></div>
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="/logout">
                                     @csrf
                                     <button type="submit" class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 w-full transition">
                                         <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Sair
@@ -260,6 +260,17 @@
                 <main class="flex-1 p-4 sm:p-6 overflow-y-auto">
                     {{ $slot }}
                 </main>
+
+                {{-- Rodapé: crédito do desenvolvedor --}}
+                <footer class="border-t border-gray-200 bg-white px-4 sm:px-6 py-3">
+                    <p class="text-center text-xs text-gray-400">
+                        Feito com <i class="fa-solid fa-heart text-red-400/60 text-[10px]"></i> por
+                        <a href="{{ config('app.desenvolvedor_url') }}" target="_blank"
+                           class="font-medium text-gray-500 transition-colors hover:text-blue-600">
+                            {{ config('app.desenvolvedor') }}
+                        </a>
+                    </p>
+                </footer>
             </div>
         </div>
 

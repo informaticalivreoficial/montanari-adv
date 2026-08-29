@@ -121,7 +121,7 @@
                     <a href="/" x-on:click="sidebarOpen = false" class="flex items-center px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition text-sm">
                         <i class="fa-solid fa-arrow-left mr-3 w-5 text-center"></i> Voltar ao Site
                     </a>
-                    <form method="POST" action="{{ route('client.logout') }}">
+                    <form method="POST" action="/cliente/logout">
                         @csrf
                         <button type="submit" class="flex items-center px-3 py-2 w-full text-left rounded-lg text-red-600 hover:bg-red-50 transition text-sm">
                             <i class="fa-solid fa-right-from-bracket mr-3 w-5 text-center"></i> Sair
