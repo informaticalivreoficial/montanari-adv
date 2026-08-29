@@ -132,7 +132,20 @@
                         <!-- Actions -->
                         <div class="flex items-center justify-between border-t border-gray-100 pt-4">
                             @if($editingId)
-                                <button type="button" wire:click="deleteEvent" onclick="return confirm('Excluir este evento?')" class="text-sm text-red-600 hover:text-red-700 font-medium">
+                                <button
+                                    type="button"
+                                    x-on:click="
+                                        MontanariAlert.confirm({
+                                            title: 'Excluir evento?',
+                                            text: 'Tem certeza que deseja excluir este evento? Esta ação não pode ser desfeita.',
+                                            confirmButtonText: 'Sim, excluir',
+                                            cancelButtonText: 'Cancelar'
+                                        }).then(r => {
+                                            if (r.isConfirmed) $wire.deleteEvent()
+                                        })
+                                    "
+                                    class="text-sm text-red-600 hover:text-red-700 font-medium"
+                                >
                                     <i class="fa-solid fa-trash mr-1"></i> Excluir
                                 </button>
                             @else

@@ -121,8 +121,17 @@
                                         </a>
                                         @if($process->source_provider === 'datajud')
                                             <button
-                                                wire:click="resync({{ $process->id }})"
-                                                onclick="return confirm('Re-sincronizar este processo com o Datajud?')"
+                                                x-on:click="
+                                                    MontanariAlert.confirm({
+                                                        title: 'Re-sincronizar com Datajud?',
+                                                        text: 'Deseja re-sincronizar este processo com o Datajud?',
+                                                        icon: 'info',
+                                                        confirmButtonText: 'Sim, sincronizar',
+                                                        cancelButtonText: 'Cancelar'
+                                                    }).then(r => {
+                                                        if (r.isConfirmed) $wire.resync({{ $process->id }})
+                                                    })
+                                                "
                                                 class="rounded-lg p-2 text-gray-400 hover:bg-amber-50 hover:text-amber-600 transition"
                                                 title="Re-sincronizar com o Datajud"
                                             >
