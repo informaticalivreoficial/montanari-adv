@@ -4,6 +4,11 @@
    LAW FIRM FRONTEND THEME
    ========================================== */
 
+/* Alpine.js — evita flash de elementos com x-cloak antes da inicialização */
+[x-cloak] {
+    display: none !important;
+}
+
 @theme {
   /* Primary - Navy Blue */
   --color-navy-50: #f0f4f9;
