@@ -83,13 +83,14 @@ class ListDocuments extends Component
 
         $file = $this->uploadFile;
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-        $path = 'documents/' . date('Y') . '/' . date('m');
+        $userId = auth()->id();
+        $path = "documents/{$userId}/" . date('Y') . '/' . date('m');
 
         $file->storeAs($path, $filename, $disk);
 
         Document::create([
             'process_id'    => $this->uploadProcessId ?: null,
-            'uploaded_by'   => auth()->id(),
+            'uploaded_by'   => $userId,
             'title'         => $this->uploadTitle,
             'description'   => $this->uploadDescription ?: null,
             'file_path'     => "{$path}/{$filename}",

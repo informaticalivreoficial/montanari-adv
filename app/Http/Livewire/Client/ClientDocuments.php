@@ -80,8 +80,9 @@ class ClientDocuments extends Component
             $disk = config('filesystems.disks.r2') ? 'r2' : 'public';
 
             $file = $this->documentFile;
-            $filename = time() . '_' . Auth::id() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('documents/client', $filename, $disk);
+            $userId = Auth::id();
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs("documents/{$userId}/" . date('Y') . '/' . date('m'), $filename, $disk);
 
             Document::create([
                 'process_id'    => $this->selectedProcess,
