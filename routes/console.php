@@ -15,3 +15,6 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('sitemap:generate')->everyMinute()->withoutOverlapping();
 Schedule::command('datajud:sync')->everyMinute()->withoutOverlapping();
 Schedule::command('app:clear-logs')->everyMinute()->withoutOverlapping();
+
+// Remove notificações com mais de 90 dias (evita crescimento indefinido da tabela)
+Schedule::command('notifications:purge')->daily()->withoutOverlapping();
