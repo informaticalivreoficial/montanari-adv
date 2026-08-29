@@ -69,11 +69,12 @@
     <!-- Event Actions Popup -->
     @if($showEventActions)
         <div
-            x-data
+            x-data="{ popupX: {{ $actionsPopupX }}, popupY: {{ $actionsPopupY }} }"
+            x-init="$nextTick(() => { if (popupX + 200 > window.innerWidth) popupX = window.innerWidth - 210; })"
             x-on:click.away="$wire.closeEventActions()"
             x-on:keydown.escape.window="$wire.closeEventActions()"
             class="fixed z-50"
-            style="top: {{ $actionsPopupY }}px; left: {{ min($actionsPopupX, window.innerWidth - 200) }}px;"
+            :style="`top: ${popupY}px; left: ${popupX}px;`"
         >
             <div class="rounded-xl border border-gray-200 bg-white shadow-xl py-1 min-w-[180px]">
                 <div class="px-4 py-2 border-b border-gray-100">
