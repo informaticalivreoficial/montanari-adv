@@ -83,9 +83,9 @@
                     class="mt-0.5 h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500">
                 <span>
                     Li e aceito os 
-                    <a href="#" class="font-medium text-amber-600 hover:text-amber-700">Termos de Uso</a> 
+                    <a href="{{ route('web.terms') }}" target="_blank" class="font-medium text-amber-600 hover:text-amber-700">Termos de Uso</a> 
                     e a 
-                    <a href="#" class="font-medium text-amber-600 hover:text-amber-700">Política de Privacidade</a>.
+                    <a href="{{ route('web.politica-de-privacidade') }}" target="_blank" class="font-medium text-amber-600 hover:text-amber-700">Política de Privacidade</a>.
                 </span>
             </label>
             @error('accept_terms')
