@@ -71,7 +71,7 @@ class ListDocuments extends Component
         'image/jpeg', 'image/png',
     ];
 
-    public function upload()
+    public function saveDocument()
     {
         $this->validate([
             'uploadFile'     => 'required|file|max:20480',

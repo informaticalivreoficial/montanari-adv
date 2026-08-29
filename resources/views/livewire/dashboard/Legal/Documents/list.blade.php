@@ -164,7 +164,7 @@
                         </button>
                     </div>
 
-                    <form wire:submit.prevent="upload" class="px-6 py-4 space-y-4">
+                    <form wire:submit.prevent="saveDocument" class="px-6 py-4 space-y-4">
                         {{-- Drop Zone (estilo x-image-gallery) --}}
                         <div class="space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Arquivo <span class="text-red-500">*</span></label>
@@ -228,12 +228,12 @@
                                 type="submit"
                                 class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 transition disabled:opacity-50"
                                 wire:loading.attr="disabled"
-                                wire:target="upload"
+                                wire:target="saveDocument"
                             >
-                                <span wire:loading.remove wire:target="upload">
+                                <span wire:loading.remove wire:target="saveDocument">
                                     <i class="fa-solid fa-upload mr-1"></i> Enviar
                                 </span>
-                                <span wire:loading wire:target="upload">
+                                <span wire:loading wire:target="saveDocument">
                                     <i class="fa-solid fa-spinner fa-spin"></i> Enviando...
                                 </span>
                             </button>
