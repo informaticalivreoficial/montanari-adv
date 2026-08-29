@@ -4,29 +4,33 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Configuracoes;
 use App\Models\Process;
 use App\Mail\Web\Atendimento;
 use App\Models\User;
-use App\Models\Newsletter;
 use App\Models\Post;
-use App\Models\PostsGb;
 use App\Models\CatPost;
 use App\Models\Slide;
 use App\Services\Asset;
+use App\Support\Seo;
 
 class WebController extends Controller
 {
+    protected $seo, $config;
+
+    public function __construct()
+    {
+        $this->seo = new Seo();
+        $this->config = Configuracoes::where('id', 1)->first();
+    }
+
     public function home()
     {
-        $Configuracoes = Configuracoes::where('id', '1')->first();
-        $head = $this->seo->render($Configuracoes->app_name ?? 'Montanari Advocacia',
-            $Configuracoes->information ?? 'Montanari Advocacia - Escritório de Advocacia',
+        $head = $this->seo->render($this->config->app_name ?? env('APP_NAME'),
+            $this->config->information ?? env('APP_NAME'),
             route('web.home'),
-            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
+            $this->config->getmetaimg() ?? url(asset('theme/images/image.jpg'))
         ); 
 
         $slides = Slide::orderBy('created_at', 'DESC')->where('status', '1')->limit(4)->get();
@@ -53,59 +57,21 @@ class WebController extends Controller
             'processosEncerrados' => $processosEncerrados,
             'totalClientes' => $totalClientes,
         ]);
-    }
-    
-    public function servicos()
-    {
-        $Configuracoes = Configuracoes::where('id', '1')->first();
-        $servicos = Post::orderBy('created_at', 'DESC')->where('type', '=', 'page')->postson()->paginate(9);
-
-        $head = $this->seo->render('Serviços ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
-            $Configuracoes->information ?? 'Montanari Advocacia - Escritório de Advocacia',
-            route('web.servicos'),
-            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
-        ); 
-
-        return view('web.servicos', [
-            'servicos' => $servicos,
-            'head' => $head
-        ]);
-    }
-    
-    public function servico(Request $request)
-    {
-        $Configuracoes = Configuracoes::where('id', '1')->first();
-        $servico = Post::where('slug', $request->slug)->where('type', '=', 'page')->postson()->first();
-        $head = $this->seo->render($servico->titulo . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
-            strip_tags($servico->getContentWebSiteAttribute()) ?? 'Montanari Advocacia - Escritório de Advocacia',
-            route('web.servico', ['slug' => $servico->slug]),
-            url($servico->cover() ?? Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg')
-        ); 
-
-        $postsTags = Post::where('type', '=', 'page')->orWhere('id', '!=', $servico->id)->postson()->limit(3)->get();
-                
-        $servico->views = $servico->views + 1;
-        $servico->save();
-
-        return view('web.servico', [
-            'servico' => $servico,
-            'head' => $head,
-            'postsTags' => $postsTags
-        ]);
-    }
+    } 
     
     public function politica()
     {
         $Configuracoes = Configuracoes::where('id', '1')->first();
         
-        $head = $this->seo->render('Política de Privacidade - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
-            'Política de privacidade ' . $Configuracoes->app_name ?? 'Montanari Advocacia - Escritório de Advocacia',
+        $head = $this->seo->render('Política de Privacidade - ' . $this->config->app_name ?? env('APP_NAME'),
+            'Política de privacidade ' . $this->config->app_name ?? 'Montanari Advocacia - Escritório de Advocacia',
             route('web.politica-de-privacidade'),
-            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
+            $this->config->getmetaimg() ?? url(asset('theme/images/image.jpg'))
         ); 
 
         return view('web.politica-de-privacidade', [
-            'head' => $head
+            'head' => $head,
+            'Configuracoes' => $Configuracoes
         ]);
     }
 
@@ -123,7 +89,7 @@ class WebController extends Controller
         $pagina->increment('views');
 
         $head = $this->seo->render(
-            $pagina->title . ' - ' . ($Configuracoes->app_name ?? 'Montanari Advocacia'),
+            $pagina->title . ' - ' . ($this->config->app_name ?? env('APP_NAME')),
             $pagina->excerpt ?? strip_tags($pagina->content),
             url('/pagina/') . '/' . $pagina->slug,
             $pagina->cover()
@@ -137,7 +103,6 @@ class WebController extends Controller
 
     public function pesquisa(Request $request)
     {
-        $Configuracoes = Configuracoes::where('id', '1')->first();        
         $search = $request->search;
 
         $artigos = Post::orderBy('created_at', 'DESC')
@@ -165,10 +130,10 @@ class WebController extends Controller
         }
         $ctotal = $c2 + $c3;
 
-        $head = $this->seo->render('Pesquisa no site - '.$Configuracoes->app_name ?? 'Montanari Advocacia',
+        $head = $this->seo->render('Pesquisa no site - '.$this->config->app_name ?? env('APP_NAME'),
             'Resultados da pesquisa por '.$search,
             route('web.pesquisa'),
-            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
+            $this->config->getmetaimg() ?? url(asset('theme/images/image.jpg'))
         );
 
         return view('web.pesquisa', [
@@ -187,58 +152,22 @@ class WebController extends Controller
         $head = $this->seo->render('Atendimento',
             'Nossa equipe está pronta para melhor atender as demandas de nossos clientes!',
             route('web.atendimento'),
-            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
+            $this->config->getmetaimg() ?? url(asset('theme/images/image.jpg'))
         );
 
         return view('web.atendimento', [
             'head' => $head
         ]);
-    }   
+    } 
     
-    public function sendEmail(Request $request)
-    {
-        $Configuracoes = Configuracoes::where('id', '1')->first();
-        if($request->nome == ''){
-            $json = "Por favor preencha o campo <strong>Nome</strong>";
-            return response()->json(['error' => $json]);
-        }
-        if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
-            $json = "O campo <strong>Email</strong> está vazio ou não tem um formato válido!";
-            return response()->json(['error' => $json]);
-        }
-        if($request->mensagem == ''){
-            $json = "Por favor preencha sua <strong>Mensagem</strong>";
-            return response()->json(['error' => $json]);
-        }
-        if(!empty($request->bairro) || !empty($request->cidade)){
-            $json = "<strong>ERRO</strong> Você está praticando SPAM!"; 
-            return response()->json(['error' => $json]);
-        }else{
-            $data = [
-                'sitename' => $Configuracoes->app_name,
-                'siteemail' => $Configuracoes->email,
-                'reply_name' => $request->nome,
-                'reply_email' => $request->email,
-                'mensagem' => $request->mensagem
-            ];
-            
-            Mail::send(new Atendimento($data));
-            
-            $json = "Obrigado {$request->nome} sua mensagem foi enviada com sucesso!"; 
-            return response()->json(['sucess' => $json]);
-        }
-    }  
-    
-
     public function artigos()
     {
-        $Configuracoes = Configuracoes::where('id', '1')->first();
         $posts = Post::orderBy('created_at', 'DESC')->where('type', '=', 'artigo')->postson()->paginate(12);
 
-        $head = $this->seo->render('Blog - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
+        $head = $this->seo->render('Blog - ' . $this->config->app_name ?? env('APP_NAME'),
             'Confira nossos artigos sobre arquitetura, design e dicas para sua obra!!',
             route('web.blog.artigos'),
-            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
+            $this->config->getmetaimg() ?? url(asset('theme/images/image.jpg'))
         );
         return view('web.blog.artigos', [
             'head' => $head,
@@ -248,7 +177,6 @@ class WebController extends Controller
 
     public function artigo(Request $request)
     {
-        $Configuracoes = Configuracoes::where('id', '1')->first();
         $post = Post::with('images')->where('slug', $request->slug)->where('type', '=', 'artigo')->postson()->first();
         $categorias = CatPost::orderBy('title', 'ASC')
             ->where('type', 'artigo')
@@ -260,10 +188,10 @@ class WebController extends Controller
         $post->views = $post->views + 1;
         $post->save();
 
-        $head = $this->seo->render($post->title . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
+        $head = $this->seo->render($post->title . ' - ' . $this->config->app_name ?? env('APP_NAME'),
             strip_tags($post->getContentWebAttribute()),
             route('web.blog.artigo', ['slug' => $post->slug]),
-            url($post->cover() ?? Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg')
+            url($post->cover() ?? $this->config->getmetaimg() ?? url(asset('theme/images/image.jpg')))
         );
 
         return view('web.blog.artigo', [
@@ -277,14 +205,13 @@ class WebController extends Controller
 
     public function categoria(Request $request)
     {
-        $Configuracoes = Configuracoes::where('id', '1')->first();
         $categoria = CatPost::where('slug', '=', $request->slug)->where('type', '=', 'artigo')->first();
         $posts = Post::orderBy('created_at', 'DESC')->where('category', '=', $categoria->id)->where('type', '=', 'artigo')->postson()->paginate(15);
         
-        $head = $this->seo->render('Blog - ' . $categoria->title . ' - ' . $Configuracoes->app_name ?? 'Montanari Advocacia',
+        $head = $this->seo->render('Blog - ' . $categoria->title . ' - ' . $this->config->app_name ?? env('APP_NAME'),
             $categoria->title,
             route('web.blog.categoria', ['slug' => $request->slug]),
-            Asset::url($Configuracoes->metaimg) ?: 'https://informaticalivre.com/media/metaimg.jpg'
+            $this->config->getmetaimg() ?? url(asset('theme/images/image.jpg'))
         );
 
         return view('web.blog.categoria', [
@@ -294,5 +221,21 @@ class WebController extends Controller
         ]);
     }
 
+    public function terms()
+    {
+        $head = $this->seo->render('Termos e Condições - ' . $this->config->app_name ?? env('APP_NAME'),
+            'Leia nossos termos e condições e saiba como seus direitos sejam respeitados.',
+            route('web.terms'),
+            $this->config->getmetaimg() ?? url(asset('theme/images/image.jpg'))
+        );
+
+        if(empty($this->config->terms_condicions)){
+            return redirect()->route('web.home');
+        }
+
+        return view("web.terms-conditions",[
+            'head' => $head,
+        ]);
+    }
     
 }

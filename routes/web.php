@@ -74,7 +74,8 @@ Route::group(['as' => 'web.'], function () {
     Route::match(['post', 'get'], '/pesquisa', [WebController::class, 'pesquisa'])->name('pesquisa');
 
     Route::get('/politica-de-privacidade', [WebController::class, 'politica'])->name('politica-de-privacidade');
-
+    Route::get('/termos-e-condicoes', [WebController::class, 'terms'])->name('terms');
+    
     // Páginas dinâmicas (criadas no painel com menu = 1)
     Route::get('/pagina/{slug}', [WebController::class, 'pagina'])->name('pagina');
 

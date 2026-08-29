@@ -48,7 +48,7 @@
                     <i class="fas fa-headset"></i>
                     Agendar Consulta
                 </a>
-                <a href="{{ route('web.servicos') }}" class="btn-outline">
+                <a href="https://montanariadvocacia.com.br/pagina/areas-de-atuacao" class="btn-outline">
                     <i class="fas fa-gavel"></i>
                     Áreas de Atuação
                 </a>

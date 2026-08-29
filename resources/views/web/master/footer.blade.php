@@ -57,17 +57,7 @@
                         <a href="{{ route('web.home') }}" class="text-white/40 hover:text-gold-400 transition-colors text-xs flex items-center gap-2">
                             <i class="fas fa-chevron-right text-[8px] text-gold-500/30"></i> Início
                         </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('web.home') }}#about-us" class="text-white/40 hover:text-gold-400 transition-colors text-xs flex items-center gap-2">
-                            <i class="fas fa-chevron-right text-[8px] text-gold-500/30"></i> Escritório
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('web.servicos') }}" class="text-white/40 hover:text-gold-400 transition-colors text-xs flex items-center gap-2">
-                            <i class="fas fa-chevron-right text-[8px] text-gold-500/30"></i> Áreas de Atuação
-                        </a>
-                    </li>
+                    </li>                    
 
                     {{-- Páginas dinâmicas do menu (mesmo do header) --}}
                     @foreach($menuPages as $page)
@@ -86,6 +76,21 @@
                     <li>
                         <a href="{{ route('web.atendimento') }}" class="text-white/40 hover:text-gold-400 transition-colors text-xs flex items-center gap-2">
                             <i class="fas fa-chevron-right text-[8px] text-gold-500/30"></i> Atendimento
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('web.politica-de-privacidade') }}" class="text-white/40 hover:text-gold-400 transition-colors text-xs flex items-center gap-2">
+                            <i class="fas fa-chevron-right text-[8px] text-gold-500/30"></i> Política de Privacidade
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('web.terms') }}" class="text-white/40 hover:text-gold-400 transition-colors text-xs flex items-center gap-2">
+                            <i class="fas fa-chevron-right text-[8px] text-gold-500/30"></i> Termos e Condições
+                        </a>
+                    </li>
+                    <li>
+                        <a @click="openModal()" class="text-white/40 hover:text-gold-400 transition-colors text-xs flex items-center gap-2 cursor-pointer">
+                            <i class="fas fa-chevron-right text-[8px] text-gold-500/30"></i> Preferências de Cookies
                         </a>
                     </li>
                 </ul>
@@ -196,9 +201,6 @@
                     &copy; {{ $configuracoes->init_date }} {{ $configuracoes->app_name }} — Todos os direitos reservados.
                 </p>
                 <div class="flex items-center gap-4">
-                    <a href="{{ route('web.politica-de-privacidade') }}" class="text-white/25 hover:text-white/50 text-xs transition-colors">
-                        Política de Privacidade
-                    </a>
                     <span class="text-white/10">|</span>
                     <span class="text-white/15 text-xs">
                         Feito com <i class="fas fa-heart text-red-400/50 text-[10px]"></i> por
