@@ -16,7 +16,7 @@
 
     <!-- Filters -->
     <div class="mb-6 rounded-xl border border-gray-200 bg-white shadow-sm p-4">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700">Buscar</label>
                 <div class="relative">
@@ -47,6 +47,15 @@
                     <option value="">Todos</option>
                     @foreach($processesList as $id => $number)
                         <option value="{{ $id }}">{{ $number }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="block text-sm font-medium text-gray-700">Cliente</label>
+                <select wire:model.live="filterClient" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+                    <option value="">Todos</option>
+                    @foreach($clientsList as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
                     @endforeach
                 </select>
             </div>

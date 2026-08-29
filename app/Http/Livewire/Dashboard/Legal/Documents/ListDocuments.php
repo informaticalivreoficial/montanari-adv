@@ -17,8 +17,9 @@ class ListDocuments extends Component
     public $search = '';
     public $filterCategory = '';
     public $filterProcess = '';
+    public $filterClient = '';
 
-    protected $queryString = ['search', 'filterCategory', 'filterProcess'];
+    protected $queryString = ['search', 'filterCategory', 'filterProcess', 'filterClient'];
 
     // Upload modal
     public $showUploadModal = false;
@@ -30,12 +31,14 @@ class ListDocuments extends Component
     public $uploadNotes = '';
 
     public $processes = [];
+    public $clients = [];
 
     protected $listeners = ['refreshDocuments' => '$refresh'];
 
     public function mount()
     {
         $this->processes = Process::active()->pluck('process_number', 'id')->toArray();
+        $this->clients = User::role('client')->pluck('name', 'id')->toArray();
     }
 
     public function updatingSearch()
@@ -129,12 +132,14 @@ class ListDocuments extends Component
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->filterCategory, fn($q) => $q->where('category', $this->filterCategory))
             ->when($this->filterProcess, fn($q) => $q->where('process_id', $this->filterProcess))
+            ->when($this->filterClient, fn($q) => $q->whereHas('process', fn($pq) => $pq->where('client_id', $this->filterClient)))
             ->latest()
             ->paginate(10);
 
         $processesList = $this->processes;
+        $clientsList = $this->clients;
 
-        return view('livewire.dashboard.Legal.Documents.list', compact('documents', 'processesList'))
+        return view('livewire.dashboard.Legal.Documents.list', compact('documents', 'processesList', 'clientsList'))
             ->layout('layouts.admin', ['title' => 'Documentos']);
     }
 }
