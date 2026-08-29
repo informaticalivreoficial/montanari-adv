@@ -23,8 +23,8 @@
             </div>
 
             <div class="relative z-10 max-w-md">
-                <h1 class="text-3xl font-semibold leading-snug text-white">Assessoria jurídica com seriedade e excelência.</h1>
-                <p class="mt-4 text-slate-400">Acesse o painel administrativo para gerenciar usuários, configurações e permissões do escritório.</p>
+                <h1 class="text-3xl font-semibold leading-snug text-white">Sistema Jurídico</h1>
+                <p class="mt-4 text-slate-400">Acesse o painel administrativo para gerenciar usuários, configurações, prazos, tarefas, agenda, mensagens e permissões do escritório.</p>
             </div>
 
             <div class="relative z-10 text-sm text-slate-500">© {{ date('Y') }} {{ $configuracoes->app_name }}. Todos os direitos reservados.</div>
