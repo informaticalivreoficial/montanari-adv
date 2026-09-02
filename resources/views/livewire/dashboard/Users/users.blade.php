@@ -49,30 +49,6 @@
                 <div class="flex flex-wrap gap-2">
                     @if(!auth()->user()->hasRole('manager'))
                     <button
-                        wire:click="switchMode('all')"
-                        class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
-                               {{ $viewMode === 'all' 
-                                   ? 'bg-amber-600 text-white shadow-sm' 
-                                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
-                    >
-                        <i class="fa-solid fa-users text-xs"></i>
-                        Todos
-                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['total'] }}</span>
-                    </button>
-                    @endif
-                    <button
-                        wire:click="switchMode('clients')"
-                        class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
-                               {{ $viewMode === 'clients' 
-                                   ? 'bg-amber-600 text-white shadow-sm' 
-                                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
-                    >
-                        <i class="fa-solid fa-user-check text-xs"></i>
-                        Clientes
-                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['clients'] }}</span>
-                    </button>
-                    @if(!auth()->user()->hasRole('manager'))
-                    <button
                         wire:click="switchMode('team')"
                         class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
                                {{ $viewMode === 'team' 
@@ -83,7 +59,31 @@
                         Time
                         <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['team'] }}</span>
                     </button>
-                    @endif
+                    @endif                    
+                    <button
+                        wire:click="switchMode('clients')"
+                        class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
+                               {{ $viewMode === 'clients' 
+                                   ? 'bg-amber-600 text-white shadow-sm' 
+                                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+                    >
+                        <i class="fa-solid fa-user-check text-xs"></i>
+                        Clientes
+                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['clients'] }}</span>
+                    </button> 
+                    @if(!auth()->user()->hasRole('manager'))
+                    <button
+                        wire:click="switchMode('all')"
+                        class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition
+                               {{ $viewMode === 'all' 
+                                   ? 'bg-amber-600 text-white shadow-sm' 
+                                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+                    >
+                        <i class="fa-solid fa-users text-xs"></i>
+                        Todos
+                        <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $stats['total'] }}</span>
+                    </button>
+                    @endif                   
                 </div>
 
             <!-- Search -->

@@ -115,6 +115,8 @@ class ListProcesses extends Component
             ->when($this->search, fn($q) => $q->search($this->search))
             ->when($this->filterStatus, fn($q) => $q->where('status', $this->filterStatus))
             ->when($this->filterType, fn($q) => $q->byType($this->filterType))
+            // Manager só vê processos onde é responsável
+            ->when(auth()->user()->hasRole('manager'), fn($q) => $q->where('responsible_id', auth()->id()))
             ->latest()
             ->paginate(25);
 

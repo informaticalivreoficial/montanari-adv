@@ -16,7 +16,7 @@
 
     <!-- Filters -->
     <div class="mb-6 rounded-xl border border-gray-200 bg-white shadow-sm p-4">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700">Buscar</label>
                 <div class="relative">
@@ -42,25 +42,16 @@
                 </select>
             </div>
             <div class="space-y-1">
-                <label class="block text-sm font-medium text-gray-700">Processo</label>
+                <label class="block text-sm font-medium text-gray-700">Processo ou Cliente</label>
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
                     <input
                         type="text"
                         wire:model.live.debounce.300ms="filterProcess"
-                        placeholder="Nº do processo..."
+                        placeholder="Nº do processo ou nome do cliente..."
                         class="w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                     >
                 </div>
-            </div>
-            <div class="space-y-1">
-                <label class="block text-sm font-medium text-gray-700">Cliente</label>
-                <select wire:model.live="filterClient" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
-                    <option value="">Todos</option>
-                    @foreach($clientsList as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
-                </select>
             </div>
         </div>
     </div>

@@ -66,7 +66,7 @@
                         <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Clientes</span>
                     </a>
 
-                    @unless(auth()->user()->hasRole('employee'))
+                    @unless(auth()->user()->hasAnyRole(['employee', 'manager']))
                     <a href="{{ route('dashboard.users') }}"
                        title="Usuários"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.users*') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
@@ -116,7 +116,7 @@
                         <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Documentos</span>
                     </a>
 
-                    @unless(auth()->user()->hasRole('employee'))
+                    @unless(auth()->user()->hasAnyRole(['employee', 'manager']))
                     <div class="px-3 pt-4 pb-1" :class="!desktopExpanded ? 'lg:hidden' : ''">
                         <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Conteúdo</p>
                     </div>

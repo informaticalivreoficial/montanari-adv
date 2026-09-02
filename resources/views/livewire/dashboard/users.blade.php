@@ -7,24 +7,28 @@
             
             <!-- View Mode Toggles -->
             <div class="mb-6 grid grid-cols-3 gap-2">
+                @unless(auth()->user()->hasRole('manager'))
                 <button
                     wire:click="switchMode('all')"
                     class="rounded-lg border-2 {{ $viewMode === 'all' ? 'border-blue-600' : 'border-transparent' }} bg-blue-50 text-sm font-medium text-blue-600 transition-colors px-4 py-2"
                 >
                     Todos
                 </button>
+                @endunless
                 <button
                     wire:click="switchMode('clients')"
                     class="rounded-lg border-2 {{ $viewMode === 'clients' ? 'border-blue-600' : 'border-transparent' }} bg-blue-50 text-sm font-medium text-blue-600 transition-colors px-4 py-2"
                 >
                     Clientes
                 </button>
+                @unless(auth()->user()->hasRole('manager'))
                 <button
                     wire:click="switchMode('team')"
                     class="rounded-lg border-2 {{ $viewMode === 'team' ? 'border-blue-600' : 'border-transparent' }} bg-blue-50 text-sm font-medium text-blue-600 transition-colors px-4 py-2"
                 >
                     Time
                 </button>
+                @endunless
             </div>
             
             <!-- Create User Form -->

@@ -77,7 +77,8 @@ class Create extends Component
         if (auth()->user()->hasRole('admin')) {
             $roleQuery->where('name', '!=', 'super-admin');
         } elseif (auth()->user()->hasRole('manager')) {
-            $roleQuery->where('name', 'employee');
+            // Manager só pode criar clientes
+            $roleQuery = Role::query()->where('name', 'client');
         }
 
         $this->roles = $roleQuery->get()->toArray();
@@ -251,6 +252,11 @@ class Create extends Component
         $auth = auth()->user();
         if ($auth->hasRole('admin') && $this->role === 'super-admin') {
             abort(403, 'Administradores não podem criar super-administradores.');
+        }
+
+        // Manager só pode criar clientes
+        if ($auth->hasRole('manager')) {
+            $this->role = 'client';
         }
 
         $rules = [

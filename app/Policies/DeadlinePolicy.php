@@ -14,7 +14,7 @@ class DeadlinePolicy
 
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin', 'admin', 'employee']);
+        return $user->hasAnyRole(['super-admin', 'admin']);
     }
 
     public function update(User $user, Deadline $deadline): bool

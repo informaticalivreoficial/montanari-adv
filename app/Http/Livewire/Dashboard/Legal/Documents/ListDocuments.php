@@ -7,7 +7,6 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\Document;
 use App\Models\Process;
-use App\Models\User;
 use App\Traits\HasAlerts;
 
 class ListDocuments extends Component
@@ -17,9 +16,8 @@ class ListDocuments extends Component
     public $search = '';
     public $filterCategory = '';
     public $filterProcess = '';
-    public $filterClient = '';
 
-    protected $queryString = ['search', 'filterCategory', 'filterProcess', 'filterClient'];
+    protected $queryString = ['search', 'filterCategory', 'filterProcess'];
 
     // Upload modal
     public $showUploadModal = false;
@@ -31,16 +29,14 @@ class ListDocuments extends Component
     public $uploadCategory = 'other';
     public $uploadNotes = '';
 
-    public $clients = [];
-
     protected $listeners = ['refreshDocuments' => '$refresh'];
 
-    public function mount()
+    public function updatingSearch()
     {
-        $this->clients = User::role('client')->pluck('name', 'id')->toArray();
+        $this->resetPage();
     }
 
-    public function updatingSearch()
+    public function updatingFilterProcess()
     {
         $this->resetPage();
     }
@@ -145,14 +141,17 @@ class ListDocuments extends Component
         $documents = Document::with('process', 'uploader')
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->filterCategory, fn($q) => $q->where('category', $this->filterCategory))
-            ->when($this->filterProcess, fn($q) => $q->whereHas('process', fn($pq) => $pq->where('process_number', 'like', "%{$this->filterProcess}%")))
-            ->when($this->filterClient, fn($q) => $q->whereHas('process', fn($pq) => $pq->where('client_id', $this->filterClient)))
+            ->when($this->filterProcess, function ($q) {
+                $filter = $this->filterProcess;
+                $q->where(function ($sub) use ($filter) {
+                    $sub->whereHas('process', fn($pq) => $pq->where('process_number', 'like', "%{$filter}%"))
+                        ->orWhereHas('process.client', fn($cq) => $cq->where('name', 'like', "%{$filter}%"));
+                });
+            })
             ->latest()
             ->paginate(27);
 
-        $clientsList = $this->clients;
-
-        return view('livewire.dashboard.Legal.Documents.list', compact('documents', 'clientsList'))
+        return view('livewire.dashboard.Legal.Documents.list', compact('documents'))
             ->layout('layouts.admin', ['title' => 'Documentos']);
     }
 }

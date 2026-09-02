@@ -33,8 +33,8 @@ class CreateTask extends Component
     {
         Gate::authorize('create', Task::class);
 
-        // Responsável: apenas admin e manager (sem clientes nem super-admin)
-        $this->team = User::role(['admin', 'manager'])->pluck('name', 'id')->toArray();
+        // Responsável: admin, manager e employee (sem clientes nem super-admin)
+        $this->team = User::role(['admin', 'manager', 'employee'])->pluck('name', 'id')->toArray();
     }
 
     public function updatedProcessId($value)

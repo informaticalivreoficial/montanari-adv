@@ -14,7 +14,14 @@ class ProcessPolicy
 
     public function view(User $user, Process $process): bool
     {
-        if ($user->hasAnyRole(['super-admin', 'admin', 'manager', 'employee'])) return true;
+        if ($user->hasAnyRole(['super-admin', 'admin'])) return true;
+        // Manager só vê processos onde é responsável
+        if ($user->hasRole('manager')) {
+            return $user->id === $process->responsible_id;
+        }
+        // Employee vê todos
+        if ($user->hasRole('employee')) return true;
+        // Client vê apenas seus processos
         return $user->id === $process->client_id;
     }
 

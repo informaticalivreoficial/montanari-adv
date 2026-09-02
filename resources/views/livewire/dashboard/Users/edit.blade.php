@@ -473,21 +473,21 @@
 
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
 
-                    @if($user->hasRole('employee'))
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Cargo</label>
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-                                {{ $user->position ?? '-' }}
-                            </div>
-                        </div>
+                    <x-input
+                        name="position"
+                        label="Cargo"
+                        placeholder="Ex: Advogado"
+                        wire:model="position"
+                    />
 
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Departamento</label>
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-                                {{ $user->department ?? '-' }}
-                            </div>
-                        </div>
+                    <x-input
+                        name="department"
+                        label="Departamento"
+                        placeholder="Ex: Jurídico"
+                        wire:model="department"
+                    />
 
+                    @if(auth()->user()->hasRole('manager'))
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Função</label>
                             <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
@@ -495,37 +495,14 @@
                             </div>
                         </div>
                     @else
-                        <x-input
-                            name="position"
-                            label="Cargo"
-                            placeholder="Ex: Advogado"
-                            wire:model="position"
+                        <x-select
+                            name="role"
+                            label="Função"
+                            :required="true"
+                            placeholder="Selecione"
+                            :options="collect($roles)->mapWithKeys(fn($r) => [$r['name'] => \App\Enums\UserRole::getLabel($r['name'])])->toArray()"
+                            wire:model="role"
                         />
-
-                        <x-input
-                            name="department"
-                            label="Departamento"
-                            placeholder="Ex: Jurídico"
-                            wire:model="department"
-                        />
-
-                        @if(auth()->user()->hasRole('manager'))
-                            <div>
-                                <label class="mb-1 block text-sm font-medium text-gray-700">Função</label>
-                                <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-                                    {{ \App\Enums\UserRole::getLabel($this->role) }}
-                                </div>
-                            </div>
-                        @else
-                            <x-select
-                                name="role"
-                                label="Função"
-                                :required="true"
-                                placeholder="Selecione"
-                                :options="collect($roles)->mapWithKeys(fn($r) => [$r['name'] => \App\Enums\UserRole::getLabel($r['name'])])->toArray()"
-                                wire:model="role"
-                            />
-                        @endif
                     @endif
 
                 </div>

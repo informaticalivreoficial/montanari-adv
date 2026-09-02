@@ -13,7 +13,7 @@ class Users extends Component
     use HasAlerts, HasValidations;
 
     // Propriedades de controle
-    public $viewMode = 'all'; // 'all', 'clients', 'team'
+    public $viewMode = 'team'; // 'all', 'clients', 'team'
     public $search = '';
     public $confirmDeleteId = null;
 
@@ -43,12 +43,12 @@ class Users extends Component
 
     public function mount()
     {
-        Gate::authorize('viewAny', User::class);
-
-        // Managers só operam na visão de clientes
+        // Managers não devem acessar esta página
         if (auth()->user()->hasRole('manager')) {
-            $this->viewMode = 'clients';
+            return redirect()->route('dashboard');
         }
+
+        Gate::authorize('viewAny', User::class);
 
         $this->loadUsers();
         $this->loadStats();
@@ -202,9 +202,15 @@ class Users extends Component
 
     public function switchMode($mode)
     {
+        // Manager só pode ficar na visão 'clients'
+        if (auth()->user()->hasRole('manager') && $mode !== 'clients') {
+            return;
+        }
+
         $this->viewMode = $mode;
         $this->currentPage = 1;
         $this->loadUsers();
+        $this->loadStats();
     }
 
     public function sortBy($field)

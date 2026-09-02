@@ -9,12 +9,12 @@ class PostPolicy
 {
     public function viewAny(User $user): bool
     {
-        // Employee não acessa módulo de conteúdos
-        if ($user->hasRole('employee')) {
+        // Employee e Manager não acessam módulo de conteúdos
+        if ($user->hasAnyRole(['employee', 'manager'])) {
             return false;
         }
 
-        return $user->hasAnyRole(['super-admin', 'admin', 'manager']);
+        return $user->hasAnyRole(['super-admin', 'admin']);
     }
 
     public function create(User $user): bool

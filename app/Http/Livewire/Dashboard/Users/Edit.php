@@ -88,6 +88,15 @@ class Edit extends Component
 
         $this->loadUser();
 
+        // Manager só pode editar clientes e a si mesmo
+        if (auth()->user()->hasRole('manager')) {
+            $isSelf = $this->user->id === auth()->id();
+            $isClient = $this->user->hasRole('client');
+            if (!$isSelf && !$isClient) {
+                abort(403, 'Gerentes só podem editar clientes e a si mesmos.');
+            }
+        }
+
         Gate::authorize('update', $this->user);
     }
 
@@ -289,7 +298,7 @@ class Edit extends Component
 
     // ─── Validação Completa + Atualização ───────────────────────
 
-    public function update()
+public function update()
     {
         Gate::authorize('update', $this->user);
 
@@ -298,7 +307,18 @@ class Edit extends Component
             abort(403, 'Administradores não podem promover usuários a super-administrador.');
         }
 
-        $rules = [
+        // Manager não pode alterar o próprio cargo nem o cargo de ninguém
+        if ($auth->hasRole('manager')) {
+            if ($this->user->id === $auth->id()) {
+                // Se está editando a si mesmo, mantém o cargo original
+                $this->role = $this->user->roles->first()?->name ?? '';
+            } else {
+                // Se está editando cliente, o cargo deve permanecer 'client'
+                $this->role = 'client';
+            }
+        }
+
+$rules = [
             'name'     => 'required|string|min:3|max:255',
             'email'    => 'required|email|max:255|unique:users,email,' . $this->userId,
             'role'     => 'required|exists:roles,name',
@@ -352,12 +372,9 @@ class Edit extends Component
             'information' => $this->information ?: null,
         ];
 
-        // Cargo, departamento, função e observações só podem ser alterados por não-employees
-        if (!$this->user->hasRole('employee')) {
-            $data['position'] = $this->position ?: null;
-            $data['department'] = $this->department ?: null;
-            $data['information'] = $this->information ?: null;
-        }
+        // Cargo e departamento sempre atualizáveis
+        $data['position'] = $this->position ?: null;
+        $data['department'] = $this->department ?: null;
 
         // Só atualiza a senha se foi informada
         if ($this->password) {
@@ -374,10 +391,8 @@ class Edit extends Component
 
         $this->user->update($data);
 
-        // Atualizar roles apenas se não for employee
-        if (!$this->user->hasRole('employee')) {
-            $this->user->syncRoles([$this->role]);
-        }
+        // Atualizar roles
+        $this->user->syncRoles([$this->role]);
 
         return redirect()->route('dashboard.users.edit', $this->userId)
             ->with('toast_success', 'Usuário atualizado com sucesso!');

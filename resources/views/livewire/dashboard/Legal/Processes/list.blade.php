@@ -5,6 +5,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Processos</h1>
             <p class="mt-1 text-sm text-gray-500">Gerencie todos os processos jurídicos.</p>
         </div>
+        @unless(auth()->user()->hasRole('employee'))
         <a
             href="{{ route('dashboard.legal.processes.create') }}"
             class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700"
@@ -12,6 +13,7 @@
             <i class="fa-solid fa-plus text-xs"></i>
             Novo Processo
         </a>
+        @endunless
     </div>
 
     <!-- Filters -->
@@ -64,9 +66,11 @@
                     <i class="fa-solid fa-folder-open text-2xl text-gray-400"></i>
                 </div>
                 <p class="text-gray-500">Nenhum processo encontrado.</p>
+                @unless(auth()->user()->hasRole('employee'))
                 <a href="{{ route('dashboard.legal.processes.create') }}" class="mt-4 inline-flex items-center gap-2 text-amber-600 hover:text-amber-700 font-medium text-sm">
                     <i class="fa-solid fa-plus"></i> Criar primeiro processo
                 </a>
+                @endunless
             </div>
         @else
             <div class="overflow-x-auto">
