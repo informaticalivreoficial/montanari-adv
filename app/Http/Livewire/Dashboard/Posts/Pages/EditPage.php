@@ -10,6 +10,7 @@ use App\Models\PostGb;
 use App\Services\ImageService;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -59,6 +60,8 @@ class EditPage extends Component
         $this->postId = $id;
         $this->categories = CatPost::active()->pluck('title', 'id')->toArray();
         $this->loadPage();
+
+        Gate::authorize('update', $this->post);
     }
 
     public function loadPage(): void

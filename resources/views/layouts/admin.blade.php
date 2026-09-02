@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>Gerenciador - {{ $configuracoes->app_name }}</title>
 
         <link rel="icon" href="{{ asset('theme/images/chave.png')}}" type="image/x-icon">
@@ -57,6 +58,15 @@
                         <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Gestão</p>
                     </div>
 
+                    <a href="{{ route('dashboard.clients') }}"
+                       title="Clientes"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.clients*') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
+                       :class="!desktopExpanded ? 'lg:justify-center lg:px-0' : ''">
+                        <i class="fa-solid fa-user-check shrink-0 w-5 text-center"></i>
+                        <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Clientes</span>
+                    </a>
+
+                    @unless(auth()->user()->hasRole('employee'))
                     <a href="{{ route('dashboard.users') }}"
                        title="Usuários"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.users*') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
@@ -64,6 +74,7 @@
                         <i class="fa-solid fa-users shrink-0 w-5 text-center"></i>
                         <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Usuários</span>
                     </a>
+                    @endunless
 
                     <div class="px-3 pt-4 pb-1" :class="!desktopExpanded ? 'lg:hidden' : ''">
                         <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Jurídico</p>
@@ -104,14 +115,8 @@
                         <i class="fa-solid fa-file-lines shrink-0 w-5 text-center"></i>
                         <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Documentos</span>
                     </a>
-                    <a href="{{ route('dashboard.messages') }}"
-                        title="Mensagens"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.messages') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
-                        :class="!desktopExpanded ? 'lg:justify-center lg:px-0' : ''">
-                        <i class="fa-solid fa-comments shrink-0 w-5 text-center"></i>
-                        <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Mensagens</span>
-                    </a>
 
+                    @unless(auth()->user()->hasRole('employee'))
                     <div class="px-3 pt-4 pb-1" :class="!desktopExpanded ? 'lg:hidden' : ''">
                         <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Conteúdo</p>
                     </div>
@@ -137,12 +142,13 @@
                         <i class="fa-solid fa-folder shrink-0 w-5 text-center"></i>
                         <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Categorias</span>
                     </a>
+                    @endunless
 
                     <div class="px-3 pt-4 pb-1" :class="!desktopExpanded ? 'lg:hidden' : ''">
                         <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Sistema</p>
                     </div>
 
-                    @if(!auth()->user()->hasRole('manager'))
+                    @if(!auth()->user()->hasAnyRole(['manager', 'employee']))
                     <a href="{{ route('dashboard.config') }}"
                        title="Configurações"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.config') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
@@ -152,6 +158,7 @@
                     </a>
                     @endif
 
+                    @unless(auth()->user()->hasRole('employee'))
                     <a href="{{ route('dashboard.analytics') }}"
                        title="Analytics"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.analytics') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
@@ -159,6 +166,7 @@
                         <i class="fa-solid fa-chart-simple shrink-0 w-5 text-center"></i>
                         <span class="whitespace-nowrap" :class="!desktopExpanded ? 'lg:hidden' : ''">Analytics</span>
                     </a>
+                    @endunless
                     <a href="{{ route('dashboard.notifications') }}"
                        title="Notificações"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard.notifications') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"

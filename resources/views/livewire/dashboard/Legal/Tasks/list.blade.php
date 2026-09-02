@@ -133,6 +133,7 @@
                         >
                             <i class="fa-solid fa-pen text-sm"></i>
                         </a>
+                        @unless(auth()->user()->hasRole('employee'))
                         <button
                             x-on:click="
                                 MontanariAlert.confirm({
@@ -149,6 +150,7 @@
                         >
                             <i class="fa-solid fa-trash text-sm"></i>
                         </button>
+                        @endunless
                     </div>
                 </div>
             </div>

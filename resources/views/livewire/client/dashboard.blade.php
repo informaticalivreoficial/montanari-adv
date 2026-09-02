@@ -161,41 +161,6 @@
                 </div>
             </div>
 
-            {{-- Recent Messages --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 mt-4">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h3 class="font-semibold text-gray-800">
-                        <i class="fa-solid fa-comments mr-2 text-green-600"></i> Mensagens
-                        @if($unreadCount > 0)
-                            <span class="ml-1 px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-xs font-semibold">{{ $unreadCount }}</span>
-                        @endif
-                    </h3>
-                    <a href="{{ route('client.messages') }}" class="text-sm text-blue-600 hover:underline">Ver todas →</a>
-                </div>
-                <div class="divide-y divide-gray-50">
-                    @forelse($recentMessages as $msg)
-                        @php
-                            $isUnread = !$msg['is_read'] && $msg['recipient_id'] == $user->id;
-                        @endphp
-                        <a href="{{ route('client.messages') }}" class="block px-6 py-3 hover:bg-gray-50 transition {{ $isUnread ? 'bg-blue-50/50' : '' }}">
-                            <div class="flex items-center justify-between gap-2">
-                                <p class="text-sm font-medium text-gray-800 truncate {{ $isUnread ? 'font-semibold' : '' }}">
-                                    {{ $msg['subject'] ?? 'Sem assunto' }}
-                                </p>
-                                @if($isUnread)
-                                    <span class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
-                                @endif
-                            </div>
-                            <p class="text-xs text-gray-500 mt-0.5 truncate">{{ \Illuminate\Support\Str::limit($msg['body'], 60) }}</p>
-                        </a>
-                    @empty
-                        <div class="px-6 py-6 text-center text-gray-400 text-sm">
-                            Nenhuma mensagem ainda.
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-
             {{-- Quick Actions --}}
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 mt-4">
                 <div class="px-6 py-4 border-b border-gray-100">
@@ -212,16 +177,6 @@
                         <div>
                             <p class="font-medium text-gray-800">Enviar Documento</p>
                             <p class="text-xs text-gray-500">Envie documentos solicitados</p>
-                        </div>
-                    </a>
-                    <a href="{{ route('client.messages') }}" 
-                       class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition text-sm">
-                        <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center">
-                            <i class="fa-solid fa-comments text-green-600"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-gray-800">Enviar Mensagem</p>
-                            <p class="text-xs text-gray-500">Comunique-se com o escritório</p>
                         </div>
                     </a>
                 </div>

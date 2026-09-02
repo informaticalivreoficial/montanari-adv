@@ -53,7 +53,7 @@
                             <select wire:model="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="">Selecione uma função</option>
                                 @foreach ($roles as $r)
-                                    <option value="{{ $r }}">{{ ucfirst(str_replace('-', ' ', $r)) }}</option>
+                                    <option value="{{ $r }}">{{ \App\Enums\UserRole::getLabel($r) }}</option>
                                 @endforeach
                             </select>
                         </div>

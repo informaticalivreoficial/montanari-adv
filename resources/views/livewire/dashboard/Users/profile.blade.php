@@ -68,18 +68,12 @@
                     <div class="mt-4 flex flex-wrap gap-2">
                         @php
                             $roleName = $user->roles->first()?->name ?? '';
-                            $roleClass = match($roleName) {
-                                'super-admin' => 'bg-purple-100 text-purple-800',
-                                'admin' => 'bg-blue-100 text-blue-800',
-                                'manager' => 'bg-indigo-100 text-indigo-800',
-                                'client' => 'bg-green-100 text-green-800',
-                                default => 'bg-gray-100 text-gray-600',
-                            };
+                            $roleClass = \App\Enums\UserRole::getColor($roleName);
                         @endphp
                         @if($roleName)
                             <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium {{ $roleClass }}">
                                 <i class="fa-solid fa-shield-halved mr-1.5"></i>
-                                {{ ucfirst(str_replace('-', ' ', $roleName)) }}
+                                {{ \App\Enums\UserRole::getLabel($roleName) }}
                             </span>
                         @endif
                         
@@ -170,6 +164,7 @@
         <!-- Coluna Lateral - Info Adicionais -->
         <div class="space-y-6">
             <!-- Informações da Conta -->
+            @unless($this->isEmployee)
             <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
                 <div class="border-b border-gray-100 px-6 py-4">
                     <h3 class="text-base font-semibold text-gray-900">
@@ -196,6 +191,7 @@
                     </div>
                 </div>
             </div>
+            @endunless
 
 
 
@@ -363,9 +359,10 @@
                             <input 
                                 type="text" 
                                 wire:model="position" 
+                                @if($this->isEmployee) disabled @endif
                                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 
                                        shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 
-                                       focus:outline-none transition"
+                                       focus:outline-none transition {{ $this->isEmployee ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : '' }}"
                                 placeholder="Ex: Advogado"
                             >
                         </div>
@@ -374,9 +371,10 @@
                             <input 
                                 type="text" 
                                 wire:model="department" 
+                                @if($this->isEmployee) disabled @endif
                                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 
                                        shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 
-                                       focus:outline-none transition"
+                                       focus:outline-none transition {{ $this->isEmployee ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : '' }}"
                                 placeholder="Ex: Jurídico"
                             >
                         </div>

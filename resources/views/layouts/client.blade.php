@@ -101,12 +101,6 @@
                         <i class="fa-solid fa-file-arrow-up mr-3 w-5 text-center"></i> Documentos
                     </a>
 
-                    <a href="{{ route('client.messages') }}"
-                       x-on:click="sidebarOpen = false"
-                       class="flex items-center px-3 py-2.5 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition {{ request()->routeIs('client.messages') ? 'bg-blue-50 text-blue-600 font-semibold' : '' }}">
-                        <i class="fa-solid fa-comments mr-3 w-5 text-center"></i> Mensagens
-                    </a>
-
                     <div class="my-2 border-t border-gray-100"></div>
 
                     <a href="{{ route('client.profile') }}"

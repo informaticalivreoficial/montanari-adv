@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\CatPost;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 
 class CreateCategory extends Component
 {
@@ -16,6 +17,11 @@ class CreateCategory extends Component
     public $tags = '';
     public $type = 'artigo';
     public $status = 1;
+
+    public function mount(): void
+    {
+        Gate::authorize('create', \App\Models\Post::class);
+    }
 
     // ──────────────────────────────────────────────────────
     //  Regras de validação

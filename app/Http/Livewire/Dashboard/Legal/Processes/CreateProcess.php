@@ -11,6 +11,7 @@ use App\Traits\HasAlerts;
 use App\Notifications\System\ProcessCreated;
 use Illuminate\Support\Facades\Notification;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 
 class CreateProcess extends Component
 {
@@ -139,9 +140,17 @@ class CreateProcess extends Component
 
     public $clients = [];
     public $team = [];
+    public $activeTab = 'geral';
+
+    public function setTab($tab)
+    {
+        $this->activeTab = $tab;
+    }
 
     public function mount()
     {
+        Gate::authorize('create', Process::class);
+
         $this->clients = User::role('client')->pluck('name', 'id')->toArray();
         // Responsável: apenas admin e manager (sem clientes nem super-admin)
         $this->team = User::role(['admin', 'manager'])->pluck('name', 'id')->toArray();

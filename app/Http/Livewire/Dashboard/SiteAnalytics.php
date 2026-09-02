@@ -29,6 +29,10 @@ class SiteAnalytics extends Component
 
     public function mount()
     {
+        if (auth()->user()->hasAnyRole(['manager', 'employee'])) {
+            abort(403, 'Acesso não autorizado.');
+        }
+
         $this->loadData();
     }
 

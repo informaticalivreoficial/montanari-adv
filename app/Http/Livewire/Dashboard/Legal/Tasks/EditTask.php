@@ -4,11 +4,11 @@ namespace App\Http\Livewire\Dashboard\Legal\Tasks;
 
 use Livewire\Component;
 use App\Models\Task;
-use App\Models\Process;
 use App\Models\User;
 use App\Models\Event;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 
 class EditTask extends Component
 {
@@ -17,6 +17,7 @@ class EditTask extends Component
     public $taskId;
 
     public $process_id = '';
+    public $processLabel = '';
     public $responsible_id = '';
     public $title = '';
     public $description = '';
@@ -26,21 +27,23 @@ class EditTask extends Component
     public $status = 'pending';
     public $notes = '';
 
-    public $processes = [];
     public $team = [];
 
     public function mount($id)
     {
         $this->taskId = $id;
-        $this->processes = Process::active()->pluck('process_number', 'id')->toArray();
         // Responsável: apenas admin e manager (sem clientes nem super-admin)
         $this->team = User::role(['admin', 'manager'])->pluck('name', 'id')->toArray();
+
+        $task = Task::findOrFail($this->taskId);
+        Gate::authorize('update', $task);
+
         $this->loadTask();
     }
 
     public function loadTask()
     {
-        $task = Task::findOrFail($this->taskId);
+        $task = Task::with('process.client')->findOrFail($this->taskId);
 
         $this->process_id = $task->process_id;
         $this->responsible_id = $task->responsible_id;
@@ -50,12 +53,31 @@ class EditTask extends Component
         $this->status = $task->status;
         $this->notes = $task->notes;
 
+        if ($task->process_id && $task->process) {
+            $clientName = $task->process->client->name ?? 'Sem cliente';
+            $this->processLabel = "{$task->process->process_number} — {$clientName}";
+        }
+
         if ($task->due_date) {
             $this->due_date = $task->due_date->format('Y-m-d');
             $this->due_time = $task->due_date->format('H:i');
         } else {
             $this->due_date = '';
             $this->due_time = '00:00';
+        }
+    }
+
+    public function updatedProcessId($value)
+    {
+        if (empty($value)) {
+            $this->processLabel = '';
+            return;
+        }
+
+        $process = \App\Models\Process::with('client')->find($value);
+        if ($process) {
+            $clientName = $process->client->name ?? 'Sem cliente';
+            $this->processLabel = "{$process->process_number} — {$clientName}";
         }
     }
 

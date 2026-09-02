@@ -10,12 +10,16 @@ use App\Http\Livewire\Dashboard;
 use App\Http\Livewire\Dashboard\Users\Users;
 use App\Http\Livewire\Dashboard\Users\Create as UserCreate;
 use App\Http\Livewire\Dashboard\Users\Edit as UserEdit;
+use App\Http\Livewire\Dashboard\Clients\ListClients;
+use App\Http\Livewire\Dashboard\Clients\CreateClient;
+use App\Http\Livewire\Dashboard\Clients\EditClient;
 use App\Http\Livewire\Dashboard\Settings\Config;
 use App\Http\Livewire\Dashboard\Users\Profile;
 use App\Http\Livewire\Auth\Register;
 use App\Http\Livewire\Dashboard\Legal\Processes\ListProcesses;
 use App\Http\Livewire\Dashboard\Legal\Processes\CreateProcess;
 use App\Http\Livewire\Dashboard\Legal\Processes\EditProcess;
+use App\Http\Livewire\Dashboard\Legal\Processes\ShowProcess;
 use App\Http\Livewire\Dashboard\Legal\Deadlines\ListDeadlines;
 use App\Http\Livewire\Dashboard\Legal\Deadlines\CreateDeadline;
 use App\Http\Livewire\Dashboard\Legal\Tasks\ListTasks;
@@ -35,7 +39,6 @@ use App\Http\Livewire\Dashboard\Posts\Categories\CreateCategory;
 use App\Http\Livewire\Dashboard\Posts\Categories\EditCategory;
 use App\Http\Livewire\Dashboard\Notifications\NotificationsDropdown;
 use App\Http\Livewire\Dashboard\Notifications\ListNotifications;
-use App\Http\Livewire\Dashboard\Messages;
 use App\Http\Livewire\Client\ClientLogin;
 use App\Http\Livewire\Client\ClientForgotPassword;
 use App\Http\Livewire\Client\ClientResetPassword;
@@ -45,7 +48,6 @@ use App\Http\Livewire\Client\Dashboard as ClientDashboard;
 use App\Http\Livewire\Client\ProcessList;
 use App\Http\Livewire\Client\ProcessDetail;
 use App\Http\Livewire\Client\ClientDocuments;
-use App\Http\Livewire\Client\ClientMessages;
 use App\Http\Livewire\Client\ClientDeadlines;
 use App\Http\Livewire\Client\ClientProfile;
 use App\Http\Livewire\Client\ClientProfileEdit;
@@ -112,12 +114,51 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | Módulo Clientes
+    |--------------------------------------------------------------------------
+    */
+    Route::livewire('/dashboard/clientes', ListClients::class)->name('dashboard.clients');
+    Route::livewire('/dashboard/clientes/criar', CreateClient::class)->name('dashboard.clients.create');
+    Route::livewire('/dashboard/clientes/{id}/editar', EditClient::class)->name('dashboard.clients.edit');
+
+    /*
+    |--------------------------------------------------------------------------
     | Módulo Jurídico
     |--------------------------------------------------------------------------
     */
     // Processos
     Route::livewire('/dashboard/processos', ListProcesses::class)->name('dashboard.legal.processes');
     Route::livewire('/dashboard/processos/criar', CreateProcess::class)->name('dashboard.legal.processes.create');
+
+    // Busca de processos (para autocomplete) — DEVE vir antes de {id}
+    Route::get('/dashboard/processos/search', function () {
+        $q = request('q', '');
+        if (strlen($q) < 2) return response()->json([]);
+
+        $results = \App\Models\Process::with('client')
+            ->where(function ($query) use ($q) {
+                $query->where('process_number', 'like', "%{$q}%")
+                    ->orWhereHas('client', function ($cq) use ($q) {
+                        $cq->where('name', 'like', "%{$q}%");
+                    });
+            })
+            ->limit(15)
+            ->get()
+            ->map(function ($p) {
+                $clientName = $p->client->name ?? 'Sem cliente';
+                return [
+                    'id'     => $p->id,
+                    'label'  => "{$p->process_number} — {$clientName}",
+                    'number' => $p->process_number,
+                    'client' => $clientName,
+                    'court'  => $p->court_name ?? '',
+                ];
+            });
+
+        return response()->json($results);
+    })->name('dashboard.legal.processes.search');
+
+    Route::livewire('/dashboard/processos/{id}', ShowProcess::class)->name('dashboard.legal.processes.show');
     Route::livewire('/dashboard/processos/{id}/editar', EditProcess::class)->name('dashboard.legal.processes.edit');
 
     // Prazos
@@ -140,9 +181,6 @@ Route::middleware(['auth', 'admin.access'])->group(function () {
 
     // Notificações
     Route::livewire('/dashboard/notificacoes', ListNotifications::class)->name('dashboard.notifications');
-
-    // Mensagens (hub cliente ↔ escritório)
-    Route::livewire('/dashboard/mensagens', Messages::class)->name('dashboard.messages');
 
     /*
     |--------------------------------------------------------------------------
@@ -190,7 +228,6 @@ Route::middleware('client')->prefix('cliente')->name('client.')->group(function 
     Route::livewire('/processo/{id}', ProcessDetail::class)->name('process.show');
     Route::livewire('/prazos', ClientDeadlines::class)->name('deadlines');
     Route::livewire('/documentos', ClientDocuments::class)->name('documents');
-    Route::livewire('/mensagens', ClientMessages::class)->name('messages');
     Route::livewire('/perfil', ClientProfile::class)->name('profile');
     Route::livewire('/perfil/editar', ClientProfileEdit::class)->name('profile.edit');
     Route::livewire('/perfil/senha', ClientPasswordChange::class)->name('profile.password');

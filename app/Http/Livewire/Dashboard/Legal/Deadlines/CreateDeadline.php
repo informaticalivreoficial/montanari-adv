@@ -11,12 +11,14 @@ use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
 use App\Notifications\System\DeadlineCreated;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Gate;
 
 class CreateDeadline extends Component
 {
     use HasAlerts, HasValidations;
 
     public $process_id = '';
+    public $processLabel = '';
     public $responsible_id = '';
     public $title = '';
     public $description = '';
@@ -27,14 +29,28 @@ class CreateDeadline extends Component
     public $status = 'pending';
     public $notes = '';
 
-    public $processes = [];
     public $team = [];
 
     public function mount()
     {
-        $this->processes = Process::active()->pluck('process_number', 'id')->toArray();
+        Gate::authorize('create', Deadline::class);
+
         // Responsável: apenas admin e manager (sem clientes nem super-admin)
         $this->team = User::role(['admin', 'manager'])->pluck('name', 'id')->toArray();
+    }
+
+    public function updatedProcessId($value)
+    {
+        if (empty($value)) {
+            $this->processLabel = '';
+            return;
+        }
+
+        $process = Process::with('client')->find($value);
+        if ($process) {
+            $clientName = $process->client->name ?? 'Sem cliente';
+            $this->processLabel = "{$process->process_number} — {$clientName}";
+        }
     }
 
     public function store()

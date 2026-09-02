@@ -27,17 +27,16 @@ class ListDocuments extends Component
     public $uploadTitle = '';
     public $uploadDescription = '';
     public $uploadProcessId = '';
+    public $uploadProcessLabel = '';
     public $uploadCategory = 'other';
     public $uploadNotes = '';
 
-    public $processes = [];
     public $clients = [];
 
     protected $listeners = ['refreshDocuments' => '$refresh'];
 
     public function mount()
     {
-        $this->processes = Process::active()->pluck('process_number', 'id')->toArray();
         $this->clients = User::role('client')->pluck('name', 'id')->toArray();
     }
 
@@ -73,6 +72,20 @@ class ListDocuments extends Component
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'image/jpeg', 'image/png',
     ];
+
+    public function updatedUploadProcessId($value)
+    {
+        if (empty($value)) {
+            $this->uploadProcessLabel = '';
+            return;
+        }
+
+        $process = Process::with('client')->find($value);
+        if ($process) {
+            $clientName = $process->client->name ?? 'Sem cliente';
+            $this->uploadProcessLabel = "{$process->process_number} — {$clientName}";
+        }
+    }
 
     public function saveDocument()
     {
@@ -116,6 +129,7 @@ class ListDocuments extends Component
         $this->uploadTitle = '';
         $this->uploadDescription = '';
         $this->uploadProcessId = '';
+        $this->uploadProcessLabel = '';
         $this->uploadCategory = 'other';
         $this->uploadNotes = '';
     }
@@ -136,10 +150,9 @@ class ListDocuments extends Component
             ->latest()
             ->paginate(27);
 
-        $processesList = $this->processes;
         $clientsList = $this->clients;
 
-        return view('livewire.dashboard.Legal.Documents.list', compact('documents', 'processesList', 'clientsList'))
+        return view('livewire.dashboard.Legal.Documents.list', compact('documents', 'clientsList'))
             ->layout('layouts.admin', ['title' => 'Documentos']);
     }
 }

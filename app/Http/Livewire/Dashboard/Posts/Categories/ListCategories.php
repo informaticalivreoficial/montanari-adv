@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\CatPost;
 use App\Traits\HasAlerts;
+use Illuminate\Support\Facades\Gate;
 
 class ListCategories extends Component
 {
@@ -14,6 +15,11 @@ class ListCategories extends Component
     public $search = '';
 
     protected $queryString = ['search'];
+
+    public function mount(): void
+    {
+        Gate::authorize('viewAny', \App\Models\Post::class);
+    }
 
     public function updatingSearch()
     {

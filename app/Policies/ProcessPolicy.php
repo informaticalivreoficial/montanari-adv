@@ -9,12 +9,12 @@ class ProcessPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(['super-admin', 'admin', 'manager']);
+        return $user->hasAnyRole(['super-admin', 'admin', 'manager', 'employee']);
     }
 
     public function view(User $user, Process $process): bool
     {
-        if ($user->hasRole(['super-admin', 'admin', 'manager'])) return true;
+        if ($user->hasAnyRole(['super-admin', 'admin', 'manager', 'employee'])) return true;
         return $user->id === $process->client_id;
     }
 

@@ -13,6 +13,7 @@ class Document extends Model
 
     protected $fillable = [
         'process_id',
+        'client_id',
         'uploaded_by',
         'title',
         'description',
@@ -29,6 +30,11 @@ class Document extends Model
     public function process()
     {
         return $this->belongsTo(Process::class);
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(User::class, 'client_id');
     }
 
     public function uploader()

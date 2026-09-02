@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\User;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 
 class Users extends Component
 {
@@ -42,6 +43,8 @@ class Users extends Component
 
     public function mount()
     {
+        Gate::authorize('viewAny', User::class);
+
         // Managers só operam na visão de clientes
         if (auth()->user()->hasRole('manager')) {
             $this->viewMode = 'clients';
@@ -76,7 +79,7 @@ class Users extends Component
             $this->stats = [
                 'total' => User::whereDoesntHave('roles', fn($q) => $q->where('name', 'super-admin'))->count(),
                 'clients' => User::role('client')->count(),
-                'team' => User::role(['admin', 'manager'])->count(),
+                'team' => User::role(['admin', 'manager', 'employee'])->count(),
                 'active' => User::where('status', 1)
                     ->whereDoesntHave('roles', fn($q) => $q->where('name', 'super-admin'))->count(),
                 'inactive' => User::where('status', 0)
@@ -86,7 +89,7 @@ class Users extends Component
             $this->stats = [
                 'total' => User::count(),
                 'clients' => User::role('client')->count(),
-                'team' => User::role(['super-admin', 'admin', 'manager'])->count(),
+                'team' => User::role(['super-admin', 'admin', 'manager', 'employee'])->count(),
                 'active' => User::where('status', 1)->count(),
                 'inactive' => User::where('status', 0)->count(),
             ];
@@ -108,7 +111,7 @@ class Users extends Component
             if ($this->viewMode === 'clients') {
                 $query->role('client');
             } elseif ($this->viewMode === 'team') {
-                $query->role(['super-admin', 'admin', 'manager']);
+                $query->role(['super-admin', 'admin', 'manager', 'employee']);
             }
 
             // Admin não visualiza super-admin

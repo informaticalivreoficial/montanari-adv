@@ -4,19 +4,20 @@ namespace App\Http\Livewire\Dashboard\Legal\Tasks;
 
 use Livewire\Component;
 use App\Models\Task;
-use App\Models\Process;
 use App\Models\User;
 use App\Models\Event;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
 use App\Notifications\System\TaskCreated;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Gate;
 
 class CreateTask extends Component
 {
     use HasAlerts, HasValidations;
 
     public $process_id = '';
+    public $processLabel = '';
     public $responsible_id = '';
     public $title = '';
     public $description = '';
@@ -26,14 +27,28 @@ class CreateTask extends Component
     public $status = 'pending';
     public $notes = '';
 
-    public $processes = [];
     public $team = [];
 
     public function mount()
     {
-        $this->processes = Process::active()->pluck('process_number', 'id')->toArray();
+        Gate::authorize('create', Task::class);
+
         // Responsável: apenas admin e manager (sem clientes nem super-admin)
         $this->team = User::role(['admin', 'manager'])->pluck('name', 'id')->toArray();
+    }
+
+    public function updatedProcessId($value)
+    {
+        if (empty($value)) {
+            $this->processLabel = '';
+            return;
+        }
+
+        $process = \App\Models\Process::with('client')->find($value);
+        if ($process) {
+            $clientName = $process->client->name ?? 'Sem cliente';
+            $this->processLabel = "{$process->process_number} — {$clientName}";
+        }
     }
 
     public function store()

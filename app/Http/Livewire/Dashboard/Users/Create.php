@@ -70,18 +70,17 @@ class Create extends Component
 
     public function mount()
     {
-        $roleQuery = Role::query();
+        Gate::authorize('create', User::class);
+
+        $roleQuery = Role::query()->where('name', '!=', 'client');
+
         if (auth()->user()->hasRole('admin')) {
             $roleQuery->where('name', '!=', 'super-admin');
         } elseif (auth()->user()->hasRole('manager')) {
-            $roleQuery->where('name', 'client');
+            $roleQuery->where('name', 'employee');
         }
-        $this->roles = $roleQuery->get()->toArray();
 
-        // Manager sempre cria clientes
-        if (auth()->user()->hasRole('manager')) {
-            $this->role = 'client';
-        }
+        $this->roles = $roleQuery->get()->toArray();
     }
 
     // ─── Validação em Tempo Real ────────────────────────────────
@@ -250,10 +249,7 @@ class Create extends Component
         Gate::authorize('create', User::class);
 
         $auth = auth()->user();
-        if ($auth->hasRole('manager')) {
-            // Manager apenas cria clientes
-            $this->role = 'client';
-        } elseif ($auth->hasRole('admin') && $this->role === 'super-admin') {
+        if ($auth->hasRole('admin') && $this->role === 'super-admin') {
             abort(403, 'Administradores não podem criar super-administradores.');
         }
 

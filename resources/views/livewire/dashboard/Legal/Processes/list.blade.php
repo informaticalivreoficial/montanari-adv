@@ -116,9 +116,14 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('dashboard.legal.processes.show', $process->id) }}" class="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition" title="Visualizar">
+                                            <i class="fa-solid fa-eye text-sm"></i>
+                                        </a>
+                                        @unless(auth()->user()->hasRole('employee'))
                                         <a href="{{ route('dashboard.legal.processes.edit', $process->id) }}" class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-amber-600 transition">
                                             <i class="fa-solid fa-pen-to-square text-sm"></i>
                                         </a>
+
                                         @if($process->source_provider === 'datajud')
                                             <button
                                                 x-on:click="
@@ -138,6 +143,7 @@
                                                 <i class="fa-solid fa-rotate text-sm"></i>
                                             </button>
                                         @endif
+
                                         <button
                                             x-on:click="
                                                 MontanariAlert.confirm({
@@ -153,6 +159,7 @@
                                         >
                                             <i class="fa-solid fa-trash text-sm"></i>
                                         </button>
+                                        @endunless
                                     </div>
                                 </td>
                             </tr>

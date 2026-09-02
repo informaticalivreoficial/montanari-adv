@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\Post;
 use App\Models\CatPost;
 use App\Traits\HasAlerts;
+use Illuminate\Support\Facades\Gate;
 
 class ListPages extends Component
 {
@@ -16,6 +17,11 @@ class ListPages extends Component
     public $filterStatus = '';
 
     protected $queryString = ['search', 'filterStatus'];
+
+    public function mount(): void
+    {
+        Gate::authorize('viewAny', \App\Models\Post::class);
+    }
 
     public function updatingSearch()
     {

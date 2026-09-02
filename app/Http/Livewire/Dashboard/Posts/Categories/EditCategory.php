@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\CatPost;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 
 class EditCategory extends Component
 {
@@ -24,6 +25,8 @@ class EditCategory extends Component
     {
         $this->categoryId = $id;
         $this->loadCategory();
+
+        Gate::authorize('update', $this->category);
     }
 
     public function loadCategory(): void

@@ -272,15 +272,6 @@
                             <p class="text-xs text-gray-500">Acompanhar andamento</p>
                         </div>
                     </a>
-                    <a href="{{ route('client.messages') }}" class="flex items-center gap-3 rounded-lg border border-gray-200 p-3 transition hover:border-[#23406C]/30 hover:bg-[#23406C]/5">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#23406C]/10 text-[#23406C]">
-                            <i class="fa-solid fa-comments"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Mensagens</p>
-                            <p class="text-xs text-gray-500">Falar com o escritório</p>
-                        </div>
-                    </a>
                 </div>
             </div>
         </div>

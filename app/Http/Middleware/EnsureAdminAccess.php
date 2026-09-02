@@ -21,7 +21,7 @@ class EnsureAdminAccess
             return redirect()->route('client.dashboard');
         }
 
-        if ($user->status != 1 || ! $user->hasAnyRole(['super-admin', 'admin', 'manager'])) {
+        if ($user->status != 1 || ! $user->hasAnyRole(['super-admin', 'admin', 'manager', 'employee'])) {
             abort(403, 'Acesso não autorizado.');
         }
 

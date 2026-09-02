@@ -11,6 +11,7 @@ use App\Exceptions\DatajudException;
 use App\Exceptions\DjenException;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 
 class EditProcess extends Component
 {
@@ -142,6 +143,12 @@ class EditProcess extends Component
 
     public $clients = [];
     public $team = [];
+    public $activeTab = 'geral';
+
+    public function setTab($tab)
+    {
+        $this->activeTab = $tab;
+    }
 
     public function mount($id)
     {
@@ -151,6 +158,8 @@ class EditProcess extends Component
         $this->team = User::role(['admin', 'manager'])->pluck('name', 'id')->toArray();
         $this->tribunais = config('datajud.tribunais', []);
         $this->loadProcess();
+
+        Gate::authorize('update', $this->process);
     }
 
     /**

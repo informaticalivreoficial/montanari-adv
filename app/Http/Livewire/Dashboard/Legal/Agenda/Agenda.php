@@ -11,6 +11,7 @@ use App\Notifications\System\EventCreated;
 use App\Services\TelegramService;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 
 class Agenda extends Component
 {
@@ -30,6 +31,7 @@ class Agenda extends Component
     public $event_type = 'other';
     public $color = '';
     public $process_id = '';
+    public $processLabel = '';
     public $location = '';
     public $notes = '';
 
@@ -44,7 +46,6 @@ class Agenda extends Component
     public $actionsPopupX = 0;
     public $actionsPopupY = 0;
 
-    public $processes = [];
     public $team = [];
     public $events = [];
 
@@ -58,7 +59,8 @@ class Agenda extends Component
 
     public function mount()
     {
-        $this->processes = Process::active()->pluck('process_number', 'id')->toArray();
+        Gate::authorize('viewAny', Event::class);
+
         $this->team = User::team()->pluck('name', 'id')->toArray();
         $this->loadEvents();
     }
@@ -96,6 +98,13 @@ class Agenda extends Component
         $this->location = $event->location;
         $this->notes = $event->notes;
 
+        if ($event->process_id && $event->process) {
+            $clientName = $event->process->client->name ?? 'Sem cliente';
+            $this->processLabel = "{$event->process->process_number} — {$clientName}";
+        } else {
+            $this->processLabel = '';
+        }
+
         $this->showViewModal = false;
         $this->showModal = true;
     }
@@ -114,6 +123,20 @@ class Agenda extends Component
         $this->loadEvents();
         $this->dispatch('loadEvents', $this->events);
         $this->toastSuccess('Evento atualizado!');
+    }
+
+    public function updatedProcessId($value)
+    {
+        if (empty($value)) {
+            $this->processLabel = '';
+            return;
+        }
+
+        $process = Process::with('client')->find($value);
+        if ($process) {
+            $clientName = $process->client->name ?? 'Sem cliente';
+            $this->processLabel = "{$process->process_number} — {$clientName}";
+        }
     }
 
     public function save()
@@ -190,6 +213,10 @@ class Agenda extends Component
 
     public function deleteFromActions()
     {
+        if (auth()->user()->hasRole('employee')) {
+            abort(403, 'Colaboradores não podem excluir eventos.');
+        }
+
         $id = $this->actionsEventId;
         $this->showEventActions = false;
         if (!$id) return;
@@ -202,6 +229,10 @@ class Agenda extends Component
 
     public function deleteEvent()
     {
+        if (auth()->user()->hasRole('employee')) {
+            abort(403, 'Colaboradores não podem excluir eventos.');
+        }
+
         if (!$this->editingId) return;
 
         Event::findOrFail($this->editingId)->delete();
@@ -277,6 +308,7 @@ class Agenda extends Component
         $this->event_type = 'other';
         $this->color = '';
         $this->process_id = '';
+        $this->processLabel = '';
         $this->location = '';
         $this->notes = '';
     }

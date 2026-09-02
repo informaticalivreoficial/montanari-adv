@@ -11,6 +11,7 @@ use App\Models\Event;
 use App\Traits\HasAlerts;
 use App\Notifications\System\TaskCompleted;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Gate;
 
 class ListTasks extends Component
 {
@@ -21,6 +22,11 @@ class ListTasks extends Component
     public $filterPriority = '';
 
     protected $queryString = ['search', 'filterStatus', 'filterPriority'];
+
+    public function mount()
+    {
+        Gate::authorize('viewAny', Task::class);
+    }
 
     public function updatingSearch()
     {
@@ -56,6 +62,10 @@ class ListTasks extends Component
 
     public function delete($id)
     {
+        if (auth()->user()->hasRole('employee')) {
+            abort(403, 'Colaboradores não podem excluir tarefas.');
+        }
+
         $task = Task::findOrFail($id);
 
         // Remove também o evento correspondente do calendário (Agenda)

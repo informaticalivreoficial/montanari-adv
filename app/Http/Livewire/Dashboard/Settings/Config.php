@@ -44,8 +44,8 @@ class Config extends Component
 
     public function mount()
     {
-        // Apenas super-admin e admin acessam as configurações; manager fica bloqueado
-        if (auth()->user()->hasRole('manager')) {
+        // Apenas super-admin e admin acessam as configurações
+        if (auth()->user()->hasAnyRole(['manager', 'employee'])) {
             abort(403, 'Acesso não autorizado.');
         }
 

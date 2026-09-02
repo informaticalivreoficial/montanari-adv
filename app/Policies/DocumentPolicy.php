@@ -9,18 +9,18 @@ class DocumentPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(['super-admin', 'admin', 'manager']);
+        return $user->hasAnyRole(['super-admin', 'admin', 'manager', 'employee']);
     }
 
     public function view(User $user, Document $document): bool
     {
-        if ($user->hasRole(['super-admin', 'admin', 'manager'])) return true;
+        if ($user->hasAnyRole(['super-admin', 'admin', 'manager', 'employee'])) return true;
         return $user->id === ($document->process->client_id ?? null);
     }
 
     public function create(User $user): bool
     {
-        return $user->hasRole(['super-admin', 'admin', 'manager', 'client']);
+        return $user->hasAnyRole(['super-admin', 'admin', 'manager', 'employee', 'client']);
     }
 
     public function update(User $user, Document $document): bool

@@ -11,6 +11,7 @@ use App\Services\DjenService;
 use App\Exceptions\DatajudException;
 use App\Exceptions\DjenException;
 use App\Traits\HasAlerts;
+use Illuminate\Support\Facades\Gate;
 
 class ListProcesses extends Component
 {
@@ -21,6 +22,11 @@ class ListProcesses extends Component
     public $filterType = '';
 
     protected $queryString = ['search', 'filterStatus', 'filterType'];
+
+    public function mount()
+    {
+        Gate::authorize('viewAny', Process::class);
+    }
 
     public function updatingSearch()
     {
@@ -39,6 +45,10 @@ class ListProcesses extends Component
 
     public function delete($id)
     {
+        if (auth()->user()->hasRole('employee')) {
+            abort(403, 'Colaboradores não podem excluir processos.');
+        }
+
         $process = Process::findOrFail($id);
         $process->delete();
 

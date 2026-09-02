@@ -39,6 +39,11 @@ class Profile extends Component
         $this->loadUser();
     }
 
+    public function getIsEmployeeProperty(): bool
+    {
+        return $this->user && $this->user->hasRole('employee');
+    }
+
     protected function loadUser()
     {
         $this->user = Auth::user()->load('roles', 'permissions');
@@ -98,10 +103,14 @@ class Profile extends Component
             'phone' => $this->phone ?: null,
             'cell_phone' => $this->cell_phone ?: null,
             'whatsapp' => $this->whatsapp ?: null,
-            'position' => $this->position ?: null,
-            'department' => $this->department ?: null,
             'biography' => $this->biography ?: null,
         ];
+
+        // Cargo/departamento só podem ser alterados por não-employees
+        if (!$this->isEmployee) {
+            $data['position'] = $this->position ?: null;
+            $data['department'] = $this->department ?: null;
+        }
 
         // Upload avatar
         if ($this->avatar) {

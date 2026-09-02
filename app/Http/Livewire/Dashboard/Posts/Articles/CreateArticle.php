@@ -10,6 +10,7 @@ use App\Models\PostGb;
 use App\Services\ImageService;
 use App\Traits\HasAlerts;
 use App\Traits\HasValidations;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
 class CreateArticle extends Component
@@ -52,6 +53,8 @@ class CreateArticle extends Component
 
     public function mount(): void
     {
+        Gate::authorize('create', \App\Models\Post::class);
+
         $this->categories = CatPost::active()->pluck('title', 'id')->toArray();
     }
 

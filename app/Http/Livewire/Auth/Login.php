@@ -54,7 +54,7 @@ class Login extends Component
             return;
         }
 
-        if (! $user->hasAnyRole(['super-admin', 'admin', 'manager'])) {
+        if (! $user->hasAnyRole(['super-admin', 'admin', 'manager', 'employee'])) {
             Auth::logout();
             $this->addError('email', 'Usuário sem permissão para acessar o painel.');
             return;

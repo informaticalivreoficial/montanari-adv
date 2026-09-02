@@ -5,6 +5,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Gerenciar Usuários</h1>
             <p class="mt-1 text-sm text-gray-500">Crie, edite e gerencie os usuários do sistema.</p>
         </div>
+        @unless(auth()->user()->hasRole('employee'))
         <a 
             href="{{ route('dashboard.users.create') }}"
             class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold 
@@ -14,6 +15,7 @@
             <i class="fa-solid fa-plus text-xs"></i>
             Novo Usuário
         </a>
+        @endunless
     </div>
 
     <!-- Stats Cards -->
@@ -121,6 +123,7 @@
                     {{ $search ? 'Tente buscar com outros termos.' : 'Comece criando o primeiro usuário do sistema.' }}
                 </p>
                 @if(!$search)
+                    @unless(auth()->user()->hasRole('employee'))
                     <div class="mt-6">
                         <a 
                             href="{{ route('dashboard.users.create') }}"
@@ -131,6 +134,7 @@
                             Novo Usuário
                         </a>
                     </div>
+                    @endunless
                 @endif
             </div>
         @else
@@ -199,20 +203,14 @@
                                     </div>
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-3">
-                                    @php
-                                        $roleName = $user['role'] ?? '';
-                                        $roleClass = match($roleName) {
-                                            'super-admin' => 'bg-purple-100 text-purple-800',
-                                            'admin' => 'bg-blue-100 text-blue-800',
-                                            'manager' => 'bg-indigo-100 text-indigo-800',
-                                            'client' => 'bg-green-100 text-green-800',
-                                            default => 'bg-gray-100 text-gray-600',
-                                        };
-                                    @endphp
-                                    @if($roleName)
-                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $roleClass }}">
-                                            {{ ucfirst(str_replace('-', ' ', $roleName)) }}
-                                        </span>
+                                @php
+                                    $roleName = $user['role'] ?? '';
+                                    $roleClass = \App\Enums\UserRole::getColor($roleName);
+                                @endphp
+                                @if($roleName)
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $roleClass }}">
+                                        {{ \App\Enums\UserRole::getLabel($roleName) }}
+                                    </span>
                                     @else
                                         <span class="text-gray-400 text-xs">Sem função</span>
                                     @endif

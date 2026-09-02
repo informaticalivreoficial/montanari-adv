@@ -8,6 +8,11 @@ class UserPolicy
 {
     public function viewAny(User $user): bool
     {
+        // Employee não visualiza lista de usuários
+        if ($user->hasRole('employee')) {
+            return false;
+        }
+
         return $user->hasAnyRole(['super-admin', 'admin', 'manager']);
     }
 
@@ -18,7 +23,12 @@ class UserPolicy
             return true;
         }
 
-        // Cliente não visualiza ninguém além de si (e é redirecionado pelo middleware)
+        // Employee não visualiza outros usuários
+        if ($user->hasRole('employee')) {
+            return false;
+        }
+
+        // Cliente não visualiza ninguém além de si
         if ($user->hasRole('client')) {
             return false;
         }
@@ -39,6 +49,11 @@ class UserPolicy
 
     public function create(User $user): bool
     {
+        // Employee não cria usuários
+        if ($user->hasRole('employee')) {
+            return false;
+        }
+
         // Super-admin e admin podem criar (admin não cria super-admin — validado no componente).
         // Manager cria apenas clientes (validado no componente).
         return $user->hasAnyRole(['super-admin', 'admin', 'manager']);
@@ -46,9 +61,14 @@ class UserPolicy
 
     public function update(User $user, User $model): bool
     {
-        // Própria conta: sempre permitido (cliente edita a si no painel do cliente)
+        // Própria conta: sempre permitido
         if ($user->id === $model->id) {
             return true;
+        }
+
+        // Employee não edita outros usuários
+        if ($user->hasRole('employee')) {
+            return false;
         }
 
         if ($user->hasRole('client')) {
@@ -71,8 +91,8 @@ class UserPolicy
 
     public function delete(User $user, User $model): bool
     {
-        // Manager e client não excluem ninguém
-        if ($user->hasRole(['manager', 'client'])) {
+        // Manager, client e employee não excluem ninguém
+        if ($user->hasRole(['manager', 'client', 'employee'])) {
             return false;
         }
 

@@ -488,7 +488,7 @@
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Função</label>
                             <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-                                {{ ucfirst(str_replace('-', ' ', $this->role)) }}
+                                {{ \App\Enums\UserRole::getLabel($this->role) }}
                             </div>
                         </div>
                     @else
@@ -497,7 +497,7 @@
                         label="Função"
                         :required="true"
                         placeholder="Selecione"
-                        :options="collect($roles)->mapWithKeys(fn($r) => [$r['name'] => ucfirst(str_replace('-', ' ', $r['name']))])->toArray()"
+                        :options="collect($roles)->mapWithKeys(fn($r) => [$r['name'] => \App\Enums\UserRole::getLabel($r['name'])])->toArray()"
                         wire:model="role"
                     />
                     @endif

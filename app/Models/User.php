@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\ResetPasswordNotification;
+use App\Models\Document;
 
 class User extends Authenticatable
 {
@@ -61,6 +62,11 @@ class User extends Authenticatable
         return $this->hasRole('super-admin');
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
     public function isManager(): bool
     {
         return $this->hasRole('manager');
@@ -82,6 +88,22 @@ class User extends Authenticatable
     /**
      * Relacionamentos
     */
+
+    /**
+     * Documentos vinculados diretamente ao cliente
+    */
+    public function clientDocuments()
+    {
+        return $this->hasMany(Document::class, 'client_id');
+    }
+
+    /**
+     * Processos do cliente
+    */
+    public function processes()
+    {
+        return $this->hasMany(Process::class, 'client_id');
+    }
 
     /**
      * Scopes
@@ -109,7 +131,7 @@ class User extends Authenticatable
     */
     public function scopeTeam($query)
     {
-        return $query->role(['super-admin', 'admin', 'manager']);
+        return $query->role(['super-admin', 'admin', 'manager', 'employee']);
     }
 
     /**
@@ -122,7 +144,7 @@ class User extends Authenticatable
 
     public function isTeam(): bool
     {
-        return $this->hasAnyRole(['super-admin', 'admin', 'manager']);
+        return $this->hasAnyRole(['super-admin', 'admin', 'manager', 'employee']);
     }
 
     /**

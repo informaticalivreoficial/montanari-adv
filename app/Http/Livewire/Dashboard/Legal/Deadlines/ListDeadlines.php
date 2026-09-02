@@ -9,6 +9,7 @@ use App\Models\Process;
 use App\Models\User;
 use App\Models\Event;
 use App\Traits\HasAlerts;
+use Illuminate\Support\Facades\Gate;
 
 class ListDeadlines extends Component
 {
@@ -19,6 +20,11 @@ class ListDeadlines extends Component
     public $filterPriority = '';
 
     protected $queryString = ['search', 'filterStatus', 'filterPriority'];
+
+    public function mount()
+    {
+        Gate::authorize('viewAny', Deadline::class);
+    }
 
     public function updatingSearch()
     {
@@ -34,6 +40,10 @@ class ListDeadlines extends Component
 
     public function delete($id)
     {
+        if (auth()->user()->hasRole('employee')) {
+            abort(403, 'Colaboradores não podem excluir prazos.');
+        }
+
         $deadline = Deadline::findOrFail($id);
 
         // Remove também o evento correspondente do calendário (Agenda)
