@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Atrás do proxy (Traefik/Cloudflare) o Laravel precisa confiar no
+        // X-Forwarded-Proto para gerar URLs https (evita mixed content).
+        $middleware->trustProxies(at: '*');
+
         // Middleware aliases (substitui $routeMiddleware do Kernel)
         $middleware->alias([
             'client' => \App\Http\Middleware\ClientArea::class,
