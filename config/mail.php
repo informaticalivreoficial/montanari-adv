@@ -53,7 +53,10 @@ return [
             'port' => (int) env('MAILTRAP_PORT', 587),
             'encryption' => env('MAILTRAP_ENCRYPTION') ?: 'tls',
             'username' => env('MAILTRAP_USERNAME') ?: 'api',
-            'password' => env('MAILTRAP_PASSWORD') ?: env('MAILTRAP_API_KEY'),
+            // A senha SMTP do Mailtrap é um API token da conta. Damos
+            // preferência a MAILTRAP_API_KEY para não depender de duas
+            // cópias da mesma credencial.
+            'password' => env('MAILTRAP_API_KEY') ?: env('MAILTRAP_PASSWORD'),
             'timeout' => (int) env('MAIL_TIMEOUT', 10),
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
