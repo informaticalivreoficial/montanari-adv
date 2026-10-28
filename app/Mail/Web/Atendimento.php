@@ -11,7 +11,7 @@ use Illuminate\Mail\Markdown;
 class Atendimento extends Mailable
 {
     use Queueable, SerializesModels;
-    
+
     private $data;
 
     /**
@@ -31,14 +31,20 @@ class Atendimento extends Mailable
      */
     public function build()
     {
-        return $this->replyTo($this->data['reply_email'], $this->data['reply_name'])
-            ->to($this->data['siteemail'], $this->data['sitename'])
-            ->from($this->data['siteemail'], $this->data['sitename'])
+        $fromAddress = config('mail.from.address');
+        $fromName = config('mail.from.name');
+
+        // Destinatário: MAIL_CONTACT_TO → e-mail das configurações → remetente.
+        $to = config('mail.contact_to') ?: ($this->data['siteemail'] ?? null) ?: $fromAddress;
+
+        return $this->from($fromAddress, $fromName)
+            ->replyTo($this->data['reply_email'], $this->data['reply_name'])
+            ->to($to)
             ->subject('#Atendimento: ' . $this->data['reply_name'])
             ->markdown('emails.atendimento', [
                 'nome' => $this->data['reply_name'],
                 'email' => $this->data['reply_email'],
                 'mensagem' => $this->data['mensagem']
-        ]);
+            ]);
     }
 }

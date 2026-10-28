@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -13,11 +14,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('ALTER TABLE posts MODIFY excerpt TEXT NULL');
+        Schema::table('posts', function (Blueprint $table) {
+            $table->text('excerpt')->nullable()->change();
+        });
     }
 
     public function down(): void
     {
-        DB::statement('ALTER TABLE posts MODIFY excerpt VARCHAR(500) NULL');
+        Schema::table('posts', function (Blueprint $table) {
+            $table->string('excerpt', 500)->nullable()->change();
+        });
     }
 };
